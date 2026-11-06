@@ -6,10 +6,12 @@ phases are tagged `phase-N` until the `v1.0.0` release.
 
 ## [Unreleased]
 
+## [phase-0] — 2026-11-06
+
 ### Added
 - Monorepo layout for ingestion, warehouse, dbt, orchestration, semantic layer,
   Grafana, Power BI, API, web, infra and docs.
-- Docker Compose skeleton with a TimescaleDB (PostgreSQL 16) service, healthcheck,
+- Docker Compose skeleton with a TimescaleDB 2.31 (PostgreSQL 16) service, healthcheck,
   restart policy and resource limits; Postgres bound to localhost by default.
 - `.env.example`, `.gitignore`, `.editorconfig`, pre-commit hooks (ruff, mypy,
   gitleaks, YAML/JSON checks).
