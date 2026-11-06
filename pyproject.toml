@@ -1,0 +1,60 @@
+[project]
+name = "dockline"
+version = "0.0.0"
+description = "Live operations intelligence for NYC bike share."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = { text = "MIT" }
+authors = [{ name = "Gnanasudharsan Ashokumar" }]
+dependencies = []
+
+[dependency-groups]
+dev = [
+  "mypy>=1.13",
+  "pre-commit>=4.0",
+  "pytest>=8.3",
+  "pyyaml>=6.0",
+  "ruff>=0.8",
+  "types-pyyaml>=6.0",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["dbt/dbt_packages", "web"]
+
+[tool.ruff.lint]
+select = [
+  "E",   # pycodestyle errors
+  "W",   # pycodestyle warnings
+  "F",   # pyflakes
+  "I",   # isort
+  "B",   # flake8-bugbear
+  "UP",  # pyupgrade
+  "SIM", # flake8-simplify
+  "N",   # pep8-naming
+  "S",   # flake8-bandit (security)
+  "D",   # pydocstyle (public docstrings)
+]
+ignore = ["D100", "D104", "D203", "D213"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["S101", "D"]
+"tests/**" = ["S101", "D"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+pretty = true
+files = ["tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = [
+  "integration: needs running Docker services",
+]
