@@ -1,0 +1,57 @@
+# Secrets and local config
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# dbt
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+dbt/.user.yml
+
+# Dagster
+orchestration/.dagster_home/
+orchestration/tmp*/
+
+# Cube
+semantic/.cubestore/
+
+# Node / Next.js
+node_modules/
+web/.next/
+web/out/
+web/.vercel/
+*.tsbuildinfo
+npm-debug.log*
+
+# Power BI local-only files
+powerbi/**/.pbi/localSettings.json
+powerbi/**/.pbi/cache.abf
+
+# Local data, backups, logs
+data/
+backups/
+*.log
+*.dump
