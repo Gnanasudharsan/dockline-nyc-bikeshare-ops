@@ -62,6 +62,9 @@ jobs:
       - name: Power BI semantic model (TMDL parsed by Microsoft's TmdlSerializer)
         run: dotnet run --project powerbi/tools/tmdl-validator -c Release -- powerbi/Dockline.SemanticModel/definition
 
+      - name: Ask the Data eval (replays the recorded live run; >= 85% answerable, 100% refusals)
+        run: uv run python evals/run_evals.py
+
       - name: Pytest (unit + integration against a TimescaleDB container)
         run: uv run pytest
 
@@ -123,6 +126,13 @@ jobs:
           board=$(query "SELECT count(*) FROM marts.mart_rebalancing_recommendations")
           echo "fct_station_status_5min rows: $facts, rebalancing board rows: $board"
           test "$board" -gt 0
+
+      - name: API serves live KPIs, stations, and the SSE stream from Cube
+        run: |
+          curl -sf localhost:8070/health
+          curl -sf localhost:8070/v1/kpis/live | python3 scripts/assert_json.py stations
+          curl -sf localhost:8070/v1/stations/live | python3 scripts/assert_json.py count
+          timeout 5 curl -sN localhost:8070/v1/kpis/stream | grep -m1 "event: kpis"
 
       - name: Every Grafana dashboard query runs through Cube without errors
         run: |
