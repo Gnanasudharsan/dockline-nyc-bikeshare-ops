@@ -6,6 +6,46 @@ phases are tagged `phase-N` until the `v1.0.0` release.
 
 ## [Unreleased]
 
+## [phase-2] — 2026-11-07
+
+### Added
+- dbt project (`dbt/`): sources with freshness rules; staging views; seeds for NYC 2020
+  neighborhood polygons, GBFS regions and WMO weather codes.
+- Station placement by borough and neighborhood using core Postgres `polygon`
+  operators, with no PostGIS (ADR 0011).
+- `int_station_status_5min_filled`: an incremental station × 5-minute grid that carries
+  each station's last report forward. Incremental and full-refresh runs produce
+  identical rows (ADR 0010).
+- Star schema:
+  - dimensions: `dim_station` (SCD2 from `snap_stations`), `dim_date`, `dim_time`,
+    `dim_weather`
+  - facts: `fct_station_status_5min`, `fct_station_hourly`, `fct_daily_kpis`
+  - snapshot: `snap_daily_kpis`, the as-of history of daily KPIs (ADR 0013)
+- Operations marts: `mart_rebalancing_recommendations`, a live view, and
+  `mart_chronic_stations`.
+- dbt tests: 80+ data tests (dbt-utils, dbt-expectations) and dbt unit tests for the
+  carry-forward and placement logic. SQLFluff linting.
+- Dagster code location (`orchestration/`):
+  - dbt assets grouped by layer, with the raw tables as external roots
+  - schedules: hourly and daily dbt builds, and raw freshness checks every 5 minutes
+  - freshness policies on marts
+  - a run-failure sensor
+  - alerts written to `ops.pipeline_events` (migration 0009) for Grafana annotations
+    (ADR 0012)
+- `dagster-webserver` (port 3070) and `dagster-daemon` Compose services. Their run
+  storage is a `dagster` database created by the migrate job.
+- Integration tests that run the full `dbt build` on hand-built data and assert exact
+  results, plus the alert and freshness-check paths.
+- CI:
+  - SQLFluff and `dbt parse`
+  - `dbt build` inside the orchestration image on live data
+  - a check that Dagster loads with all schedules running
+- `docs/metrics.md` (metrics catalog), `make dbt-build`, `make dbt-docs`,
+  `make dbt-freshness`, `make dagster-dev`, `make check-pipeline`.
+
+### Changed
+- The ingestion image installs only the ingestion and warehouse packages.
+
 ## [phase-1] — 2026-11-07
 
 ### Added

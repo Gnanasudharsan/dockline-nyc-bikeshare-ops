@@ -22,7 +22,7 @@ with certified metrics, and serves it to four surfaces:
 | --- | --- | --- |
 | 0 | Repository and foundation | Done |
 | 1 | Live ingestion and storage | Done |
-| 2 | dbt models and orchestration | Planned |
+| 2 | dbt models and orchestration | Done |
 | 3 | Semantic layer and live Grafana dashboard | Planned |
 | 4 | Power BI analyst report | Planned |
 | 5 | Ask the Data (governed natural-language Q&A) | Planned |
@@ -75,7 +75,18 @@ make up      # start the stack and wait until every service is healthy
 make test    # run the test suite
 ```
 
-Other targets: `make lint`, `make logs`, `make down`, `make help`.
+Then:
+
+| What | Where |
+| --- | --- |
+| Dagster (lineage, runs, schedules, checks) | <http://localhost:3070> |
+| Warehouse (psql) | `make psql`, or `localhost:5433` |
+| Ingestion health and data checks | `make check-ingestion` |
+| dbt marts and Dagster run checks | `make check-pipeline` |
+| dbt docs and lineage | `make dbt-docs` (<http://localhost:8080>) |
+
+Other targets: `make dbt-build`, `make lint`, `make logs`, `make down`, `make help`.
+Metric definitions: [`docs/metrics.md`](docs/metrics.md).
 
 ## Repository layout
 
