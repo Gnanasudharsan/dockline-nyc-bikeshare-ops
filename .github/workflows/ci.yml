@@ -39,7 +39,7 @@ jobs:
       - name: Mypy (strict)
         run: uv run mypy
 
-      - name: Pytest
+      - name: Pytest (unit + integration against a TimescaleDB container)
         run: uv run pytest
 
       - name: Pre-commit file hygiene
@@ -77,8 +77,21 @@ jobs:
           cp .env.example .env
           docker compose config --quiet
 
-      - name: Start stack and wait for health
-        run: docker compose up -d --wait --wait-timeout 120
+      - name: Build, migrate, start, and wait for health
+        run: docker compose up -d --build --wait --wait-timeout 180
+
+      - name: Smoke test — live GBFS rows landed and the poll was audited
+        run: |
+          query() { docker compose exec -T timescaledb psql -U dockline -d dockline -tAc "$1"; }
+          rows=$(query "SELECT count(*) FROM raw.station_status")
+          runs=$(query "SELECT count(*) FROM ops.ingestion_runs WHERE feed = 'station_status' AND status = 'success'")
+          echo "station_status rows: $rows, successful status runs: $runs"
+          test "$rows" -gt 0
+          test "$runs" -gt 0
+
+      - name: Service logs
+        if: failure()
+        run: docker compose logs --tail=200
 
       - name: Show service status
         if: always()
