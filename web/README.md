@@ -6,23 +6,25 @@ API (which reads only Cube) and embeds the public Grafana dashboard. Design rati
 [`docs/design/design-plan.md`](../docs/design/design-plan.md);
 [ADR 0019](../docs/adr/0019-website.md).
 
-| Page | What it shows |
-| --- | --- |
-| `/` | Full-bleed live map of every station by imbalance, one live sentence, KPI strip over Server-Sent Events, three highlights |
-| `/live` | 24-hour replay (hourly frames, play/pause, slider), then the live Grafana dashboard |
-| `/ask` | Ask the Data: answer, numbers, metric definitions, the validated query, refusals with a suggested question |
-| `/insights` | Five findings recomputed every 15 minutes, each with a chart and a recommendation (or an honest "not enough history yet") |
-| `/how-it-works` | Architecture diagram, the data path, the certified metric catalog, quality gates |
-| `/about` | Who, why, data sources and licenses |
+| Page            | What it shows                                                                                                             |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `/`             | Full-bleed live map of every station by imbalance, one live sentence, KPI strip over Server-Sent Events, three highlights |
+| `/live`         | 24-hour replay (hourly frames, play/pause, slider), then the live Grafana dashboard                                       |
+| `/ask`          | Ask the Data: answer, numbers, metric definitions, the validated query, refusals with a suggested question                |
+| `/insights`     | Five findings recomputed every 15 minutes, each with a chart and a recommendation (or an honest "not enough history yet") |
+| `/how-it-works` | Architecture diagram, the data path, the certified metric catalog, quality gates                                          |
+| `/about`        | Who, why, data sources and licenses                                                                                       |
 
 ## Run it
 
 ```bash
 make up
 ```
+
 ```bash
 make web-install
 ```
+
 ```bash
 make web-dev
 ```
@@ -37,9 +39,11 @@ origin.
 ```bash
 make web-build
 ```
+
 ```bash
 make web-test
 ```
+
 ```bash
 make web-screenshots
 ```
