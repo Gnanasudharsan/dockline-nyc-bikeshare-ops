@@ -43,7 +43,7 @@ semantic/.cubestore/
 node_modules/
 web/.next/
 web/out/
-web/.vercel/
+.vercel/
 *.tsbuildinfo
 npm-debug.log*
 

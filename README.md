@@ -2,6 +2,13 @@
 
 **Live operations intelligence for NYC bike share.**
 
+**[Live demo: dockline-nyc.vercel.app](https://dockline-nyc.vercel.app)**
+
+[![Live demo](https://img.shields.io/badge/live_demo-dockline--nyc.vercel.app-1B5FD1)](https://dockline-nyc.vercel.app)
+[![Snapshot](https://img.shields.io/github/actions/workflow/status/Gnanasudharsan/dockline-nyc-bikeshare-ops/snapshot.yml?branch=main&label=snapshot)](https://github.com/Gnanasudharsan/dockline-nyc-bikeshare-ops/actions/workflows/snapshot.yml)
+[![Uptime](https://img.shields.io/github/actions/workflow/status/Gnanasudharsan/dockline-nyc-bikeshare-ops/uptime.yml?branch=main&label=uptime)](https://github.com/Gnanasudharsan/dockline-nyc-bikeshare-ops/actions/workflows/uptime.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/Gnanasudharsan/dockline-nyc-bikeshare-ops/ci.yml?branch=main&label=CI)](https://github.com/Gnanasudharsan/dockline-nyc-bikeshare-ops/actions/workflows/ci.yml)
+
 Dockline watches every station in New York City's bike share network about once a
 minute, keeps every report in a time-series warehouse, turns it into a governed star
 schema with certified metrics, and serves those same numbers to four surfaces:
@@ -19,7 +26,7 @@ schema with certified metrics, and serves those same numbers to four surfaces:
    - a live map, live KPIs over Server-Sent Events, and a 24-hour replay
    - findings, and how it all works
 
-![Dockline home page: live map of every station colored by imbalance](docs/design/screenshots/home-light-desktop.png)
+![The live production site: a map of every station colored by imbalance, with live KPIs](docs/design/screenshots/production-home-desktop.png)
 
 > Independent project. Not affiliated with Citi Bike or Lyft. Uses the public GBFS feed.
 
@@ -57,7 +64,7 @@ numbers only from Cube; Power BI mirrors its measures by name, and tests enforce
 | Analyst BI | Power BI project generated as text (TMDL + PBIR) and validated with Microsoft's schemas and parser | [`powerbi/`](powerbi/) |
 | API + Ask the Data | FastAPI; the LLM returns a JSON plan over an allowlisted catalog, strict validation builds the Cube query, and answers are checked against the returned numbers | [`api/`](api/), [`evals/`](evals/) |
 | Website | Next.js, TypeScript strict, Tailwind, MapLibre + OpenFreeMap, ECharts; light/dark; WCAG 2.2 AA | [`web/`](web/), [`docs/design/`](docs/design/) |
-| Deployment | Oracle Always Free ARM VM, HTTPS via Caddy + DuckDNS or Cloudflare Tunnel, Vercel, nightly backups, uptime checks | [`infra/`](infra/), [`docs/deploy/`](docs/deploy/) |
+| Deployment | Snapshot mode (Vercel + a GitHub Actions snapshot every 10 minutes), or the full stack on an Oracle Always Free ARM VM with Caddy + DuckDNS or Cloudflare Tunnel; nightly backups, uptime checks | [`infra/`](infra/), [`docs/deploy/`](docs/deploy/) |
 
 Everything runs on free tiers or open-source software, and every image runs on
 `linux/arm64`.
@@ -117,7 +124,29 @@ local credentials. `make up` starts the stack and waits until every service is h
 Ask the Data needs a free LLM key in `.env` (`GROQ_API_KEY` or `GEMINI_API_KEY`), or a
 local Ollama. Run `make help` for every target.
 
+## Deployment modes
+
+The public demo runs in **snapshot mode**; the same code also runs as the **full
+stack**. One setting, `NEXT_PUBLIC_DEPLOY_MODE`, chooses
+([ADR 0022](docs/adr/0022-snapshot-mode.md)).
+
+| | Full stack | Snapshot mode (the live demo) |
+| --- | --- | --- |
+| Runs on | one free ARM VM (Docker Compose) plus Vercel | Vercel and GitHub Actions only, no server |
+| Live numbers | ingestion every minute → TimescaleDB → dbt → Cube | `/api/live` computes them from the public feed, cached about 30 s |
+| History | every report, kept in the warehouse | a snapshot every 10 minutes on the `data` branch (24 hours, 30 days of daily KPIs) |
+| Grafana, Power BI, Ask the Data | yes | no (the Ask page explains how to run it) |
+| Cost | $0 | $0 |
+
+The live metrics in snapshot mode exist twice, in Python (the snapshot workflow) and
+TypeScript (`/api/live`). CI runs both on the same recorded feed and requires identical
+output, and they were checked against Cube's numbers from the full stack.
+
 ## Deploy it
+
+**Snapshot mode:** [docs/deploy/snapshot-mode.md](docs/deploy/snapshot-mode.md).
+
+**Full stack:**
 
 One Oracle Cloud Always Free ARM VM, HTTPS through Caddy with free DuckDNS subdomains
 or a Cloudflare Tunnel ([ADR 0021](docs/adr/0021-https-modes.md)), and Vercel for the
@@ -137,6 +166,7 @@ website. Step by step: [Oracle VM](docs/deploy/oracle-vm.md) ·
 | 5 | Ask the Data (governed natural-language Q&A) | Done |
 | 6 | Public website | Done |
 | 7 | Deployment and launch | Done (v1.0.0) |
+| — | Public deployment (snapshot mode) | Done (v1.1.0), live at [dockline-nyc.vercel.app](https://dockline-nyc.vercel.app) |
 
 ## Repository layout
 

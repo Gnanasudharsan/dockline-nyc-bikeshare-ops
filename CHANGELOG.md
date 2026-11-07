@@ -6,14 +6,35 @@ phases are tagged `phase-N` until the `v1.0.0` release.
 
 ## [Unreleased]
 
+## [v1.1.0] — 2026-11-07
+
+Public deployment in snapshot mode: <https://dockline-nyc.vercel.app>.
+
 ### Added
+- Snapshot mode (ADR 0022), selected by `NEXT_PUBLIC_DEPLOY_MODE=snapshot`:
+  - `/api/live` on Vercel computes the certified live metrics from the public GBFS
+    feed (`web/src/lib/metrics.ts`), CDN-cached about 30 s, with the last snapshot as
+    a fallback
+  - the Snapshot workflow (every 10 minutes) uses `dockline_ingestion.kpis` and
+    `.snapshot` to publish `latest.json`, `history-24h.json` and `daily-kpis.json` to a
+    single-commit `data` branch
+  - a parity test runs the Python and TypeScript implementations on one recorded feed
+    with edge cases and requires identical output, in pytest and in CI's website job
+  - Home: a freshness line ticking from the feed's own timestamp; Live: a 10-minute
+    replay and ECharts trend panels instead of Grafana; Insights rebuilt from the
+    history; Ask: a note that Ask the Data runs in the full stack; How it works: a
+    Deployment modes section
+  - the Uptime workflow checks `/api/live` freshness and the age of the last snapshot
+  - deployment guide `docs/deploy/snapshot-mode.md`
+
+### Added (full stack)
 - A second HTTPS mode for deploying without a domain (ADR 0021): Caddy with the
   rate-limit plugin and automatic Let's Encrypt certificates, plus a DuckDNS updater,
   under the `duckdns` Compose profile. Cloudflare Tunnel moves to the `cloudflare`
   profile. Caddy adds security headers, unbuffered SSE, and 10 `/v1/ask` requests per
   minute per IP. Guide: `docs/deploy/duckdns-caddy.md`.
 
-### Changed
+### Changed (full stack)
 - `PUBLIC_DOMAIN` is replaced by `PUBLIC_API_HOST` and `PUBLIC_GRAFANA_HOST`, since
   DuckDNS names do not share a parent domain.
 - The API trusts `X-Forwarded-For` in production, so its per-visitor `/v1/ask` limit

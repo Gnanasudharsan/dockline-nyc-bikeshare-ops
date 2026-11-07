@@ -70,3 +70,29 @@ Bring up the backend ([oracle-vm.md](oracle-vm.md)), then in Vercel set
 Everything is free: Vercel Hobby (personal, non-commercial use) and GitHub Actions
 minutes for public repositories. GitHub may delay scheduled runs at busy times, and it
 disables schedules after 60 days without commits to `main`.
+
+## What happened in practice (2026-11-07)
+
+- The CLI created the project from `web/`, but Vercel's Git integration builds from the
+  repository root, so the project's **Root Directory** is set to `web` and CLI deploys
+  run from the repository root. `.vercelignore` there uploads only `web/` (never the
+  local `.env`). The CLI also appends `.env*` to `.gitignore` when linking; that rule
+  would hide `.env.example`, so it was reverted.
+- `vercel git connect` fails until the Vercel GitHub app is installed on the account
+  (vercel.com → Settings → Git, or the project's **Settings → Git → Connect**).
+- GitHub's scheduler took more than 20 minutes to start a new `*/10` schedule; manual
+  runs (`gh workflow run snapshot.yml`) filled the gap.
+- Production: <https://dockline-nyc.vercel.app> (an extra `*.vercel.app` domain on the
+  project). Lighthouse 13.6 against production:
+
+| Page | Form factor | Performance | Accessibility | Best practices | SEO | CLS |
+| --- | --- | --- | --- | --- | --- | --- |
+| / | mobile | 99 | 100 | 100 | 100 | 0 |
+| / | desktop | 100 | 100 | 100 | 100 | 0 |
+| /live | mobile | 100 | 100 | 100 | 100 | 0 |
+| /live | desktop | 100 | 100 | 100 | 100 | 0.001 |
+
+Playwright against production (desktop and mobile, light and dark): the map renders
+with live numbers, the feed age ticks and stays under 3 minutes, the replay slider and
+play button work, the Ask page shows its note, no console errors, no horizontal
+scrolling.
