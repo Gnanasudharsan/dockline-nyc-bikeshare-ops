@@ -32,10 +32,32 @@ def load(path: Path) -> dict[str, Any]:
     return data
 
 
+# The only ports that may listen beyond localhost: Caddy's HTTP and HTTPS (duckdns mode).
+PUBLIC_PORTS = {"caddy": {"80:80", "443:443"}}
+
+
 def test_every_published_port_is_bound_to_localhost() -> None:
     for name, service in load(PROD)["services"].items():
         for port in service.get("ports", []):
+            if str(port) in PUBLIC_PORTS.get(name, set()):
+                continue
             assert str(port).startswith("127.0.0.1:"), f"{name} publishes {port} beyond localhost"
+
+
+def test_https_front_doors_are_opt_in_profiles() -> None:
+    prod = load(PROD)["services"]
+    assert prod["cloudflared"]["profiles"] == ["cloudflare"]
+    assert prod["caddy"]["profiles"] == ["duckdns"]
+    assert prod["duckdns"]["profiles"] == ["duckdns"]
+
+
+def test_caddy_keeps_certificates_and_limits_ask() -> None:
+    compose = load(PROD)
+    assert "caddy_data:/data" in compose["services"]["caddy"]["volumes"]
+    assert "caddy_data" in compose["volumes"]
+    caddyfile = (ROOT / "infra" / "caddy" / "Caddyfile").read_text()
+    assert "rate_limit" in caddyfile and "path /v1/ask" in caddyfile
+    assert "flush_interval -1" in caddyfile  # SSE must not be buffered
 
 
 def test_every_long_running_service_restarts_always() -> None:
@@ -49,7 +71,7 @@ def test_every_long_running_service_restarts_always() -> None:
 
 def test_production_only_services_have_healthchecks_and_limits() -> None:
     prod = load(PROD)["services"]
-    for name in ("cloudflared", "backup"):
+    for name in ("cloudflared", "caddy", "duckdns", "backup"):
         service = prod[name]
         assert "healthcheck" in service, name
         assert service["deploy"]["resources"]["limits"]["memory"], name
@@ -62,8 +84,10 @@ def test_every_production_variable_is_documented() -> None:
 
 
 def test_backup_scripts_are_executable_and_restore_never_overwrites() -> None:
-    for script in ("backup.sh", "healthcheck.sh", "restore.sh"):
-        mode = (ROOT / "infra" / "backup" / script).stat().st_mode
+    scripts = ["backup/backup.sh", "backup/healthcheck.sh", "backup/restore.sh"]
+    scripts += ["duckdns/update.sh", "duckdns/healthcheck.sh"]
+    for script in scripts:
+        mode = (ROOT / "infra" / script).stat().st_mode
         assert mode & stat.S_IXUSR, script
     restore = (ROOT / "infra" / "backup" / "restore.sh").read_text()
     assert "already exists" in restore

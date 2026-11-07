@@ -4,11 +4,14 @@
 #   (or: make prod-up)
 #
 # Differences from local:
-# - Every published port is bound to 127.0.0.1 only. Nothing listens on a public
-#   interface; Cloudflare Tunnel (outbound only) publishes api.<domain> and
-#   grafana.<domain>. Postgres is never exposed.
+# - Every service port is bound to 127.0.0.1 only. Postgres is never exposed.
+# - HTTPS for the API and Grafana comes from one of two modes, chosen with
+#   COMPOSE_PROFILES in .env (docs/adr/0021-https-modes.md):
+#     cloudflare: Cloudflare Tunnel, outbound only; no inbound port is open.
+#     duckdns:    Caddy on ports 80/443 with Let's Encrypt, for free DuckDNS
+#                 subdomains; the only service that listens publicly.
 # - restart: always, and memory limits sized for the VM.
-# - cloudflared (tunnel) and backup (nightly pg_dump with rotation) services.
+# - backup (nightly pg_dump with rotation) runs in both modes.
 # Requires Docker Compose 2.24+ (for !override).
 
 x-logging: &prod-logging
@@ -73,7 +76,7 @@ services:
   grafana:
     restart: always
     environment:
-      GF_SERVER_ROOT_URL: https://grafana.${PUBLIC_DOMAIN:?Set PUBLIC_DOMAIN in .env}
+      GF_SERVER_ROOT_URL: https://${PUBLIC_GRAFANA_HOST:?Set PUBLIC_GRAFANA_HOST in .env}
       GF_SECURITY_COOKIE_SECURE: "true"
       GF_SECURITY_STRICT_TRANSPORT_SECURITY: "true"
     ports: !override
@@ -84,18 +87,23 @@ services:
     restart: always
     environment:
       WEB_ORIGINS: ${PROD_WEB_ORIGINS:?Set PROD_WEB_ORIGINS in .env (the website URL)}
+      # Trust X-Forwarded-For from the proxy (Caddy or cloudflared) so per-visitor rate
+      # limits see the visitor, not the proxy. The API port is reachable only from
+      # localhost and the Compose network.
+      FORWARDED_ALLOW_IPS: "*"
     ports: !override
       - "127.0.0.1:${API_PORT:-8070}:8000"
     logging: *prod-logging
 
-  # Cloudflare Tunnel: an outbound-only connection that publishes api.<domain> and
-  # grafana.<domain> (routes are configured on the tunnel in the Cloudflare dashboard).
+  # Cloudflare Tunnel (profile "cloudflare"): an outbound-only connection that publishes
+  # the API and Grafana hosts (routes are configured on the tunnel in Cloudflare).
   cloudflared:
     image: cloudflare/cloudflared:2026.10.7
+    profiles: ["cloudflare"]
     command: ["tunnel", "--no-autoupdate", "--metrics", "127.0.0.1:20241", "run"]
     restart: always
     environment:
-      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:?Set CLOUDFLARE_TUNNEL_TOKEN in .env}
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
     depends_on:
       api:
         condition: service_healthy
@@ -112,6 +120,64 @@ services:
         limits:
           cpus: "0.5"
           memory: 256m
+    logging: *prod-logging
+
+  # Caddy (profile "duckdns"): HTTPS on 80/443 with automatic Let's Encrypt certificates,
+  # security headers, and an edge rate limit on /v1/ask (infra/caddy/Caddyfile).
+  caddy:
+    build: ./infra/caddy
+    image: dockline/caddy:local
+    profiles: ["duckdns"]
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      PUBLIC_API_HOST: ${PUBLIC_API_HOST:?Set PUBLIC_API_HOST in .env}
+      PUBLIC_GRAFANA_HOST: ${PUBLIC_GRAFANA_HOST:?Set PUBLIC_GRAFANA_HOST in .env}
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+      grafana:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:2019/config/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256m
+    logging: *prod-logging
+
+  # DuckDNS updater (profile "duckdns"): keeps both subdomains on the VM's public IP.
+  duckdns:
+    image: curlimages/curl:8.22.0
+    profiles: ["duckdns"]
+    entrypoint: ["/scripts/update.sh"]
+    restart: always
+    environment:
+      DUCKDNS_DOMAINS: ${DUCKDNS_DOMAINS:-}
+      DUCKDNS_TOKEN: ${DUCKDNS_TOKEN:-}
+    volumes:
+      - ./infra/duckdns:/scripts:ro
+    healthcheck:
+      test: ["CMD", "/scripts/healthcheck.sh"]
+      interval: 1m
+      timeout: 5s
+      retries: 3
+      start_period: 1m
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 32m
     logging: *prod-logging
 
   # Nightly pg_dump of the warehouse and Dagster databases, rotated (infra/backup).
@@ -148,3 +214,8 @@ services:
           cpus: "0.5"
           memory: 512m
     logging: *prod-logging
+
+volumes:
+  # Caddy's certificates and ACME account; must survive restarts (Let's Encrypt rate limits).
+  caddy_data:
+  caddy_config:
