@@ -1,0 +1,118 @@
+version: 2
+
+models:
+  - name: int_station_locations
+    description: >
+      Stations with borough and neighborhood. Placed by GBFS region (NJ), then NYC NTA
+      polygon containment, then nearest polygon (≤ ~500 m), then nearest placed station
+      (≤ ~1 km).
+    columns:
+      - name: station_id
+        data_tests: [unique, not_null]
+      - name: borough
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [Manhattan, Brooklyn, Queens, Bronx, Staten Island, Jersey City, Hoboken, Unknown]
+      - name: location_method
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [gbfs_region, polygon, nearest_polygon, nearest_station, unmatched]
+    data_tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "location_method <> 'unmatched'"
+          config:
+            severity: warn
+
+  - name: int_station_status_5min_filled
+    description: >
+      Complete station × 5-minute grid with the last known state carried forward
+      (ADR 0006). Incremental: each run rebuilds the last status_lookback_hours.
+    columns:
+      - name: station_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_gbfs__station_information')
+                field: station_id
+      - name: bucket_start
+        data_tests: [not_null]
+      - name: report_count
+        description: Reports received in this bucket (0 = state carried forward).
+      - name: net_flow_bikes
+        description: Change in bikes_available since the previous bucket.
+      - name: minutes_since_report
+        description: Minutes between the last report and the end of the bucket.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [station_id, bucket_start]
+          config:
+            where: "bucket_start > now() - interval '1 day'"
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "(bikes_available is null) = (last_reported_at is null)"
+
+unit_tests:
+  - name: carries_last_state_forward_through_quiet_buckets
+    description: >
+      A quiet bucket repeats the previous report; a station that never reported stays
+      empty; net flow is the bucket-to-bucket change in bikes.
+    model: int_station_status_5min_filled
+    overrides:
+      macros:
+        is_incremental: false
+      vars:
+        as_of: "2026-11-02 10:22:00+00"
+    given:
+      - input: ref('stg_ops__ingestion_runs')
+        rows:
+          - {feed: station_status, started_at: "2026-11-02 10:01:00+00"}
+      - input: ref('stg_gbfs__station_information')
+        rows:
+          - {station_id: A, first_seen_at: "2026-11-02 10:01:00+00", last_seen_at: "2026-11-02 10:01:00+00"}
+          - {station_id: B, first_seen_at: "2026-11-02 10:01:00+00", last_seen_at: "2026-11-02 10:01:00+00"}
+      - input: ref('stg_gbfs__station_status_5min')
+        rows:
+          - {station_id: A, bucket_start: "2026-11-02 09:50:00+00", bikes_available: 5, ebikes_available: 1, classic_bikes_available: 4, docks_available: 5, bikes_disabled: 0, docks_disabled: 0, is_installed: true, is_renting: true, is_returning: true, report_count: 1, min_bikes_available: 5, max_bikes_available: 5, min_docks_available: 5, max_docks_available: 5, last_reported_at: "2026-11-02 09:51:00+00"}
+          - {station_id: A, bucket_start: "2026-11-02 10:05:00+00", bikes_available: 3, ebikes_available: 1, classic_bikes_available: 2, docks_available: 7, bikes_disabled: 0, docks_disabled: 0, is_installed: true, is_renting: true, is_returning: true, report_count: 2, min_bikes_available: 3, max_bikes_available: 4, min_docks_available: 6, max_docks_available: 7, last_reported_at: "2026-11-02 10:07:00+00"}
+          - {station_id: A, bucket_start: "2026-11-02 10:15:00+00", bikes_available: 0, ebikes_available: 0, classic_bikes_available: 0, docks_available: 10, bikes_disabled: 0, docks_disabled: 0, is_installed: true, is_renting: true, is_returning: true, report_count: 1, min_bikes_available: 0, max_bikes_available: 0, min_docks_available: 10, max_docks_available: 10, last_reported_at: "2026-11-02 10:16:00+00"}
+    expect:
+      rows:
+        - {station_id: A, bucket_start: "2026-11-02 10:00:00+00", bikes_available: 5, report_count: 0, net_flow_bikes: 0, last_reported_at: "2026-11-02 09:51:00+00", minutes_since_report: 14.0}
+        - {station_id: A, bucket_start: "2026-11-02 10:05:00+00", bikes_available: 3, report_count: 2, net_flow_bikes: -2, last_reported_at: "2026-11-02 10:07:00+00", minutes_since_report: 3.0}
+        - {station_id: A, bucket_start: "2026-11-02 10:10:00+00", bikes_available: 3, report_count: 0, net_flow_bikes: 0, last_reported_at: "2026-11-02 10:07:00+00", minutes_since_report: 8.0}
+        - {station_id: A, bucket_start: "2026-11-02 10:15:00+00", bikes_available: 0, report_count: 1, net_flow_bikes: -3, last_reported_at: "2026-11-02 10:16:00+00", minutes_since_report: 4.0}
+        - {station_id: B, bucket_start: "2026-11-02 10:00:00+00", bikes_available: null, report_count: 0, net_flow_bikes: null, last_reported_at: null, minutes_since_report: null}
+        - {station_id: B, bucket_start: "2026-11-02 10:05:00+00", bikes_available: null, report_count: 0, net_flow_bikes: null, last_reported_at: null, minutes_since_report: null}
+        - {station_id: B, bucket_start: "2026-11-02 10:10:00+00", bikes_available: null, report_count: 0, net_flow_bikes: null, last_reported_at: null, minutes_since_report: null}
+        - {station_id: B, bucket_start: "2026-11-02 10:15:00+00", bikes_available: null, report_count: 0, net_flow_bikes: null, last_reported_at: null, minutes_since_report: null}
+
+  - name: places_stations_by_region_polygon_and_nearest_station
+    model: int_station_locations
+    given:
+      - input: ref('stg_gbfs__station_information')
+        rows:
+          - {station_id: nj, station_name: Grove St, latitude: 40.7196, longitude: -74.0431, region_id: "70"}
+          - {station_id: inside, station_name: Inside, latitude: 40.5, longitude: -73.95, region_id: "71"}
+          - {station_id: pier, station_name: Pier, latitude: 40.5, longitude: -73.898, region_id: "71"}
+          - {station_id: orphan, station_name: Orphan, latitude: 40.5, longitude: -73.89, region_id: null}
+          - {station_id: far, station_name: Far, latitude: 41.0, longitude: -73.0, region_id: null}
+      - input: ref('nyc_neighborhoods')
+        rows:
+          - {nta_code: XX0101, nta_name: Squareville, borough: Brooklyn, nta_type: "0", part_index: 0, boundary: "((-74.0,40.45),(-73.9,40.45),(-73.9,40.55),(-74.0,40.55))"}
+      - input: ref('gbfs_regions')
+        rows:
+          - {region_id: "70", region_name: JC District, borough: Jersey City, neighborhood: Jersey City}
+          - {region_id: "71", region_name: NYC District, borough: null, neighborhood: null}
+    expect:
+      rows:
+        - {station_id: nj, borough: Jersey City, neighborhood: Jersey City, location_method: gbfs_region}
+        - {station_id: inside, borough: Brooklyn, neighborhood: Squareville, location_method: polygon}
+        - {station_id: pier, borough: Brooklyn, neighborhood: Squareville, location_method: nearest_polygon}
+        - {station_id: orphan, borough: Brooklyn, neighborhood: Squareville, location_method: nearest_station}
+        - {station_id: far, borough: Unknown, neighborhood: Unknown, location_method: unmatched}
