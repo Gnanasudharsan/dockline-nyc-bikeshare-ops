@@ -59,3 +59,6 @@ backups/
 
 # Downloaded tool caches (schemas, ...)
 .cache/
+
+# Local editor/agent tooling
+.claude/

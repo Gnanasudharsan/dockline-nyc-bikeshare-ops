@@ -1,0 +1,144 @@
+@import "tailwindcss";
+
+/* Dockline "urban wayfinding" tokens (docs/design/design-plan.md). */
+:root {
+  --ink: #13202f;
+  --slate: #4a5a6e;
+  --paper: #f6f7f9;
+  --surface: #ffffff;
+  --line: #d9dee5;
+  --signal: #1b5fd1;
+  --signal-ink: #ffffff;
+  --starving: #e0701f;
+  --balanced: #a9b3c1;
+  --flooding: #2357c6;
+  --offline: #7a6f9b;
+  --danger: #b4261a;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ink: #e8edf3;
+    --slate: #9aa8b8;
+    --paper: #0f1722;
+    --surface: #172231;
+    --line: #263446;
+    --signal: #6a9bff;
+    --signal-ink: #0f1722;
+    --starving: #f08a3e;
+    --balanced: #7d8a9c;
+    --flooding: #5b8df0;
+    --offline: #a496cc;
+    --danger: #ff8a7e;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --ink: #e8edf3;
+  --slate: #9aa8b8;
+  --paper: #0f1722;
+  --surface: #172231;
+  --line: #263446;
+  --signal: #6a9bff;
+  --signal-ink: #0f1722;
+  --starving: #f08a3e;
+  --balanced: #7d8a9c;
+  --flooding: #5b8df0;
+  --offline: #a496cc;
+  --danger: #ff8a7e;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-slate: var(--slate);
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-signal: var(--signal);
+  --color-signal-ink: var(--signal-ink);
+  --color-starving: var(--starving);
+  --color-balanced: var(--balanced);
+  --color-flooding: var(--flooding);
+  --color-offline: var(--offline);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  /* Type scale 1.25, body 17px. */
+  --text-sm: 0.8rem;
+  --text-base: 1.0625rem;
+  --text-lg: 1.328rem;
+  --text-xl: 1.66rem;
+  --text-2xl: 2.075rem;
+  --text-3xl: 2.594rem;
+  --text-4xl: 3.242rem;
+}
+
+@layer base {
+  html {
+    background: var(--paper);
+    color: var(--ink);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 1.55;
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  /* Semi-condensed, bold headlines (Archivo width axis). */
+  .headline {
+    font-stretch: 87.5%;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.12;
+    text-wrap: balance;
+  }
+
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .measure {
+    max-width: 70ch;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  a {
+    color: var(--signal);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+  }
+}
+
+.live-fade {
+  animation: live-fade 150ms ease;
+}
+
+@keyframes live-fade {
+  from {
+    opacity: 0.15;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
