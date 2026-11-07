@@ -74,6 +74,39 @@ jobs:
           SKIP: ruff,ruff-format,mypy,gitleaks,sqlfluff
         run: uv run pre-commit run --all-files --show-diff-on-failure
 
+  web:
+    name: Website (lint, types, build, end-to-end)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: ESLint, TypeScript (strict), Prettier
+        run: |
+          npm run lint
+          npm run typecheck
+          npm run format:check
+
+      - name: Production build (the API is absent here, so pages render their unavailable states)
+        run: npm run build
+
+      - name: End-to-end tests against a mocked API
+        run: |
+          npx playwright install --with-deps chromium
+          npx playwright test --project=e2e
+
   secret-scan:
     name: Secret scan
     runs-on: ubuntu-latest
