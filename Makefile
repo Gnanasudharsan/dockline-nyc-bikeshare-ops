@@ -5,7 +5,7 @@ COMPOSE := docker compose
 
 .PHONY: help setup env up down logs ps test test-unit lint fmt clean migrate psql check-ingestion \
 	dbt-deps dbt-build dbt-docs dbt-freshness dagster-dev check-pipeline \
-	grafana-dashboards check-grafana grafana-public test-stale-alert
+	grafana-dashboards check-grafana grafana-public test-stale-alert powerbi powerbi-validate powerbi-reference
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
@@ -81,6 +81,18 @@ grafana-public: .env ## Share the public live dashboard (idempotent) and print i
 
 test-stale-alert: .env ## Stop ingestion until the feed-stale alert fires, then restart it (~7 min)
 	grafana/test_stale_feed_alert.sh
+
+powerbi: ## Regenerate the Power BI project (TMDL + PBIR) from powerbi/build_pbip.py
+	python3 powerbi/build_pbip.py
+
+powerbi-validate: ## Validate the Power BI project: JSON schemas, theme, fields, and TMDL (Docker)
+	uv run python powerbi/scripts/validate_pbip.py
+	docker run --rm -v "$(CURDIR)/powerbi/tools/tmdl-validator:/src" \
+		-v "$(CURDIR)/powerbi/Dockline.SemanticModel:/model:ro" -w /src \
+		mcr.microsoft.com/dotnet/sdk:8.0 dotnet run -c Release -- /model/definition
+
+powerbi-reference: .env ## Print Cube's current values to compare with Power BI (VERIFY.md)
+	set -a && . ./.env && set +a && uv run python powerbi/scripts/cube_reference_values.py
 
 lint: ## Run every pre-commit hook on all files
 	uv run pre-commit run --all-files
