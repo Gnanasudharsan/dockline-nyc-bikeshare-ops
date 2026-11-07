@@ -6,6 +6,38 @@ phases are tagged `phase-N` until the `v1.0.0` release.
 
 ## [Unreleased]
 
+## [v1.0.0] — 2026-11-07
+
+First complete release: ingestion, warehouse, dbt + Dagster, Cube, Grafana, Power BI,
+Ask the Data, the website, and production deployment.
+
+### Added (phase 7: deployment)
+- `infra/docker-compose.prod.yml`, a production override for an Oracle Cloud Always Free
+  ARM VM:
+  - every port bound to `127.0.0.1`, and `restart: always`
+  - VM-sized limits, tuned Postgres memory, and larger log rotation
+  - a `cloudflared` tunnel service that publishes `api.` and `grafana.` with no inbound
+    port
+- Nightly backups (`infra/backup/`):
+  - dumps the warehouse and Dagster databases with `pg_dump -Fc`
+  - keeps 7 daily and 4 weekly dumps, with a healthcheck on the last success
+  - a restore script that always restores into a new database with TimescaleDB's
+    pre/post-restore steps
+  - verified with a full backup and restore
+- Uptime workflow (`.github/workflows/uptime.yml`): every 15 minutes it checks API
+  health, data freshness, and the website.
+- Deployment guides (`docs/deploy/`): Oracle VM, Cloudflare Tunnel, Vercel, and
+  operations (logs, backups, restores, upgrades, rollback, secret rotation, disk).
+- `tests/test_production_config.py`: production ports are localhost-only, every merged
+  service has a healthcheck, `restart: always`, and limits, and every variable is
+  documented.
+- `make prod-config`, `make prod-up`, `make prod-ps`, `make backup-now`.
+- ADR 0020, a final README, and `docs/blog-post.md`.
+
+### Changed
+- Repository hygiene checks apply to complete Compose files; the production override is
+  checked as merged with the base file.
+
 ## [phase-6] — 2026-11-07
 
 ### Added
