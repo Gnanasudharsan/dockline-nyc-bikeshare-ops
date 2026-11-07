@@ -35,3 +35,8 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
+      - id: sqlfluff
+        name: sqlfluff (dbt models)
+        entry: uv run sqlfluff lint --config dbt/.sqlfluff
+        language: system
+        files: ^dbt/models/.*\.sql$

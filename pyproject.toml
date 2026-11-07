@@ -8,6 +8,7 @@ license = { text = "MIT" }
 authors = [{ name = "Gnanasudharsan Ashokumar" }]
 dependencies = [
   "dockline-ingestion",
+  "dockline-orchestration",
   "dockline-warehouse",
 ]
 
@@ -22,22 +23,24 @@ dev = [
   "pyyaml>=6.0",
   "ruff>=0.8",
   "types-pyyaml>=6.0",
+  "sqlfluff>=3.4",
 ]
 
 [tool.uv]
 package = false
 
 [tool.uv.workspace]
-members = ["ingestion", "warehouse"]
+members = ["ingestion", "orchestration", "warehouse"]
 
 [tool.uv.sources]
 dockline-ingestion = { workspace = true }
+dockline-orchestration = { workspace = true }
 dockline-warehouse = { workspace = true }
 
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-extend-exclude = ["dbt/dbt_packages", "web"]
+extend-exclude = ["dbt/dbt_packages", "dbt/target", "web"]
 
 [tool.ruff.lint]
 select = [
@@ -55,7 +58,12 @@ select = [
 ignore = ["D100", "D104", "D203", "D213"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["dockline_ingestion", "dockline_warehouse", "ingestion_test_support"]
+known-first-party = [
+  "dockline_ingestion",
+  "dockline_orchestration",
+  "dockline_warehouse",
+  "ingestion_test_support",
+]
 
 [tool.ruff.lint.per-file-ignores]
 "**/tests/**" = ["S101", "S106", "D"]
@@ -67,17 +75,26 @@ python_version = "3.12"
 strict = true
 warn_unreachable = true
 pretty = true
-files = ["conftest.py", "tests", "ingestion/src", "ingestion/tests", "warehouse/src", "warehouse/tests"]
+files = [
+  "conftest.py",
+  "tests",
+  "ingestion/src",
+  "ingestion/tests",
+  "warehouse/src",
+  "warehouse/tests",
+  "orchestration/src",
+  "orchestration/tests",
+]
 mypy_path = ["ingestion/tests"]
 exclude = ["ingestion/tests/conftest\\.py$"]
 plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
-module = ["testcontainers.*", "sqlparse.*"]
+module = ["testcontainers.*", "sqlparse.*", "dbt.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
-testpaths = ["tests", "ingestion/tests", "warehouse/tests"]
+testpaths = ["tests", "ingestion/tests", "warehouse/tests", "orchestration/tests"]
 pythonpath = ["ingestion/tests"]
 addopts = "-ra --strict-markers --import-mode=importlib"
 asyncio_mode = "auto"

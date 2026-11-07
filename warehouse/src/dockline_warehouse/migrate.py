@@ -171,13 +171,41 @@ def conninfo_from_env() -> str:
     )
 
 
+def ensure_databases(conninfo: str, names: list[str]) -> list[str]:
+    """Create each named database on the same server if it does not exist yet.
+
+    Used for service metadata stores that live beside the warehouse (for example
+    Dagster's run storage). Returns the names that were created.
+    """
+    created: list[str] = []
+    with psycopg.connect(conninfo, autocommit=True) as conn:
+        for name in names:
+            exists = conn.execute(
+                "SELECT 1 FROM pg_database WHERE datname = %s", (name,)
+            ).fetchone()
+            if exists:
+                continue
+            conn.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(name)))
+            logger.info("created database %s", name)
+            created.append(name)
+    return created
+
+
+def extra_databases_from_env() -> list[str]:
+    """Parse DOCKLINE_EXTRA_DATABASES (comma separated) into a list of names."""
+    raw = os.environ.get("DOCKLINE_EXTRA_DATABASES", "")
+    return [name.strip() for name in raw.split(",") if name.strip()]
+
+
 def main() -> int:
     """Command-line entry point. Returns a process exit code."""
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     directory = Path(os.environ.get("MIGRATIONS_DIR", str(DEFAULT_MIGRATIONS_DIR)))
+    conninfo = conninfo_from_env()
     try:
-        applied = migrate(conninfo_from_env(), directory)
-    except MigrationError as error:
+        applied = migrate(conninfo, directory)
+        ensure_databases(conninfo, extra_databases_from_env())
+    except (MigrationError, psycopg.Error) as error:
         logger.error("%s", error)
         return 1
     logger.info("migrations complete: %d applied", len(applied))

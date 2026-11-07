@@ -20,12 +20,16 @@ WORKDIR /app
 COPY pyproject.toml uv.lock ./
 COPY ingestion/pyproject.toml ingestion/pyproject.toml
 COPY warehouse/pyproject.toml warehouse/pyproject.toml
-RUN uv sync --frozen --no-dev --all-packages --no-install-workspace
+COPY orchestration/pyproject.toml orchestration/pyproject.toml
+# Only the two packages this image runs (orchestration has its own image).
+RUN uv sync --frozen --no-dev --package dockline-ingestion --package dockline-warehouse \
+        --no-install-workspace
 
 COPY ingestion/src ingestion/src
 COPY warehouse/src warehouse/src
 COPY warehouse/migrations warehouse/migrations
-RUN uv sync --frozen --no-dev --all-packages --no-editable
+RUN uv sync --frozen --no-dev --package dockline-ingestion --package dockline-warehouse \
+        --no-editable
 
 RUN useradd --system --uid 10001 --no-create-home dockline
 USER dockline

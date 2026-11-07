@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import shutil
+import uuid
 from pathlib import Path
 
 import psycopg
@@ -10,6 +11,8 @@ from dockline_warehouse.migrate import (
     DEFAULT_MIGRATIONS_DIR,
     MigrationError,
     discover_migrations,
+    ensure_databases,
+    extra_databases_from_env,
     migrate,
 )
 
@@ -113,3 +116,20 @@ def test_failed_migration_is_not_recorded(fresh_database: str, tmp_path: Path) -
         half_done = conn.execute("SELECT to_regclass('public.half_done')").fetchone()
     assert versions == [(1,)]
     assert half_done == (None,), "a transactional migration must roll back completely"
+
+
+@pytest.mark.integration
+def test_ensure_databases_is_idempotent(fresh_database: str) -> None:
+    name = f"extra_{uuid.uuid4().hex[:8]}"
+    assert ensure_databases(fresh_database, [name]) == [name]
+    assert ensure_databases(fresh_database, [name]) == []
+    with psycopg.connect(fresh_database, autocommit=True) as conn:
+        assert conn.execute("SELECT 1 FROM pg_database WHERE datname = %s", (name,)).fetchone()
+        conn.execute(f'DROP DATABASE "{name}"')
+
+
+def test_extra_databases_from_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("DOCKLINE_EXTRA_DATABASES", " dagster, ,other ")
+    assert extra_databases_from_env() == ["dagster", "other"]
+    monkeypatch.delenv("DOCKLINE_EXTRA_DATABASES")
+    assert extra_databases_from_env() == []
