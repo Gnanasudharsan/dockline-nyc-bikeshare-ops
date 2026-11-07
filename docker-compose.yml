@@ -287,6 +287,43 @@ services:
           memory: 512m
     logging: *default-logging
 
+  # Dockline API: live KPIs, SSE stream, stations for the map, and Ask the Data.
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    image: dockline-api:local
+    restart: unless-stopped
+    environment:
+      CUBE_API_URL: http://cube:4000/cubejs-api/v1
+      CUBEJS_API_SECRET: ${CUBEJS_API_SECRET:?Run make env to generate CUBEJS_API_SECRET}
+      LLM_PROVIDER: ${LLM_PROVIDER:-groq}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      ASK_RATE_PER_MINUTE: ${ASK_RATE_PER_MINUTE:-6}
+      ASK_DAILY_LIMIT: ${ASK_DAILY_LIMIT:-500}
+      WEB_ORIGINS: ${WEB_ORIGINS:-http://localhost:3000}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      TZ: ${TZ:-America/New_York}
+    ports:
+      - "${API_BIND_ADDRESS:-127.0.0.1}:${API_PORT:-8070}:8000"
+    depends_on:
+      cube:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 384m
+    logging: *default-logging
+
 volumes:
   timescaledb-data:
   cubestore-data:
