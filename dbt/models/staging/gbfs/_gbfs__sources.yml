@@ -1,0 +1,59 @@
+version: 2
+
+sources:
+  - name: gbfs
+    description: Citi Bike GBFS feeds, loaded by the ingestion service (Phase 1).
+    schema: raw
+    loader: dockline-ingestion
+    tables:
+      - name: station_status
+        description: One row per distinct (station_id, last_reported). Quiet stations add no rows (ADR 0006).
+        loaded_at_field: fetched_at
+        config:
+          freshness:
+            warn_after: {count: 5, period: minute}
+            error_after: {count: 15, period: minute}
+      - name: station_information
+        description: Current station metadata, upserted hourly.
+        loaded_at_field: last_seen_at
+        config:
+          freshness:
+            warn_after: {count: 2, period: hour}
+            error_after: {count: 6, period: hour}
+
+  - name: gbfs_agg
+    description: TimescaleDB continuous aggregates over raw.station_status (real-time, kept forever).
+    schema: agg
+    tables:
+      - name: station_status_5min
+        description: Last state per station per 5-minute bucket that had at least one report.
+        loaded_at_field: last_reported
+        config:
+          freshness:
+            warn_after: {count: 10, period: minute}
+            error_after: {count: 30, period: minute}
+      - name: station_status_hourly
+        description: Hierarchical hourly rollup of station_status_5min.
+
+  - name: open_meteo
+    description: Open-Meteo hourly weather for central NYC.
+    schema: raw
+    loader: dockline-ingestion
+    tables:
+      - name: weather_hourly
+        loaded_at_field: fetched_at
+        config:
+          freshness:
+            warn_after: {count: 2, period: hour}
+            error_after: {count: 6, period: hour}
+
+  - name: ops
+    description: Ingestion audit log.
+    schema: ops
+    tables:
+      - name: ingestion_runs
+        loaded_at_field: started_at
+        config:
+          freshness:
+            warn_after: {count: 5, period: minute}
+            error_after: {count: 15, period: minute}

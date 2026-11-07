@@ -1,0 +1,80 @@
+version: 2
+
+models:
+  - name: stg_gbfs__station_information
+    description: Station metadata from GBFS station_information, renamed to warehouse conventions.
+    columns:
+      - name: station_id
+        description: GBFS station identifier (UUID string). Stable across renames.
+        data_tests: [unique, not_null]
+      - name: station_name
+        data_tests: [not_null]
+      - name: latitude
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments: {min_value: 40.4, max_value: 41.0}
+      - name: longitude
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments: {min_value: -74.4, max_value: -73.6}
+      - name: capacity
+        description: Total docks at the station as published by the operator.
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments: {min_value: 0, max_value: 200}
+      - name: region_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('gbfs_regions')
+                field: region_id
+              config:
+                severity: warn
+    data_tests:
+      - dbt_expectations.expect_table_row_count_to_be_between:
+          arguments: {min_value: 1}
+
+  - name: stg_gbfs__station_status_5min
+    description: >
+      Real-time 5-minute continuous aggregate of station_status. Only buckets with at
+      least one report exist (see ADR 0006).
+    columns:
+      - name: bucket_start
+        description: Start of the 5-minute bucket (UTC-aligned).
+      - name: bikes_available
+        description: Bikes available to rent at the last report in the bucket.
+      - name: last_reported_at
+        description: Timestamp of the last report in the bucket.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [station_id, bucket_start]
+          config:
+            where: "bucket_start > now() - interval '1 day'"
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "bikes_available >= 0 and docks_available >= 0 and ebikes_available <= bikes_available"
+          config:
+            where: "bucket_start > now() - interval '1 day'"
+
+  - name: stg_open_meteo__weather_hourly
+    description: Hourly weather with WMO codes mapped to a small set of conditions.
+    columns:
+      - name: weather_hour
+        data_tests: [unique, not_null]
+      - name: weather_condition
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [Clear, Cloudy, Fog, Drizzle, Rain, Snow, Thunderstorm, Unknown]
+
+  - name: stg_ops__ingestion_runs
+    description: Ingestion audit log, one row per poll.
+    columns:
+      - name: run_id
+        data_tests: [unique, not_null]
+      - name: run_status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [running, success, failed]

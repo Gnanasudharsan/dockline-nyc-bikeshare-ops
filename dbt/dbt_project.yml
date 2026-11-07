@@ -1,0 +1,91 @@
+name: dockline
+version: "0.2.0"
+config-version: 2
+require-dbt-version: [">=1.11.0", "<2.0.0"]
+
+profile: dockline
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+snapshot-paths: ["snapshots"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+analysis-paths: ["analyses"]
+clean-targets: ["target", "dbt_packages"]
+
+flags:
+  send_anonymous_usage_stats: false
+
+vars:
+  # Used by dbt_date / dbt_expectations recency tests. Must match local_timezone.
+  "dbt_date:time_zone": America/New_York
+  # Business timezone: dates, hours of day, and peak periods are all New York local time.
+  local_timezone: America/New_York
+  # A station that has not reported for this long is treated as offline (ADR 0010).
+  stale_report_minutes: 30
+  # Target share of a station's usable slots holding a bike. 0.5 = half full.
+  target_fill_ratio: 0.5
+  # imbalance_state thresholds on fill_ratio.
+  starving_fill_ratio: 0.2
+  flooding_fill_ratio: 0.8
+  # Weekday peak commute windows, local time, [start, end) hours.
+  peak_hours: [7, 8, 9, 16, 17, 18, 19]
+  # Chronic problem stations: share of in-service peak minutes empty (or full).
+  chronic_lookback_days: 14
+  chronic_share_threshold: 0.25
+  chronic_min_peak_hours: 10
+  # How far back each incremental run rebuilds, to absorb late reports.
+  status_lookback_hours: 3
+  # 5-minute facts are pruned after this many days; hourly and daily facts are kept forever.
+  fact_5min_retention_days: 35
+  # Optional fixed "now" for reproducible runs and unit tests (ISO timestamp or null).
+  as_of: null
+
+seeds:
+  dockline:
+    +schema: reference
+    +tags: ["hourly"]
+    nyc_neighborhoods:
+      +column_types:
+        nta_code: text
+        nta_name: text
+        borough: text
+        nta_type: text
+        part_index: integer
+        boundary: text
+    gbfs_regions:
+      +column_types:
+        region_id: text
+        region_name: text
+        borough: text
+        neighborhood: text
+    wmo_weather_codes:
+      +column_types:
+        weather_code: smallint
+        description: text
+        weather_condition: text
+
+models:
+  dockline:
+    +persist_docs:
+      relation: true
+      columns: true
+    staging:
+      +schema: staging
+      +materialized: view
+      +tags: ["hourly"]
+    intermediate:
+      +schema: intermediate
+      +tags: ["hourly"]
+    marts:
+      +schema: marts
+      +materialized: table
+      +tags: ["hourly"]
+
+snapshots:
+  dockline:
+    +schema: snapshots
+
+data_tests:
+  dockline:
+    +store_failures: false

@@ -1,0 +1,48 @@
+version: 2
+
+seeds:
+  - name: nyc_neighborhoods
+    description: >
+      NYC 2020 Neighborhood Tabulation Areas (NYC Department of City Planning, NYC Open
+      Data 9nt8-h7nd), simplified to ~20 m and stored as Postgres polygon literals, one
+      row per polygon part. Regenerate with scripts/build_neighborhood_seed.py.
+    columns:
+      - name: nta_code
+        data_tests: [not_null]
+      - name: nta_name
+        data_tests: [not_null]
+      - name: borough
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [Manhattan, Brooklyn, Queens, Bronx, Staten Island]
+      - name: nta_type
+        description: "0 = residential neighborhood; other codes are parks, airports, cemeteries, etc."
+      - name: part_index
+      - name: boundary
+        description: Exterior ring as a Postgres polygon literal ((lon,lat),...).
+        data_tests: [not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [nta_code, part_index]
+
+  - name: gbfs_regions
+    description: >
+      GBFS system_regions with the borough/neighborhood used for stations outside NYC
+      (Jersey City, Hoboken). NYC stations are placed by polygon instead.
+    columns:
+      - name: region_id
+        data_tests: [unique, not_null]
+
+  - name: wmo_weather_codes
+    description: WMO weather interpretation codes used by Open-Meteo, grouped into conditions.
+    columns:
+      - name: weather_code
+        data_tests: [unique, not_null]
+      - name: weather_condition
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [Clear, Cloudy, Fog, Drizzle, Rain, Snow, Thunderstorm]
