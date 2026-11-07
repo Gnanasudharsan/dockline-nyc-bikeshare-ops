@@ -2,19 +2,127 @@
 
 **Live operations intelligence for NYC bike share.**
 
-Dockline reads the public Citi Bike GBFS feed about every 60 seconds, keeps every
-station snapshot in a time-series warehouse, models it into a governed star schema
-with certified metrics, and serves it to four surfaces:
+Dockline watches every station in New York City's bike share network about once a
+minute, keeps every report in a time-series warehouse, turns it into a governed star
+schema with certified metrics, and serves those same numbers to four surfaces:
 
-1. **Live operations dashboard** (Grafana): auto-refreshing KPIs, a station map
-   colored by imbalance, alerts, and time travel to any past moment.
-2. **Analyst and executive report** (Power BI Desktop): DirectQuery, automatic page
-   refresh, DAX measures that mirror the certified metrics, row-level security by borough.
-3. **Ask the Data**: natural-language questions answered *only* through certified
-   semantic-layer metrics. No raw SQL, no invented numbers.
-4. **Public website**: live map hero, live KPIs, written findings, and how it all works.
+1. **Live operations dashboard** (Grafana)
+   - auto-refreshing KPIs and a station map colored by imbalance
+   - alerts as code, and rewind to any moment
+2. **Analyst report** (Power BI Desktop)
+   - DirectQuery, automatic page refresh, row-level security by borough
+   - DAX measures with the same names as the certified metrics
+3. **Ask the Data**
+   - plain-English questions answered *only* through certified metrics
+   - the model never writes SQL and cannot invent numbers
+4. **Public website**
+   - a live map, live KPIs over Server-Sent Events, and a 24-hour replay
+   - findings, and how it all works
+
+![Dockline home page: live map of every station colored by imbalance](docs/design/screenshots/home-light-desktop.png)
 
 > Independent project. Not affiliated with Citi Bike or Lyft. Uses the public GBFS feed.
+
+## Architecture
+
+```mermaid
+flowchart LR
+  GBFS[GBFS feed<br/>~60 s] --> ING[Ingestion<br/>Python, validated]
+  WX[Open-Meteo<br/>hourly] --> ING
+  ING --> TS[(PostgreSQL 16<br/>+ TimescaleDB)]
+  DAG[Dagster] -. every 5 min, hourly, daily .-> DBT[dbt Core<br/>star schema, 100+ tests]
+  DBT <--> TS
+  TS --> CUBE[Cube Core<br/>certified metrics]
+  CUBE --> GRAF[Grafana<br/>dashboards + alerts]
+  CUBE --> API[FastAPI<br/>KPIs, SSE, /ask]
+  LLM[LLM, free tier<br/>Groq / Gemini / Ollama] <--> API
+  TS -- bi schema, read-only --> PBI[Power BI Desktop<br/>DirectQuery]
+  API --> WEB[Next.js website<br/>Vercel]
+  GRAF --> WEB
+```
+
+Cube is the only place metrics are defined. Grafana, the API, and the website read
+numbers only from Cube; Power BI mirrors its measures by name, and tests enforce it.
+
+## What is in the box
+
+| Layer | What it does | Where |
+| --- | --- | --- |
+| Ingestion | Polls on the feed's own clock with ETag requests; validates each record; stores each distinct report once; retries; graceful shutdown | [`ingestion/`](ingestion/) |
+| Warehouse | TimescaleDB hypertable (compressed after 7 days, 30-day retention), 5-minute and hourly continuous aggregates kept forever, in-house migration runner, read-only serving roles | [`warehouse/`](warehouse/) |
+| Models | dbt: a carried-forward station × 5-minute grid, SCD2 stations, hourly and daily facts, an as-of KPI snapshot, live rebalancing and chronic-station marts, borough placement without PostGIS | [`dbt/`](dbt/) |
+| Orchestration | Dagster: dbt as assets with lineage; 5-minute, hourly, and daily schedules; freshness policies; failure alerts | [`orchestration/`](orchestration/) |
+| Semantic layer | Cube: every metric once, pre-aggregations in Cube Store | [`semantic/`](semantic/), [`docs/metrics.md`](docs/metrics.md) |
+| Live ops | Grafana, provisioned entirely as code: 4 dashboards plus a public one; alerts for stale feed, failing ingestion, and empty high-traffic stations | [`grafana/`](grafana/) |
+| Analyst BI | Power BI project generated as text (TMDL + PBIR) and validated with Microsoft's schemas and parser | [`powerbi/`](powerbi/) |
+| API + Ask the Data | FastAPI; the LLM returns a JSON plan over an allowlisted catalog, strict validation builds the Cube query, and answers are checked against the returned numbers | [`api/`](api/), [`evals/`](evals/) |
+| Website | Next.js, TypeScript strict, Tailwind, MapLibre + OpenFreeMap, ECharts; light/dark; WCAG 2.2 AA | [`web/`](web/), [`docs/design/`](docs/design/) |
+| Deployment | Oracle Always Free ARM VM, Cloudflare Tunnel (no open ports), Vercel, nightly backups, uptime checks | [`infra/`](infra/), [`docs/deploy/`](docs/deploy/) |
+
+Everything runs on free tiers or open-source software, and every image runs on
+`linux/arm64`.
+
+## Quality, measured
+
+| Check | Result |
+| --- | --- |
+| Python tests: unit plus integration against a throwaway TimescaleDB | 186 |
+| dbt tests (dbt-utils, dbt-expectations) | 107 data tests, 2 unit tests, on 26 models |
+| Ask the Data evaluation (40 cases, live run) | 31/32 answerable (96.9%), 8/8 refusals (thresholds: ≥ 85%, 100%) |
+| Grafana | Every panel query run through Cube in CI |
+| Power BI | Microsoft JSON schemas, theme schema, 88 field references, Microsoft `TmdlSerializer` |
+| Website, Lighthouse (all pages, mobile and desktop) | 99–100 for performance, accessibility, best practices, and SEO |
+| Website, end to end | 6 Playwright tests against a mocked API; 24 design screenshots |
+| Backups | Nightly dump restored into a new database with hypertables and aggregates intact |
+| Static checks | Ruff, strict mypy, SQLFluff, ESLint, TypeScript strict, Prettier, gitleaks |
+
+The first acceptance runs found real problems:
+- a polling timer that phase-locked just before each feed refresh
+- a CDN serving stale versions
+- an LLM that over-filtered questions
+- a map library worker that would not start under the bundler
+
+Each fix is recorded in the [ADRs](docs/adr/) and the [changelog](CHANGELOG.md).
+
+## Run it locally
+
+Prerequisites: Docker (Compose 2.24+), Python 3.12, [uv](https://docs.astral.sh/uv/),
+Node 20.9+, GNU Make.
+
+```bash
+make setup
+```
+```bash
+make up
+```
+```bash
+make test
+```
+
+`make setup` installs the Python tooling and git hooks and creates `.env` with random
+local credentials. `make up` starts the stack and waits until every service is healthy.
+`make test` runs the full test suite.
+
+| What | Where |
+| --- | --- |
+| Website (`make web-install && make web-dev`) | <http://localhost:3010> |
+| Grafana | <http://localhost:3060> (admin password in `.env`) |
+| API docs | <http://localhost:8070/docs>; try `make ask Q="Which borough has the most empty stations right now?"` |
+| Dagster | <http://localhost:3070> |
+| Cube | <http://localhost:4000>, SQL API on `localhost:15432` |
+| Power BI | [`powerbi/Dockline.pbip`](powerbi/) ([checklist](powerbi/VERIFY.md)) |
+| Warehouse | `make psql`, or `localhost:5433` |
+| Data checks | `make check-ingestion`, `make check-pipeline`, `make check-grafana` |
+
+Ask the Data needs a free LLM key in `.env` (`GROQ_API_KEY` or `GEMINI_API_KEY`), or a
+local Ollama. Run `make help` for every target.
+
+## Deploy it
+
+One Oracle Cloud Always Free ARM VM, Cloudflare Tunnel for `api.` and `grafana.`
+(nothing listens on a public port), and Vercel for the website. Step by step:
+[Oracle VM](docs/deploy/oracle-vm.md) · [Cloudflare Tunnel](docs/deploy/cloudflare-tunnel.md)
+· [Vercel](docs/deploy/vercel.md) · [Operations, backups, and restores](docs/deploy/operations.md).
 
 ## Project status
 
@@ -27,94 +135,27 @@ with certified metrics, and serves it to four surfaces:
 | 4 | Power BI analyst report | Done |
 | 5 | Ask the Data (governed natural-language Q&A) | Done |
 | 6 | Public website | Done |
-| 7 | Deployment and launch | Planned |
-
-## Architecture (target)
-
-```mermaid
-flowchart LR
-  GBFS[Citi Bike GBFS feed] --> ING[Ingestion service<br/>Python, httpx, Pydantic]
-  WX[Open-Meteo weather] --> ING
-  ING --> TS[(PostgreSQL 16<br/>+ TimescaleDB)]
-  TS --> DBT[dbt Core<br/>star schema + tests]
-  DAG[Dagster] -. schedules .-> DBT
-  DBT --> TS
-  TS --> CUBE[Cube Core<br/>certified metrics]
-  TS --> GRAF[Grafana OSS]
-  TS --> PBI[Power BI Desktop<br/>DirectQuery]
-  CUBE --> API[FastAPI<br/>KPIs, SSE, /ask]
-  LLM[LLM: Gemini / Groq / Ollama] <--> API
-  API --> WEB[Next.js website]
-  GRAF --> WEB
-```
-
-## Stack
-
-| Layer | Choice |
-| --- | --- |
-| Ingestion | Python 3.12, httpx (async), Pydantic v2, tenacity |
-| Warehouse | PostgreSQL 16 + TimescaleDB |
-| Transformation | dbt Core (dbt-postgres), dbt-expectations |
-| Orchestration | Dagster OSS |
-| Semantic layer | Cube Core |
-| Live dashboard | Grafana OSS (provisioned as code) |
-| Analyst BI | Power BI Desktop, PBIP (TMDL + PBIR) |
-| API | FastAPI, Server-Sent Events |
-| Website | Next.js, TypeScript, Tailwind CSS, MapLibre GL JS, Apache ECharts |
-| Infra | Docker Compose, Cloudflare Tunnel, GitHub Actions |
-
-Everything runs on free tiers or open-source software, and every image supports `linux/arm64`.
-
-## Run locally
-
-Prerequisites: Docker (Compose v2), Python 3.12, [uv](https://docs.astral.sh/uv/), GNU Make.
-
-```bash
-make setup   # install Python tooling and git hooks, create .env from .env.example
-make up      # start the stack and wait until every service is healthy
-make test    # run the test suite
-```
-
-Then:
-
-| What | Where |
-| --- | --- |
-| Website (`make web-dev`) | <http://localhost:3010> |
-| Grafana (live dashboards, alerts) | <http://localhost:3060> (admin password in `.env`) |
-| Public live dashboard URL | `make grafana-public` |
-| Cube (REST API / SQL API) | <http://localhost:4000>, `localhost:15432` |
-| Power BI project (open in Desktop) | [`powerbi/Dockline.pbip`](powerbi/), checklist in [`powerbi/VERIFY.md`](powerbi/VERIFY.md) |
-| API (live KPIs, SSE, Ask the Data) | <http://localhost:8070/docs>, `make ask Q="..."` |
-| Dagster (lineage, runs, schedules, checks) | <http://localhost:3070> |
-| Warehouse (psql) | `make psql`, or `localhost:5433` |
-| Ingestion health and data checks | `make check-ingestion` |
-| dbt marts and Dagster run checks | `make check-pipeline` |
-| dbt docs and lineage | `make dbt-docs` (<http://localhost:8080>) |
-
-`make env` creates `.env` with random local passwords and secrets (and adds new keys
-when a later phase introduces them). Other targets: `make check-grafana`,
-`make dbt-build`, `make lint`, `make logs`, `make down`, `make help`.
-Metric definitions: [`docs/metrics.md`](docs/metrics.md).
+| 7 | Deployment and launch | Done (v1.0.0) |
 
 ## Repository layout
 
 ```
-ingestion/      GBFS and weather poller service
-warehouse/      TimescaleDB migrations
-dbt/            staging, intermediate and mart models
-orchestration/  Dagster definitions
-semantic/       Cube data model (single source of truth for metrics)
-grafana/        provisioned datasources, dashboards, alert rules
-powerbi/        Power BI Project (TMDL + PBIR) and theme
-api/            FastAPI service
+ingestion/      GBFS and weather poller
+warehouse/      TimescaleDB migrations and acceptance checks
+dbt/            staging, intermediate, marts, bi (Power BI contract), snapshots
+orchestration/  Dagster code location
+semantic/       Cube data model: the single source of metric definitions
+grafana/        datasources, dashboards (generated), alert rules
+powerbi/        Power BI project (generated), validators, guides
+api/            FastAPI service and Ask the Data
+evals/          Ask the Data evaluation set and recorded run
 web/            Next.js website
-infra/          production compose override, deployment guides
-docs/           ADRs, metrics catalog, design system
+infra/          production override, backups
+docs/           ADRs, metrics catalog, design plan and screenshots, deployment guides
 ```
 
-## Decisions
-
-Architecture Decision Records live in [`docs/adr/`](docs/adr/).
+Writing: [How Dockline was built](docs/blog-post.md). Decisions:
+[`docs/adr/`](docs/adr/).
 
 ## License
 
