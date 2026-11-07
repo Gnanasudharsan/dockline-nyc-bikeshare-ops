@@ -4,7 +4,8 @@ SHELL := /bin/bash
 COMPOSE := docker compose
 
 .PHONY: help setup env up down logs ps test test-unit lint fmt clean migrate psql check-ingestion \
-	dbt-deps dbt-build dbt-docs dbt-freshness dagster-dev check-pipeline
+	dbt-deps dbt-build dbt-docs dbt-freshness dagster-dev check-pipeline \
+	grafana-dashboards check-grafana grafana-public test-stale-alert
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
@@ -13,10 +14,11 @@ setup: env ## Install Python tooling and git hooks, create .env
 	uv sync
 	uv run pre-commit install
 
-env: .env ## Create .env from .env.example if it does not exist
+env: ## Create .env, or add keys new phases introduced; generates empty passwords/secrets
+	python3 scripts/init_env.py .env.example .env
 
 .env:
-	cp .env.example .env
+	python3 scripts/init_env.py .env.example .env
 	@echo "Created .env from .env.example. Review it before running in production."
 
 up: .env ## Build and start the stack, waiting until every service is healthy
@@ -67,6 +69,18 @@ dagster-dev: .env ## Run Dagster locally (outside Docker) on http://localhost:30
 
 check-pipeline: .env ## Run the Phase 2 acceptance queries
 	$(COMPOSE) exec -T timescaledb sh -c 'psql -U "$$POSTGRES_USER" -d "$$POSTGRES_DB" -v ON_ERROR_STOP=1' < warehouse/checks/phase2_acceptance.sql
+
+grafana-dashboards: ## Regenerate grafana/dashboards/*.json from grafana/build_dashboards.py
+	python3 grafana/build_dashboards.py
+
+check-grafana: .env ## Run every dashboard query through Grafana and check datasources and alert rules
+	set -a && . ./.env && set +a && python3 grafana/check_dashboards.py
+
+grafana-public: .env ## Share the public live dashboard (idempotent) and print its URL
+	set -a && . ./.env && set +a && cd grafana && python3 share_public_dashboard.py
+
+test-stale-alert: .env ## Stop ingestion until the feed-stale alert fires, then restart it (~7 min)
+	grafana/test_stale_feed_alert.sh
 
 lint: ## Run every pre-commit hook on all files
 	uv run pre-commit run --all-files

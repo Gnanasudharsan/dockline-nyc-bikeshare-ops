@@ -1,9 +1,17 @@
 # Metrics catalog
 
-The certified metric definitions will live in exactly one place: the Cube data model
-(`semantic/`, Phase 3). This catalog is their human-readable contract. Since Phase 2,
-every metric below is computed from the dbt marts. Cube aggregates these columns and
-never re-derives station state.
+The certified metric definitions live in exactly one place: the Cube data model
+(`semantic/model/cubes/`). This catalog is their human-readable contract. Cube
+aggregates columns of the dbt marts and never re-derives station state. Grafana, the
+API, and the website query Cube; Power BI mirrors these measures under the same names.
+
+| Metric | Cube measure(s) |
+| --- | --- |
+| `bikes_available`, `ebikes_available`, `docks_available`, `fill_ratio`, `imbalance_index` | `fleet_status.*` (live), `station_status.*` (5-minute history) |
+| `empty_station_minutes`, `full_station_minutes`, `availability_rate`, `net_flow` | `station_status.*`, `station_hourly.*`, `daily_kpis.*` |
+| `rebalance_need_bikes` | `fleet_status.rebalance_need_bikes`, `station_status.rebalance_need_bikes` |
+| `chronic_problem_station` | `chronic_stations.chronic_problem_stations` (count) |
+| `data_freshness_seconds` | `fleet_status.data_freshness_seconds` |
 
 - **Owner of all metrics:** Dockline operations analytics (Gnanasudharsan Ashokumar).
 - **Time zone:** America/New_York for dates, hours of day, and peak periods.
