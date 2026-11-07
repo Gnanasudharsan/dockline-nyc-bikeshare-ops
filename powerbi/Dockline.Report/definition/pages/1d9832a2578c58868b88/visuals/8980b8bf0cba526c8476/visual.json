@@ -1,0 +1,195 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "8980b8bf0cba526c8476",
+  "position": {
+    "x": 20,
+    "y": 430,
+    "z": 9000,
+    "width": 1240,
+    "height": 270,
+    "tabOrder": 9000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Station"
+                    }
+                  },
+                  "Property": "station_name"
+                }
+              },
+              "queryRef": "Station.station_name",
+              "nativeQueryRef": "station_name"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Borough"
+                    }
+                  },
+                  "Property": "borough"
+                }
+              },
+              "queryRef": "Borough.borough",
+              "nativeQueryRef": "borough"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fleet_status"
+                    }
+                  },
+                  "Property": "is_high_traffic"
+                }
+              },
+              "queryRef": "fleet_status.is_high_traffic",
+              "nativeQueryRef": "is_high_traffic"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fleet_status"
+                    }
+                  },
+                  "Property": "longest_empty_minutes"
+                }
+              },
+              "queryRef": "fleet_status.longest_empty_minutes",
+              "nativeQueryRef": "longest_empty_minutes"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fleet_status"
+                    }
+                  },
+                  "Property": "empty_stations"
+                }
+              },
+              "queryRef": "fleet_status.empty_stations",
+              "nativeQueryRef": "empty_stations"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "fleet_status"
+                  }
+                },
+                "Property": "longest_empty_minutes"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'High-traffic stations with no bikes'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "highTraffic",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fleet_status"
+              }
+            },
+            "Property": "imbalance_state"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "t",
+              "Entity": "fleet_status",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Not": {
+                  "Expression": {
+                    "In": {
+                      "Expressions": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Source": "t"
+                              }
+                            },
+                            "Property": "imbalance_state"
+                          }
+                        }
+                      ],
+                      "Values": [
+                        [
+                          {
+                            "Literal": {
+                              "Value": "'offline'"
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

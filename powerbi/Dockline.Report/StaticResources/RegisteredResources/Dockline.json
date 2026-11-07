@@ -1,0 +1,98 @@
+{
+  "name": "Dockline",
+  "dataColors": [
+    "#1B5FD1",
+    "#E0701F",
+    "#2357C6",
+    "#4A5A6E",
+    "#7A6F9B",
+    "#A9B3C1",
+    "#2E7D4F",
+    "#8C5A2B"
+  ],
+  "foreground": "#13202F",
+  "foregroundNeutralSecondary": "#4A5A6E",
+  "foregroundNeutralTertiary": "#7B8796",
+  "background": "#FFFFFF",
+  "backgroundLight": "#F6F7F9",
+  "backgroundNeutral": "#D9DEE5",
+  "tableAccent": "#1B5FD1",
+  "good": "#2E7D4F",
+  "neutral": "#A9B3C1",
+  "bad": "#E0701F",
+  "maximum": "#2357C6",
+  "center": "#A9B3C1",
+  "minimum": "#E0701F",
+  "textClasses": {
+    "callout": {
+      "fontSize": 28,
+      "fontFace": "Archivo, Segoe UI",
+      "color": "#13202F"
+    },
+    "title": {
+      "fontSize": 13,
+      "fontFace": "Archivo SemiBold, Segoe UI Semibold",
+      "color": "#13202F"
+    },
+    "header": {
+      "fontSize": 12,
+      "fontFace": "Archivo SemiBold, Segoe UI Semibold",
+      "color": "#13202F"
+    },
+    "label": {
+      "fontSize": 10,
+      "fontFace": "Archivo, Segoe UI",
+      "color": "#4A5A6E"
+    }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#FFFFFF"
+              }
+            }
+          }
+        ],
+        "border": [
+          {
+            "show": false
+          }
+        ],
+        "dropShadow": [
+          {
+            "show": false
+          }
+        ],
+        "title": [
+          {
+            "fontColor": {
+              "solid": {
+                "color": "#13202F"
+              }
+            },
+            "fontSize": 12
+          }
+        ]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [
+          {
+            "color": {
+              "solid": {
+                "color": "#F6F7F9"
+              }
+            },
+            "transparency": 0
+          }
+        ]
+      }
+    }
+  }
+}

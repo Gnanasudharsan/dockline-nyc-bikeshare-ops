@@ -1,0 +1,115 @@
+/// Weekday-peak verdict per station over the last 14 days. Mirrors chronic_stations.
+table chronic_stations
+	lineageTag: cac04803-52e9-58d4-bd56-8975ce2e5a65
+
+	/// Stations empty or full > 25% of in-service weekday-peak minutes (≥ 10 peak hours observed).
+	measure chronic_problem_stations = CALCULATE(COUNTROWS(chronic_stations), chronic_stations[chronic_problem_station] = TRUE())
+		formatString: #,0
+		displayFolder: Chronic
+		lineageTag: 77fade2a-93e4-52e1-b9e5-4abc872ac314
+
+	/// Stations with enough peak data for a verdict.
+	measure stations_rated = CALCULATE(COUNTROWS(chronic_stations), chronic_stations[chronic_status] <> "insufficient_data")
+		formatString: #,0
+		displayFolder: Chronic
+		lineageTag: afae0c14-2f2e-56ec-858e-f28503cb11ff
+
+	/// Join key.
+	column station_key
+		dataType: string
+		isHidden
+		lineageTag: ef935435-30f2-5a13-9248-c2440cee64bd
+		summarizeBy: none
+		sourceColumn: station_key
+
+		annotation SummarizationSetBy = Automatic
+
+	/// insufficient_data, ok, chronic_empty, chronic_full, chronic_empty_and_full.
+	column chronic_status
+		dataType: string
+		lineageTag: 8970a8dc-120a-5cfc-9259-91b9da1be953
+		summarizeBy: none
+		sourceColumn: chronic_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column chronic_problem_station
+		dataType: boolean
+		lineageTag: b2713013-65c6-5675-a5e6-d1cfb080b58e
+		summarizeBy: none
+		sourceColumn: chronic_problem_station
+
+		annotation SummarizationSetBy = Automatic
+
+	column peak_hours_observed
+		dataType: int64
+		lineageTag: 16fb9e05-1029-5c37-88ad-497788ce981e
+		summarizeBy: none
+		sourceColumn: peak_hours_observed
+
+		annotation SummarizationSetBy = Automatic
+
+	column peak_in_service_minutes
+		dataType: double
+		isHidden
+		lineageTag: 307f0d20-6b6e-51b8-bbd3-5e7c645eac76
+		summarizeBy: none
+		sourceColumn: peak_in_service_minutes
+
+		annotation SummarizationSetBy = Automatic
+
+	column peak_empty_minutes
+		dataType: double
+		isHidden
+		lineageTag: 12ea2d40-c6e6-5a00-a915-9d9592a6eafa
+		summarizeBy: none
+		sourceColumn: peak_empty_minutes
+
+		annotation SummarizationSetBy = Automatic
+
+	column peak_full_minutes
+		dataType: double
+		isHidden
+		lineageTag: 6fdf4bae-1f1d-5d85-9ad4-1237e9bbda9d
+		summarizeBy: none
+		sourceColumn: peak_full_minutes
+
+		annotation SummarizationSetBy = Automatic
+
+	column peak_empty_share
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 72b30f1c-bf9a-5e22-b832-eced62f4bc7b
+		summarizeBy: none
+		sourceColumn: peak_empty_share
+
+		annotation SummarizationSetBy = Automatic
+
+	column peak_full_share
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 5a0704bc-b21e-542e-9cd2-1d78957424cb
+		summarizeBy: none
+		sourceColumn: peak_full_share
+
+		annotation SummarizationSetBy = Automatic
+
+	column lookback_days
+		dataType: int64
+		isHidden
+		lineageTag: b01472d2-6fdc-5a52-b099-6fc3bbaf1ed7
+		summarizeBy: none
+		sourceColumn: lookback_days
+
+		annotation SummarizationSetBy = Automatic
+
+	partition chronic_stations = m
+		mode: directQuery
+		source =
+				let
+				    Source = PostgreSQL.Database(DbHost & ":" & Number.ToText(DbPort), DbName),
+				    Data = Source{[Schema = "bi", Item = "chronic_stations"]}[Data]
+				in
+				    Data
+
+	annotation PBI_ResultType = Table

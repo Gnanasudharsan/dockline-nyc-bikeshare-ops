@@ -1,0 +1,144 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "d8feef6b5d6452c0bbce",
+  "position": {
+    "x": 560,
+    "y": 150,
+    "z": 8000,
+    "width": 700,
+    "height": 260,
+    "tabOrder": 8000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Borough"
+                    }
+                  },
+                  "Property": "borough"
+                }
+              },
+              "queryRef": "Borough.borough",
+              "nativeQueryRef": "borough"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fleet_status"
+                    }
+                  },
+                  "Property": "bikes_available"
+                }
+              },
+              "queryRef": "fleet_status.bikes_available",
+              "nativeQueryRef": "bikes_available"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fleet_status"
+                    }
+                  },
+                  "Property": "docks_available"
+                }
+              },
+              "queryRef": "fleet_status.docks_available",
+              "nativeQueryRef": "docks_available"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fleet_status"
+                    }
+                  },
+                  "Property": "fill_ratio"
+                }
+              },
+              "queryRef": "fleet_status.fill_ratio",
+              "nativeQueryRef": "fill_ratio"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fleet_status"
+                    }
+                  },
+                  "Property": "empty_stations"
+                }
+              },
+              "queryRef": "fleet_status.empty_stations",
+              "nativeQueryRef": "empty_stations"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fleet_status"
+                    }
+                  },
+                  "Property": "full_stations"
+                }
+              },
+              "queryRef": "fleet_status.full_stations",
+              "nativeQueryRef": "full_stations"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fleet_status"
+                    }
+                  },
+                  "Property": "offline_stations"
+                }
+              },
+              "queryRef": "fleet_status.offline_stations",
+              "nativeQueryRef": "offline_stations"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Right now by borough'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

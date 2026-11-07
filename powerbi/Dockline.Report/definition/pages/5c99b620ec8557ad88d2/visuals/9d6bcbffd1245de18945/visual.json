@@ -1,0 +1,92 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "9d6bcbffd1245de18945",
+  "position": {
+    "x": 20,
+    "y": 440,
+    "z": 6000,
+    "width": 1240,
+    "height": 260,
+    "tabOrder": 6000
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Weather"
+                    }
+                  },
+                  "Property": "weather_condition"
+                }
+              },
+              "queryRef": "Weather.weather_condition",
+              "nativeQueryRef": "weather_condition"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "station_hourly"
+                    }
+                  },
+                  "Property": "bikes_added"
+                }
+              },
+              "queryRef": "station_hourly.bikes_added",
+              "nativeQueryRef": "bikes_added"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "station_hourly"
+                    }
+                  },
+                  "Property": "bikes_removed"
+                }
+              },
+              "queryRef": "station_hourly.bikes_removed",
+              "nativeQueryRef": "bikes_removed"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Bikes added and removed by weather condition'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

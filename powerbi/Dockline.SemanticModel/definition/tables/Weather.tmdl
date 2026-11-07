@@ -1,0 +1,151 @@
+/// Hourly weather for central NYC (Open-Meteo).
+table Weather
+	lineageTag: 6ee78f04-f9b1-59dd-9704-d4451a9c387c
+
+	/// Average temperature (°C).
+	measure avg_temperature_c = AVERAGE(Weather[temperature_c])
+		formatString: 0.0
+		displayFolder: Weather
+		lineageTag: 07ce4f63-412c-5179-9a11-78a3348afaac
+
+	/// Precipitation (mm).
+	measure total_precipitation_mm = SUM(Weather[precipitation_mm])
+		formatString: 0.0
+		displayFolder: Weather
+		lineageTag: 1625e0ef-c598-5d61-bfb0-385783d48786
+
+	/// Join key.
+	column weather_hour_key
+		dataType: int64
+		isHidden
+		lineageTag: 5164577e-c24b-5f0c-bc9f-233cdefc3d10
+		summarizeBy: none
+		sourceColumn: weather_hour_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column weather_hour_local
+		dataType: dateTime
+		formatString: yyyy-mm-dd hh:nn
+		lineageTag: ee38e002-ea03-5c03-92b8-4fc1b5af452a
+		summarizeBy: none
+		sourceColumn: weather_hour_local
+
+		annotation SummarizationSetBy = Automatic
+
+	column temperature_c
+		dataType: double
+		isHidden
+		lineageTag: 9234e1c3-db91-5851-8c2c-b4fa06f85fc2
+		summarizeBy: none
+		sourceColumn: temperature_c
+
+		annotation SummarizationSetBy = Automatic
+
+	column temperature_f
+		dataType: double
+		isHidden
+		lineageTag: cb772231-1b8e-5705-bd05-56ff86e0924c
+		summarizeBy: none
+		sourceColumn: temperature_f
+
+		annotation SummarizationSetBy = Automatic
+
+	column apparent_temperature_c
+		dataType: double
+		isHidden
+		lineageTag: 068138c1-5bcf-5b3b-9e1c-f4bade905c62
+		summarizeBy: none
+		sourceColumn: apparent_temperature_c
+
+		annotation SummarizationSetBy = Automatic
+
+	column precipitation_mm
+		dataType: double
+		isHidden
+		lineageTag: 6920c0d1-3f5d-526b-b556-9e1f13217e63
+		summarizeBy: none
+		sourceColumn: precipitation_mm
+
+		annotation SummarizationSetBy = Automatic
+
+	column snowfall_cm
+		dataType: double
+		isHidden
+		lineageTag: 33fc1cb0-b735-559b-9864-e6797e5b5362
+		summarizeBy: none
+		sourceColumn: snowfall_cm
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Clear, Cloudy, Fog, Drizzle, Rain, Snow, Thunderstorm.
+	column weather_condition
+		dataType: string
+		lineageTag: b920f417-2a43-5f2c-ad02-19db3da47bc7
+		summarizeBy: none
+		sourceColumn: weather_condition
+
+		annotation SummarizationSetBy = Automatic
+
+	column weather_description
+		dataType: string
+		lineageTag: a58aba82-82ad-5ccd-b615-7b32b418a8e3
+		summarizeBy: none
+		sourceColumn: weather_description
+
+		annotation SummarizationSetBy = Automatic
+
+	column temperature_band
+		dataType: string
+		lineageTag: cf4f7031-87b0-530c-8da0-96613388624f
+		summarizeBy: none
+		sourceColumn: temperature_band
+		sortByColumn: temperature_band_order
+
+		annotation SummarizationSetBy = Automatic
+
+	column temperature_band_order
+		dataType: int64
+		isHidden
+		lineageTag: 65165609-3739-56d0-b14b-efa6a76add55
+		summarizeBy: none
+		sourceColumn: temperature_band_order
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_precipitating
+		dataType: boolean
+		lineageTag: 4b22863e-6931-50c8-9839-f917c4a57689
+		summarizeBy: none
+		sourceColumn: is_precipitating
+
+		annotation SummarizationSetBy = Automatic
+
+	column wind_speed_kmh
+		dataType: double
+		isHidden
+		lineageTag: e4350c89-760e-5203-80a4-328dddf5631d
+		summarizeBy: none
+		sourceColumn: wind_speed_kmh
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_forecast
+		dataType: boolean
+		isHidden
+		lineageTag: 4096455f-7f28-5104-a42d-3ebf0b33f421
+		summarizeBy: none
+		sourceColumn: is_forecast
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Weather = m
+		mode: directQuery
+		source =
+				let
+				    Source = PostgreSQL.Database(DbHost & ":" & Number.ToText(DbPort), DbName),
+				    Data = Source{[Schema = "bi", Item = "weather"]}[Data]
+				in
+				    Data
+
+	annotation PBI_ResultType = Table

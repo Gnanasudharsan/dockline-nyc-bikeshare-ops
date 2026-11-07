@@ -1,0 +1,7 @@
+/// Sees only Queens stations and their facts.
+role 'Borough - Queens'
+	modelPermission: read
+
+	tablePermission Borough = [borough] = "Queens"
+
+	annotation PBI_Id = 7039311d33d15df09fcb

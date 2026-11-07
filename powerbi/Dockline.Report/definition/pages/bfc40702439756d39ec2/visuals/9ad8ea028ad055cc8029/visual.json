@@ -1,0 +1,176 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "9ad8ea028ad055cc8029",
+  "position": {
+    "x": 280,
+    "y": 20,
+    "z": 2000,
+    "width": 980,
+    "height": 420,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Station"
+                    }
+                  },
+                  "Property": "station_name"
+                }
+              },
+              "queryRef": "Station.station_name",
+              "nativeQueryRef": "station_name"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Station"
+                    }
+                  },
+                  "Property": "neighborhood"
+                }
+              },
+              "queryRef": "Station.neighborhood",
+              "nativeQueryRef": "neighborhood"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "station_hourly"
+                    }
+                  },
+                  "Property": "availability_rate"
+                }
+              },
+              "queryRef": "station_hourly.availability_rate",
+              "nativeQueryRef": "availability_rate"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "station_hourly"
+                    }
+                  },
+                  "Property": "empty_share"
+                }
+              },
+              "queryRef": "station_hourly.empty_share",
+              "nativeQueryRef": "empty_share"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "station_hourly"
+                    }
+                  },
+                  "Property": "full_share"
+                }
+              },
+              "queryRef": "station_hourly.full_share",
+              "nativeQueryRef": "full_share"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "station_hourly"
+                    }
+                  },
+                  "Property": "bikes_added"
+                }
+              },
+              "queryRef": "station_hourly.bikes_added",
+              "nativeQueryRef": "bikes_added"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "station_hourly"
+                    }
+                  },
+                  "Property": "bikes_removed"
+                }
+              },
+              "queryRef": "station_hourly.bikes_removed",
+              "nativeQueryRef": "bikes_removed"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "station_hourly"
+                    }
+                  },
+                  "Property": "net_flow"
+                }
+              },
+              "queryRef": "station_hourly.net_flow",
+              "nativeQueryRef": "net_flow"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "station_hourly"
+                  }
+                },
+                "Property": "availability_rate"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Stations by availability (lowest first)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

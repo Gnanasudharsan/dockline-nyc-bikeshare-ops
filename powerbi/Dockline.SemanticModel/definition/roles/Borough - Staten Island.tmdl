@@ -1,0 +1,7 @@
+/// Sees only Staten Island stations and their facts.
+role 'Borough - Staten Island'
+	modelPermission: read
+
+	tablePermission Borough = [borough] = "Staten Island"
+
+	annotation PBI_Id = 11115888f86c58718bee

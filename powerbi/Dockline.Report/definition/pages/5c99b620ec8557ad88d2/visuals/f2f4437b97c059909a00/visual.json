@@ -1,0 +1,78 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "f2f4437b97c059909a00",
+  "position": {
+    "x": 20,
+    "y": 150,
+    "z": 4000,
+    "width": 610,
+    "height": 270,
+    "tabOrder": 4000
+  },
+  "visual": {
+    "visualType": "clusteredBarChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Weather"
+                    }
+                  },
+                  "Property": "weather_condition"
+                }
+              },
+              "queryRef": "Weather.weather_condition",
+              "nativeQueryRef": "weather_condition"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "station_hourly"
+                    }
+                  },
+                  "Property": "availability_rate"
+                }
+              },
+              "queryRef": "station_hourly.availability_rate",
+              "nativeQueryRef": "availability_rate"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Availability rate by weather condition'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

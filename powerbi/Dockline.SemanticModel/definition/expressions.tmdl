@@ -1,0 +1,20 @@
+/// Warehouse host as seen from the Windows VM (Parallels default).
+expression DbHost = "10.211.55.2" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: 81271e30-9ad5-548b-aa90-fcefbb330120
+	queryGroup: Parameters
+
+	annotation PBI_ResultType = Text
+
+/// Published Postgres port (POSTGRES_PORT).
+expression DbPort = 5433 meta [IsParameterQuery = true, Type = "Number", IsParameterQueryRequired = true]
+	lineageTag: 51733a5f-b543-5091-a73b-0ce4ac0ab2b7
+	queryGroup: Parameters
+
+	annotation PBI_ResultType = Number
+
+/// Warehouse database (POSTGRES_DB).
+expression DbName = "dockline" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: 97d7cea0-84d7-5000-9529-78fa9a2a03a3
+	queryGroup: Parameters
+
+	annotation PBI_ResultType = Text

@@ -1,0 +1,7 @@
+/// Sees only Jersey City stations and their facts.
+role 'Borough - Jersey City'
+	modelPermission: read
+
+	tablePermission Borough = [borough] = "Jersey City"
+
+	annotation PBI_Id = 4ba7beae285a59b1a582

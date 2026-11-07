@@ -1,0 +1,27 @@
+relationship 594d1246-307b-5197-acdc-6eb4f566a537
+	fromColumn: fleet_status.station_key
+	toColumn: Station.station_key
+
+relationship c7b490d8-7a3f-58cc-89a4-a0184a333129
+	fromColumn: station_hourly.station_key
+	toColumn: Station.station_key
+
+relationship 5b09a5a6-dc61-522c-baf6-eb8f97782c14
+	fromColumn: chronic_stations.station_key
+	toColumn: Station.station_key
+
+relationship 27d04f89-d519-535e-8998-42dddf915869
+	fromColumn: Station.borough
+	toColumn: Borough.borough
+
+relationship da62550c-212a-5e8f-a97c-be36ef86cbc2
+	fromColumn: station_hourly.date_key
+	toColumn: Date.date_key
+
+relationship 108ce424-76f0-5e9e-8658-e96561990294
+	fromColumn: station_hourly.hour_of_day
+	toColumn: Hour.hour_of_day
+
+relationship 77a18bf5-682d-5d73-bcd8-b676e6ab1444
+	fromColumn: station_hourly.weather_hour_key
+	toColumn: Weather.weather_hour_key

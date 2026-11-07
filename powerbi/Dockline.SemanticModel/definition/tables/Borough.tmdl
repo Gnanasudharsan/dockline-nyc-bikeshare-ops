@@ -1,0 +1,42 @@
+/// Boroughs. Row-level security roles filter this table.
+table Borough
+	lineageTag: cd2edbd9-8960-5919-a7d7-4ebb32ff9ad2
+
+	/// Borough (or Jersey City / Hoboken).
+	column borough
+		dataType: string
+		lineageTag: 87c0b56c-0885-568d-a886-e797ae5ce600
+		summarizeBy: none
+		sourceColumn: borough
+		sortByColumn: borough_order
+
+		annotation SummarizationSetBy = Automatic
+
+	/// New York City or New Jersey.
+	column city
+		dataType: string
+		lineageTag: 562118cf-eea5-505f-a5db-1245f339ed1e
+		summarizeBy: none
+		sourceColumn: city
+
+		annotation SummarizationSetBy = Automatic
+
+	column borough_order
+		dataType: int64
+		isHidden
+		lineageTag: 189c720d-68ab-5591-9188-51bc642bf09b
+		summarizeBy: none
+		sourceColumn: borough_order
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Borough = m
+		mode: directQuery
+		source =
+				let
+				    Source = PostgreSQL.Database(DbHost & ":" & Number.ToText(DbPort), DbName),
+				    Data = Source{[Schema = "bi", Item = "borough"]}[Data]
+				in
+				    Data
+
+	annotation PBI_ResultType = Table

@@ -1,0 +1,325 @@
+/// Live state of every listed station. Mirrors the Cube cube fleet_status.
+table fleet_status
+	lineageTag: 84b99c32-5a80-5d43-a351-7963e9f035d2
+
+	/// Bikes a rider could rent right now (in-service stations; includes e-bikes).
+	measure bikes_available = CALCULATE(SUM(fleet_status[station_bikes_available]), fleet_status[is_in_service] = TRUE())
+		formatString: #,0
+		displayFolder: Live\Availability
+		lineageTag: 4484368a-36ba-5e9b-aebc-c1bccd49a38e
+
+	/// E-bikes a rider could rent right now.
+	measure ebikes_available = CALCULATE(SUM(fleet_status[station_ebikes_available]), fleet_status[is_in_service] = TRUE())
+		formatString: #,0
+		displayFolder: Live\Availability
+		lineageTag: 1d750ed1-4a62-5af7-93c1-dfdc2d3be77d
+
+	/// Empty docks a rider could return to right now.
+	measure docks_available = CALCULATE(SUM(fleet_status[station_docks_available]), fleet_status[is_in_service] = TRUE())
+		formatString: #,0
+		displayFolder: Live\Availability
+		lineageTag: 0d4e930b-d805-5540-ad19-5c26aa497cb1
+
+	/// Bikes plus free docks at in-service stations (helper).
+	measure usable_slots = [bikes_available] + [docks_available]
+		formatString: #,0
+		displayFolder: Live\Availability
+		isHidden
+		lineageTag: dbf3a7a0-91a9-5f88-b773-e1ddc6fb0b9a
+
+	/// bikes_available / (bikes_available + docks_available).
+	measure fill_ratio = DIVIDE([bikes_available], [usable_slots])
+		formatString: 0.0%
+		displayFolder: Live\Availability
+		lineageTag: 8b4b9c30-1777-5c49-b6ec-292524419552
+
+	/// fill_ratio minus the 0.5 target. Negative = starving, positive = flooding.
+	measure imbalance_index = [fill_ratio] - 0.5
+		formatString: 0.000
+		displayFolder: Live\Availability
+		lineageTag: dfa3f41c-e3fe-5442-956d-b4952b571c54
+
+	/// Stations listed in the feed.
+	measure stations = COUNTROWS(fleet_status)
+		formatString: #,0
+		displayFolder: Live\Station counts
+		lineageTag: 7d339c55-2e60-563b-a97c-3894a84a8c6c
+
+	/// Stations reporting, installed, and renting or returning.
+	measure stations_in_service = CALCULATE(COUNTROWS(fleet_status), fleet_status[is_in_service] = TRUE())
+		formatString: #,0
+		displayFolder: Live\Station counts
+		lineageTag: ca1c0449-05bb-53a5-b42b-3d88565a0e1a
+
+	/// In-service stations with no bike to rent right now.
+	measure empty_stations = CALCULATE(COUNTROWS(fleet_status), fleet_status[is_in_service] = TRUE(), fleet_status[station_bikes_available] = 0)
+		formatString: #,0
+		displayFolder: Live\Station counts
+		lineageTag: 986f6436-3321-5616-905e-de9b5a2805a2
+
+	/// In-service stations with no free dock right now.
+	measure full_stations = CALCULATE(COUNTROWS(fleet_status), fleet_status[is_in_service] = TRUE(), fleet_status[station_docks_available] = 0)
+		formatString: #,0
+		displayFolder: Live\Station counts
+		lineageTag: 647e8b08-a609-5dda-bcb5-6a4a9f659f28
+
+	/// Stations in the starving state right now.
+	measure starving_stations = CALCULATE(COUNTROWS(fleet_status), fleet_status[imbalance_state] = "starving")
+		formatString: #,0
+		displayFolder: Live\Station counts
+		lineageTag: 9c9643e4-c920-5213-ac9b-e66b87e54b32
+
+	/// Stations in the balanced state right now.
+	measure balanced_stations = CALCULATE(COUNTROWS(fleet_status), fleet_status[imbalance_state] = "balanced")
+		formatString: #,0
+		displayFolder: Live\Station counts
+		lineageTag: 016f9939-a6cc-5003-8120-fa4de332006d
+
+	/// Stations in the flooding state right now.
+	measure flooding_stations = CALCULATE(COUNTROWS(fleet_status), fleet_status[imbalance_state] = "flooding")
+		formatString: #,0
+		displayFolder: Live\Station counts
+		lineageTag: 0c69b221-85a5-5e76-a61d-1b66c46ef5d4
+
+	/// Stations in the offline state right now.
+	measure offline_stations = CALCULATE(COUNTROWS(fleet_status), fleet_status[imbalance_state] = "offline")
+		formatString: #,0
+		displayFolder: Live\Station counts
+		lineageTag: 6aed0dad-b9b5-5907-92ce-019fcf395c1b
+
+	/// Bikes to add plus bikes to remove to bring starving and flooding stations to half full.
+	measure rebalance_need_bikes = SUM(fleet_status[bikes_to_move])
+		formatString: #,0
+		displayFolder: Live\Rebalancing
+		lineageTag: 4cf9f515-8643-522d-9628-1653e5f7800b
+
+	/// Longest current empty spell among the stations in context (minutes).
+	measure longest_empty_minutes = MAX(fleet_status[minutes_empty])
+		formatString: 0
+		displayFolder: Live\Rebalancing
+		lineageTag: c22f727a-dd5c-536f-a070-12ff823a44bf
+
+	/// Seconds since the newest station report (now − latest last_reported).
+	measure data_freshness_seconds = DATEDIFF(MAX(fleet_status[last_reported_at_utc]), UTCNOW(), SECOND)
+		formatString: #,0
+		displayFolder: Live\Data quality
+		lineageTag: 7a82e4eb-3541-552e-8dd6-5b6e234772ee
+
+	/// Join key.
+	column station_key
+		dataType: string
+		isHidden
+		lineageTag: 95136a56-9d18-578b-b7ca-8b03b0ca71e8
+		summarizeBy: none
+		sourceColumn: station_key
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Bikes at this station now.
+	column station_bikes_available
+		dataType: int64
+		isHidden
+		lineageTag: 91ae2128-7567-5682-b62e-09306962e64b
+		summarizeBy: none
+		sourceColumn: station_bikes_available
+
+		annotation SummarizationSetBy = Automatic
+
+	/// E-bikes at this station now.
+	column station_ebikes_available
+		dataType: int64
+		isHidden
+		lineageTag: c33d5a15-3308-5930-8c77-764693f57acf
+		summarizeBy: none
+		sourceColumn: station_ebikes_available
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Free docks at this station now.
+	column station_docks_available
+		dataType: int64
+		isHidden
+		lineageTag: 3874cfeb-3098-55fe-aad7-44362b1e8d3a
+		summarizeBy: none
+		sourceColumn: station_docks_available
+
+		annotation SummarizationSetBy = Automatic
+
+	column station_bikes_disabled
+		dataType: int64
+		isHidden
+		lineageTag: b0d6cf81-9ce2-5175-905a-2bea67bfb53f
+		summarizeBy: none
+		sourceColumn: station_bikes_disabled
+
+		annotation SummarizationSetBy = Automatic
+
+	column station_docks_disabled
+		dataType: int64
+		isHidden
+		lineageTag: 6b4d06cf-76a1-53a4-a0fd-a6b531fb2ad1
+		summarizeBy: none
+		sourceColumn: station_docks_disabled
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Reported within 30 minutes, installed, renting or returning.
+	column is_in_service
+		dataType: boolean
+		lineageTag: 23d64c32-819a-547d-b631-15852d24b902
+		summarizeBy: none
+		sourceColumn: is_in_service
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Fill ratio of this station.
+	column station_fill_ratio
+		dataType: double
+		formatString: 0%
+		lineageTag: 97646d01-b3a8-510b-a652-be7f20974143
+		summarizeBy: none
+		sourceColumn: station_fill_ratio
+
+		annotation SummarizationSetBy = Automatic
+
+	column station_imbalance_index
+		dataType: double
+		formatString: 0.00
+		lineageTag: 4e5859c8-0e40-5625-9a21-db790c669f65
+		summarizeBy: none
+		sourceColumn: station_imbalance_index
+
+		annotation SummarizationSetBy = Automatic
+
+	/// starving, balanced, flooding, or offline.
+	column imbalance_state
+		dataType: string
+		lineageTag: 46fc515a-62a9-55aa-9db1-166f58ff5d65
+		summarizeBy: none
+		sourceColumn: imbalance_state
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Bikes to add (+) or remove (−) to reach half full.
+	column station_rebalance_need_bikes
+		dataType: int64
+		lineageTag: 4bf79ec4-9e8b-5b95-b03e-49962da6e6fa
+		summarizeBy: none
+		sourceColumn: station_rebalance_need_bikes
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Add bikes, Remove bikes, or No action.
+	column recommended_action
+		dataType: string
+		lineageTag: 5afe714c-658a-535b-b645-0aa098a3cbe9
+		summarizeBy: none
+		sourceColumn: recommended_action
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Bikes to move at this station (0 when balanced).
+	column bikes_to_move
+		dataType: int64
+		lineageTag: c5e1b2fe-ec60-5d26-a5ca-a5d1a7283bf1
+		summarizeBy: none
+		sourceColumn: bikes_to_move
+
+		annotation SummarizationSetBy = Automatic
+
+	column priority_score
+		dataType: double
+		formatString: 0.0
+		lineageTag: abe0743b-b269-5ca9-aae7-00afb2dbc117
+		summarizeBy: none
+		sourceColumn: priority_score
+
+		annotation SummarizationSetBy = Automatic
+
+	/// 1 = visit first. Blank when no action is needed.
+	column priority_rank
+		dataType: int64
+		lineageTag: d0aea745-5e6a-5f96-a97e-db3cd07089ed
+		summarizeBy: none
+		sourceColumn: priority_rank
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Typical bikes in + out at this hour.
+	column typical_hourly_turnover
+		dataType: double
+		formatString: 0.0
+		lineageTag: a9175b5d-5911-5fb4-b90e-0177fb9bdd1b
+		summarizeBy: none
+		sourceColumn: typical_hourly_turnover
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Minutes since the station last had a bike.
+	column minutes_empty
+		dataType: double
+		formatString: 0
+		lineageTag: b6f24f8d-c4dc-5c5f-843a-609beb48b7cc
+		summarizeBy: none
+		sourceColumn: minutes_empty
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Busiest 10% of stations at this hour.
+	column is_high_traffic
+		dataType: boolean
+		lineageTag: 42885705-2b0c-5c9a-b3f4-796e7200858e
+		summarizeBy: none
+		sourceColumn: is_high_traffic
+
+		annotation SummarizationSetBy = Automatic
+
+	column minutes_since_report
+		dataType: double
+		formatString: 0.0
+		lineageTag: 6655045a-3572-554b-94b2-dfc60a379c2c
+		summarizeBy: none
+		sourceColumn: minutes_since_report
+
+		annotation SummarizationSetBy = Automatic
+
+	column last_reported_at_utc
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd hh:nn:ss
+		lineageTag: 68ef04a9-c66d-57cc-ac6c-1ad0eb3c9ab7
+		summarizeBy: none
+		sourceColumn: last_reported_at_utc
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Last report, New York time.
+	column last_reported_at_local
+		dataType: dateTime
+		formatString: yyyy-mm-dd hh:nn:ss
+		lineageTag: 67fd139c-2ea1-506e-af86-363a450c0ed8
+		summarizeBy: none
+		sourceColumn: last_reported_at_local
+
+		annotation SummarizationSetBy = Automatic
+
+	column computed_at_utc
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd hh:nn:ss
+		lineageTag: 88499459-ccd5-5ef7-aa6b-d20de163225d
+		summarizeBy: none
+		sourceColumn: computed_at_utc
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fleet_status = m
+		mode: directQuery
+		source =
+				let
+				    Source = PostgreSQL.Database(DbHost & ":" & Number.ToText(DbPort), DbName),
+				    Data = Source{[Schema = "bi", Item = "fleet_status"]}[Data]
+				in
+				    Data
+
+	annotation PBI_ResultType = Table

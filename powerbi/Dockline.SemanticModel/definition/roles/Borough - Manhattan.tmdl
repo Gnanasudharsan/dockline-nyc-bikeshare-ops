@@ -1,0 +1,7 @@
+/// Sees only Manhattan stations and their facts.
+role 'Borough - Manhattan'
+	modelPermission: read
+
+	tablePermission Borough = [borough] = "Manhattan"
+
+	annotation PBI_Id = a6d9536316b05f44a2d6

@@ -1,0 +1,133 @@
+/// Stations (one row per version; facts join to the version valid at the time).
+table Station
+	lineageTag: f139d045-d0a3-56b6-82d0-2198d13ca8d8
+
+	/// Join key.
+	column station_key
+		dataType: string
+		isHidden
+		lineageTag: c701275f-4be2-509e-835d-e704be21c63b
+		summarizeBy: none
+		sourceColumn: station_key
+
+		annotation SummarizationSetBy = Automatic
+
+	/// GBFS station id.
+	column station_id
+		dataType: string
+		isHidden
+		lineageTag: 07768eca-e54e-5607-84f0-7b6d37fd74d3
+		summarizeBy: none
+		sourceColumn: station_id
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Station name.
+	column station_name
+		dataType: string
+		lineageTag: cf80d203-02a0-5f83-91d7-6e17ebada54a
+		summarizeBy: none
+		sourceColumn: station_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column short_name
+		dataType: string
+		lineageTag: 82640bc4-be70-5a53-ae7c-7ccf1831e69e
+		summarizeBy: none
+		sourceColumn: short_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column borough
+		dataType: string
+		isHidden
+		lineageTag: 8949c6c3-9118-5a87-af39-b2f6c6174844
+		summarizeBy: none
+		sourceColumn: borough
+
+		annotation SummarizationSetBy = Automatic
+
+	/// NYC 2020 neighborhood (NTA).
+	column neighborhood
+		dataType: string
+		lineageTag: cb2af6f6-779d-513c-ba8c-27e8e0d9d796
+		summarizeBy: none
+		sourceColumn: neighborhood
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Docks at the station.
+	column capacity
+		dataType: int64
+		lineageTag: 7b5b7d0b-d286-580e-a98c-c7842169c4e3
+		summarizeBy: none
+		sourceColumn: capacity
+
+		annotation SummarizationSetBy = Automatic
+
+	column latitude
+		dataType: double
+		formatString: 0.00000
+		dataCategory: Latitude
+		lineageTag: 1e0191f7-4ba5-5e10-9e22-2710807c3e74
+		summarizeBy: none
+		sourceColumn: latitude
+
+		annotation SummarizationSetBy = Automatic
+
+	column longitude
+		dataType: double
+		formatString: 0.00000
+		dataCategory: Longitude
+		lineageTag: 5d6b0839-ebff-5c0d-a126-15990011bee7
+		summarizeBy: none
+		sourceColumn: longitude
+
+		annotation SummarizationSetBy = Automatic
+
+	column has_ebike_charging
+		dataType: boolean
+		lineageTag: 2b6d56a1-780d-5082-890a-edb52e880b01
+		summarizeBy: none
+		sourceColumn: has_ebike_charging
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Current version of the station.
+	column is_current
+		dataType: boolean
+		lineageTag: abbdc303-5414-5a76-b225-39924fe7cbc8
+		summarizeBy: none
+		sourceColumn: is_current
+
+		annotation SummarizationSetBy = Automatic
+
+	column valid_from_local
+		dataType: dateTime
+		isHidden
+		lineageTag: 836249d3-9d00-5fae-8a3d-a6ca7ae12030
+		summarizeBy: none
+		sourceColumn: valid_from_local
+
+		annotation SummarizationSetBy = Automatic
+
+	column valid_to_local
+		dataType: dateTime
+		isHidden
+		lineageTag: d7388d94-6899-52b3-b742-4a24d2648c78
+		summarizeBy: none
+		sourceColumn: valid_to_local
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Station = m
+		mode: directQuery
+		source =
+				let
+				    Source = PostgreSQL.Database(DbHost & ":" & Number.ToText(DbPort), DbName),
+				    Data = Source{[Schema = "bi", Item = "station"]}[Data]
+				in
+				    Data
+
+	annotation PBI_ResultType = Table

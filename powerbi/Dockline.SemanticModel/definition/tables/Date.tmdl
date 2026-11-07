@@ -1,0 +1,149 @@
+/// Calendar (New York local dates). Marked as the date table.
+table Date
+	dataCategory: Time
+	lineageTag: 7fa180b3-890c-5d56-96da-2f1b285f1c5e
+
+	/// Join key.
+	column date_key
+		dataType: int64
+		isHidden
+		lineageTag: ac83937e-58ed-5604-b51b-cea90d72d00b
+		summarizeBy: none
+		sourceColumn: date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Date.
+	column calendar_date
+		dataType: dateTime
+		isKey
+		formatString: yyyy-mm-dd
+		lineageTag: 4f459e07-8c06-598b-9d2a-dfec7621ef5e
+		summarizeBy: none
+		sourceColumn: calendar_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column year
+		dataType: int64
+		lineageTag: 0b5ed0da-7ffc-5e58-9e10-30a300dcbf61
+		summarizeBy: none
+		sourceColumn: year
+
+		annotation SummarizationSetBy = Automatic
+
+	column quarter
+		dataType: int64
+		lineageTag: 303b70de-441c-5204-a717-bc07150444b4
+		summarizeBy: none
+		sourceColumn: quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	column month
+		dataType: int64
+		isHidden
+		lineageTag: 5a31c5c5-66a5-51f0-874b-271a912a414b
+		summarizeBy: none
+		sourceColumn: month
+
+		annotation SummarizationSetBy = Automatic
+
+	column month_name
+		dataType: string
+		lineageTag: f8244ebd-aaab-586e-ae19-04be75b29f52
+		summarizeBy: none
+		sourceColumn: month_name
+		sortByColumn: month
+
+		annotation SummarizationSetBy = Automatic
+
+	column month_short_name
+		dataType: string
+		lineageTag: 41a7df19-d677-55f5-9022-7726e5c51793
+		summarizeBy: none
+		sourceColumn: month_short_name
+		sortByColumn: month
+
+		annotation SummarizationSetBy = Automatic
+
+	column day_of_month
+		dataType: int64
+		lineageTag: 1657779e-5ad9-5c69-a4eb-a1a9375e2478
+		summarizeBy: none
+		sourceColumn: day_of_month
+
+		annotation SummarizationSetBy = Automatic
+
+	column day_of_week
+		dataType: int64
+		isHidden
+		lineageTag: 5bba0e67-bae1-5bdf-bf51-e0b469faae75
+		summarizeBy: none
+		sourceColumn: day_of_week
+
+		annotation SummarizationSetBy = Automatic
+
+	column day_name
+		dataType: string
+		lineageTag: a02c676c-ab76-5bc8-94c6-00138505db39
+		summarizeBy: none
+		sourceColumn: day_name
+		sortByColumn: day_of_week
+
+		annotation SummarizationSetBy = Automatic
+
+	column day_short_name
+		dataType: string
+		lineageTag: cb0b79a1-dbe8-5572-bcba-31ab14d038ff
+		summarizeBy: none
+		sourceColumn: day_short_name
+		sortByColumn: day_of_week
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_weekend
+		dataType: boolean
+		lineageTag: 3c0c003a-0389-5196-8073-9c7cd2707d87
+		summarizeBy: none
+		sourceColumn: is_weekend
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Weekday or Weekend.
+	column day_type
+		dataType: string
+		lineageTag: 43267caf-410c-5eaf-ac60-b62bc1109d49
+		summarizeBy: none
+		sourceColumn: day_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column week_start_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: eea986cf-fec2-5a6a-965a-f385ef2de2d4
+		summarizeBy: none
+		sourceColumn: week_start_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column month_start_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: e88c746a-8cd0-5b25-9ab2-9208260032d6
+		summarizeBy: none
+		sourceColumn: month_start_date
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Date = m
+		mode: directQuery
+		source =
+				let
+				    Source = PostgreSQL.Database(DbHost & ":" & Number.ToText(DbPort), DbName),
+				    Data = Source{[Schema = "bi", Item = "date"]}[Data]
+				in
+				    Data
+
+	annotation PBI_ResultType = Table

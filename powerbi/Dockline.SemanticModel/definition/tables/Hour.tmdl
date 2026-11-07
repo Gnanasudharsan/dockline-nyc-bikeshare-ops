@@ -1,0 +1,60 @@
+/// Hour of day (New York local time).
+table Hour
+	lineageTag: 4f08b61a-2e87-56b2-8c50-a6b9174ccc29
+
+	/// 0–23.
+	column hour_of_day
+		dataType: int64
+		lineageTag: 3cee0797-03b1-50f5-805c-ee97f85cf556
+		summarizeBy: none
+		sourceColumn: hour_of_day
+
+		annotation SummarizationSetBy = Automatic
+
+	/// 12 AM … 11 PM.
+	column hour_label
+		dataType: string
+		lineageTag: f2e56e4f-1f9f-57ed-b338-dde91907657a
+		summarizeBy: none
+		sourceColumn: hour_label
+		sortByColumn: hour_of_day
+
+		annotation SummarizationSetBy = Automatic
+
+	column day_part
+		dataType: string
+		lineageTag: 14e3f959-b3aa-5912-9280-933e664c27c8
+		summarizeBy: none
+		sourceColumn: day_part
+		sortByColumn: day_part_order
+
+		annotation SummarizationSetBy = Automatic
+
+	column day_part_order
+		dataType: int64
+		isHidden
+		lineageTag: b7b2095a-8a14-5ec3-b3f5-590226101124
+		summarizeBy: none
+		sourceColumn: day_part_order
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Commute peak hour (applies on weekdays).
+	column is_peak_hour
+		dataType: boolean
+		lineageTag: 3cd40ce0-34a6-5b28-a39e-cf7833e893e9
+		summarizeBy: none
+		sourceColumn: is_peak_hour
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Hour = m
+		mode: directQuery
+		source =
+				let
+				    Source = PostgreSQL.Database(DbHost & ":" & Number.ToText(DbPort), DbName),
+				    Data = Source{[Schema = "bi", Item = "hour"]}[Data]
+				in
+				    Data
+
+	annotation PBI_ResultType = Table

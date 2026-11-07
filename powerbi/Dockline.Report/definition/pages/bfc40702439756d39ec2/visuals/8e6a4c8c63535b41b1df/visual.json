@@ -1,0 +1,177 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "8e6a4c8c63535b41b1df",
+  "position": {
+    "x": 280,
+    "y": 460,
+    "z": 3000,
+    "width": 980,
+    "height": 240,
+    "tabOrder": 3000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Station"
+                    }
+                  },
+                  "Property": "station_name"
+                }
+              },
+              "queryRef": "Station.station_name",
+              "nativeQueryRef": "station_name"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "chronic_stations"
+                    }
+                  },
+                  "Property": "chronic_status"
+                }
+              },
+              "queryRef": "chronic_stations.chronic_status",
+              "nativeQueryRef": "chronic_status"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "chronic_stations"
+                    }
+                  },
+                  "Property": "peak_hours_observed"
+                }
+              },
+              "queryRef": "chronic_stations.peak_hours_observed",
+              "nativeQueryRef": "peak_hours_observed"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "chronic_stations"
+                    }
+                  },
+                  "Property": "peak_empty_share"
+                }
+              },
+              "queryRef": "chronic_stations.peak_empty_share",
+              "nativeQueryRef": "peak_empty_share"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "chronic_stations"
+                    }
+                  },
+                  "Property": "peak_full_share"
+                }
+              },
+              "queryRef": "chronic_stations.peak_full_share",
+              "nativeQueryRef": "peak_full_share"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Chronic verdicts (weekday peaks, last 14 days)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "ratedOnly",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "chronic_stations"
+              }
+            },
+            "Property": "chronic_status"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "t",
+              "Entity": "chronic_stations",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Not": {
+                  "Expression": {
+                    "In": {
+                      "Expressions": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Source": "t"
+                              }
+                            },
+                            "Property": "chronic_status"
+                          }
+                        }
+                      ],
+                      "Values": [
+                        [
+                          {
+                            "Literal": {
+                              "Value": "'insufficient_data'"
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

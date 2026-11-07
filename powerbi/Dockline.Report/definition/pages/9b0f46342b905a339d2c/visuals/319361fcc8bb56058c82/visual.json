@@ -1,0 +1,92 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "319361fcc8bb56058c82",
+  "position": {
+    "x": 20,
+    "y": 500,
+    "z": 8000,
+    "width": 1240,
+    "height": 200,
+    "tabOrder": 8000
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Hour"
+                    }
+                  },
+                  "Property": "hour_label"
+                }
+              },
+              "queryRef": "Hour.hour_label",
+              "nativeQueryRef": "hour_label"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "station_hourly"
+                    }
+                  },
+                  "Property": "empty_share"
+                }
+              },
+              "queryRef": "station_hourly.empty_share",
+              "nativeQueryRef": "empty_share"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "station_hourly"
+                    }
+                  },
+                  "Property": "full_share"
+                }
+              },
+              "queryRef": "station_hourly.full_share",
+              "nativeQueryRef": "full_share"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Empty and full share by hour of day'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

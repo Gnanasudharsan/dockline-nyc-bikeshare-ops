@@ -1,0 +1,7 @@
+/// Sees only Hoboken stations and their facts.
+role 'Borough - Hoboken'
+	modelPermission: read
+
+	tablePermission Borough = [borough] = "Hoboken"
+
+	annotation PBI_Id = 4db482516f095ccca1f2

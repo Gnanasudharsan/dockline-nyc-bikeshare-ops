@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Dockline"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "0b5a7ddd-473e-50d7-bb45-790f8ae99284"
+  }
+}
