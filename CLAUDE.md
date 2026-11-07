@@ -45,6 +45,13 @@ casual instruction, ask before deviating.
 ## Local environment notes
 - Python tooling is managed with `uv` (root `pyproject.toml`, `uv.lock`).
 - Host Postgres port defaults to **5433** (owner's Mac runs a local Postgres on 5432).
+- Migrations: `warehouse/migrations/NNNN_name.sql`, applied by `python -m dockline_warehouse`
+  (one-shot `migrate` service). Never edit an applied file. CAGG files start with
+  `-- dockline:no-transaction` (ADR 0007).
+- `raw.station_status` stores one row per distinct `(station_id, last_reported)`: quiet
+  stations add no rows, so time-weighted metrics in dbt must carry the last state forward
+  (ADR 0006). CAGG refresh windows (3 days) must stay inside raw retention (30 days).
+- Tests: `make test-unit` (no Docker) and `make test` (integration uses testcontainers).
 - Postgres binds to `127.0.0.1` by default (`POSTGRES_BIND_ADDRESS`). Expose only to the
   VM network for Power BI; never to the public internet.
 
