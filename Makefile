@@ -6,7 +6,8 @@ COMPOSE := docker compose
 .PHONY: help setup env up down logs ps test test-unit lint fmt clean migrate psql check-ingestion \
 	dbt-deps dbt-build dbt-docs dbt-freshness dagster-dev check-pipeline \
 	grafana-dashboards check-grafana grafana-public test-stale-alert powerbi powerbi-validate powerbi-reference \
-	ask eval eval-live web-install web-dev web-build web-test web-screenshots
+	ask eval eval-live web-install web-dev web-build web-test web-screenshots \
+	prod-config prod-up prod-ps backup-now
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
@@ -124,6 +125,20 @@ web-test: ## Website end-to-end tests against a mocked API (builds first)
 web-screenshots: ## Every page x light/dark x mobile/desktop into docs/design/screenshots (needs make up)
 	npm --prefix web run build
 	cd web && npx playwright test --project=screenshots
+
+PROD := docker compose -f docker-compose.yml -f infra/docker-compose.prod.yml
+
+prod-config: .env ## Validate the merged production configuration
+	$(PROD) config --quiet && echo "production config OK"
+
+prod-up: .env ## Start the production stack (on the VM): localhost ports, tunnel, backups
+	$(PROD) up -d --build --wait --wait-timeout 600
+
+prod-ps: ## Show production service status and health
+	$(PROD) ps
+
+backup-now: .env ## Take a backup now into $$BACKUP_PATH (default ./backups)
+	$(PROD) run --rm --no-deps -e BACKUP_ONCE=1 backup
 
 lint: ## Run every pre-commit hook on all files
 	uv run pre-commit run --all-files
