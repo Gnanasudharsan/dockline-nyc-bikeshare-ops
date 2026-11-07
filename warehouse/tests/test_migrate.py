@@ -147,3 +147,18 @@ def test_reader_role_can_read_but_not_write(migrated_database: str) -> None:
         assert conn.execute("SELECT count(*) FROM raw.station_status").fetchone() == (0,)
         with pytest.raises(psycopg.errors.InsufficientPrivilege):
             conn.execute("DELETE FROM ops.ingestion_runs")
+
+
+@pytest.mark.integration
+def test_bi_role_sees_only_the_bi_schema(migrated_database: str) -> None:
+    ensure_role_password(migrated_database, "dockline_bi", "bi-test-password")
+    with psycopg.connect(migrated_database, autocommit=True) as conn:
+        conn.execute("CREATE VIEW bi.probe AS SELECT 1 AS one")
+    params = psycopg.conninfo.conninfo_to_dict(migrated_database)
+    params["user"] = "dockline_bi"
+    params["password"] = "bi-test-password"
+    bi_user = psycopg.conninfo.make_conninfo(**{k: str(v) for k, v in params.items()})
+    with psycopg.connect(bi_user, autocommit=True) as conn:
+        assert conn.execute("SELECT one FROM bi.probe").fetchone() == (1,)
+        with pytest.raises(psycopg.errors.InsufficientPrivilege):
+            conn.execute("SELECT 1 FROM raw.station_status LIMIT 1")

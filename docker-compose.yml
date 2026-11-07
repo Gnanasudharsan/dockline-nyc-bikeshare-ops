@@ -72,6 +72,8 @@ services:
       DOCKLINE_EXTRA_DATABASES: ${DAGSTER_POSTGRES_DB:-dagster}
       # Login password for the read-only serving role (migration 0010).
       DOCKLINE_READER_PASSWORD: ${DOCKLINE_READER_PASSWORD:?Run make env to generate DOCKLINE_READER_PASSWORD}
+      # Login password for Power BI's read-only role (migration 0011).
+      DOCKLINE_BI_PASSWORD: ${DOCKLINE_BI_PASSWORD:?Run make env to generate DOCKLINE_BI_PASSWORD}
     depends_on:
       timescaledb:
         condition: service_healthy

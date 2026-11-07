@@ -191,6 +191,13 @@ def ensure_databases(conninfo: str, names: list[str]) -> list[str]:
     return created
 
 
+# Login roles created by migrations, and the environment variable holding each password.
+ROLE_PASSWORD_VARIABLES = {
+    "dockline_reader": "DOCKLINE_READER_PASSWORD",  # Cube and Grafana (migration 0010)
+    "dockline_bi": "DOCKLINE_BI_PASSWORD",  # Power BI DirectQuery (migration 0011)
+}
+
+
 def ensure_role_password(conninfo: str, role: str, password: str) -> None:
     """Set the login password of an existing role (idempotent).
 
@@ -220,9 +227,10 @@ def main() -> int:
     try:
         applied = migrate(conninfo, directory)
         ensure_databases(conninfo, extra_databases_from_env())
-        reader_password = os.environ.get("DOCKLINE_READER_PASSWORD", "")
-        if reader_password:
-            ensure_role_password(conninfo, "dockline_reader", reader_password)
+        for role, variable in ROLE_PASSWORD_VARIABLES.items():
+            password = os.environ.get(variable, "")
+            if password:
+                ensure_role_password(conninfo, role, password)
     except (MigrationError, psycopg.Error) as error:
         logger.error("%s", error)
         return 1
