@@ -12,3 +12,4 @@ New ADRs use the next number and the template in `0000-template.md`.
 | [0005](0005-gbfs-discovery-and-version.md) | Resolve GBFS feeds via discovery, prefer v2.3 | Accepted |
 | [0006](0006-raw-station-status-storage.md) | Store each distinct station report, keyed by last_reported | Accepted |
 | [0007](0007-in-house-migration-runner.md) | A small in-house SQL migration runner | Accepted |
+| [0008](0008-poll-on-feed-clock.md) | Schedule station_status polls from the feed's clock | Accepted |

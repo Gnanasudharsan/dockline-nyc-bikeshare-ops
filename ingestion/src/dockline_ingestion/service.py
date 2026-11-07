@@ -43,17 +43,40 @@ def utc_now() -> datetime:
     return datetime.now(tz=UTC)
 
 
+# Wait this long past the feed's expiry (last_updated + ttl) so the new version has
+# reached the CDN before we ask for it.
+PUBLISH_BUFFER_SECONDS = 5.0
+
+
 def next_status_delay(
-    ttl_seconds: int | None, elapsed_seconds: float, minimum: int, maximum: int
+    *,
+    ttl_seconds: int | None,
+    source_last_updated: datetime | None,
+    previous_source_last_updated: datetime | None,
+    now: datetime,
+    minimum: int,
+    maximum: int,
 ) -> float:
     """Seconds to wait before the next station_status poll.
 
-    Polls once per feed ttl, measured from the start of the last poll, and clamps the
-    result so a missing or extreme ttl cannot make us hammer or abandon the feed.
+    GBFS data is valid until ``last_updated + ttl``, so the next poll is scheduled from
+    the feed's own clock, not from when we happened to poll. A fixed 60 s timer can
+    phase-lock just before the feed refreshes and keep reading the previous version.
+
+    - New version received: wait until it expires, plus a small publish buffer.
+    - Same version as last time (the refresh has not reached us yet): retry after
+      ``minimum`` seconds instead of waiting a whole ttl.
+    The result is always clamped to [minimum, maximum].
     """
     ttl = ttl_seconds if ttl_seconds and ttl_seconds > 0 else 60
-    target = min(max(ttl, minimum), maximum)
-    return max(0.0, target - elapsed_seconds)
+    if source_last_updated is None:
+        target = float(ttl)
+    elif source_last_updated == previous_source_last_updated:
+        target = float(minimum)
+    else:
+        expires_at = source_last_updated.timestamp() + ttl + PUBLISH_BUFFER_SECONDS
+        target = expires_at - now.timestamp()
+    return min(max(target, float(minimum)), float(maximum))
 
 
 def touch_heartbeat(path: Path) -> None:
@@ -80,6 +103,8 @@ class IngestionService:
         self._clock = clock
         self._feeds: FeedUrls | None = None
         self._last_status_ttl: int | None = None
+        self._last_source_updated: datetime | None = None
+        self._previous_source_updated: datetime | None = None
 
     # ------------------------------------------------------------------ audit wrapper
 
@@ -134,6 +159,8 @@ class IngestionService:
         fetched_at = self._clock()
         batch = parse_station_status(payload, fetched_at)
         self._last_status_ttl = batch.ttl
+        self._previous_source_updated = self._last_source_updated
+        self._last_source_updated = batch.source_last_updated
         async with self._pool.connection() as conn, conn.transaction():
             inserted = await repository.insert_station_status(
                 conn, batch.records, fetched_at=fetched_at, run_id=run_id
@@ -199,14 +226,16 @@ class IngestionService:
 
     async def _status_loop(self, stop: asyncio.Event) -> None:
         while not stop.is_set():
-            started = time.monotonic()
             await self.poll_station_status()
             delay = next_status_delay(
-                self._last_status_ttl,
-                time.monotonic() - started,
-                self._settings.min_status_poll_seconds,
-                self._settings.max_status_poll_seconds,
+                ttl_seconds=self._last_status_ttl,
+                source_last_updated=self._last_source_updated,
+                previous_source_last_updated=self._previous_source_updated,
+                now=utc_now(),
+                minimum=self._settings.min_status_poll_seconds,
+                maximum=self._settings.max_status_poll_seconds,
             )
+            log.debug("next_status_poll", delay_seconds=round(delay, 1))
             await _sleep_or_stop(stop, delay)
 
     async def _fixed_interval_loop(

@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import time
 from collections.abc import AsyncIterator
-from datetime import datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import httpx
@@ -21,19 +21,53 @@ from ingestion_test_support import DISCOVERY_URL, OPEN_METEO_URL, STATUS_URL
 # ---------------------------------------------------------------- unit
 
 
+NOW = datetime(2026, 11, 7, 6, 20, 23, tzinfo=UTC)
+
+
 @pytest.mark.parametrize(
-    ("ttl", "elapsed", "expected"),
+    ("ttl", "updated_ago", "previous_ago", "expected"),
     [
-        (60, 2.0, 58.0),  # normal: one poll per ttl
-        (60, 75.0, 0.0),  # poll took longer than ttl: go again now
-        (None, 0.0, 60.0),  # feed omitted ttl: default to 60 s
-        (0, 0.0, 60.0),  # ttl 0 means "no caching", not "poll in a tight loop"
-        (1, 0.0, 15.0),  # tiny ttl clamped to the minimum
-        (3600, 0.0, 300.0),  # huge ttl clamped to the maximum
+        # Fresh version published 1 s ago: wait until it expires + 5 s buffer.
+        (60, 1.0, 61.0, 64.0),
+        # Version is 59 s old (the case that phase-locked): poll again soon, not in 60 s.
+        (60, 59.0, 119.0, 15.0),
+        # Same version as last poll: the refresh hasn't reached us, retry at the minimum.
+        (60, 119.0, 119.0, 15.0),
+        # First poll ever (no previous version).
+        (60, 30.0, None, 35.0),
+        # ttl 0 / missing means "no caching", not "poll in a tight loop": default 60 s.
+        (0, 1.0, 61.0, 64.0),
+        (None, 1.0, 61.0, 64.0),
+        # Huge ttl clamped to the maximum.
+        (3600, 1.0, 61.0, 300.0),
     ],
 )
-def test_next_status_delay(ttl: int | None, elapsed: float, expected: float) -> None:
-    assert next_status_delay(ttl, elapsed, minimum=15, maximum=300) == expected
+def test_next_status_delay(
+    ttl: int | None, updated_ago: float, previous_ago: float | None, expected: float
+) -> None:
+    delay = next_status_delay(
+        ttl_seconds=ttl,
+        source_last_updated=NOW - timedelta(seconds=updated_ago),
+        previous_source_last_updated=(
+            None if previous_ago is None else NOW - timedelta(seconds=previous_ago)
+        ),
+        now=NOW,
+        minimum=15,
+        maximum=300,
+    )
+    assert delay == pytest.approx(expected)
+
+
+def test_next_status_delay_without_source_timestamp_uses_ttl() -> None:
+    delay = next_status_delay(
+        ttl_seconds=60,
+        source_last_updated=None,
+        previous_source_last_updated=None,
+        now=NOW,
+        minimum=15,
+        maximum=300,
+    )
+    assert delay == 60.0
 
 
 def test_healthcheck_fresh_stale_and_missing(tmp_path: Path) -> None:
