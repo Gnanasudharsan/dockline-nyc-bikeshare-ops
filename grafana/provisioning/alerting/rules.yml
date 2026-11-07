@@ -1,0 +1,140 @@
+# Grafana-managed alert rules, provisioned as code.
+# Firing alerts appear in Alerting > Alert rules and as annotations on the dashboards.
+# Notification channels (email, Slack, ...) are deployment-specific and added in Phase 7.
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: dockline-live
+    folder: Dockline
+    interval: 30s
+    rules:
+      - uid: dockline-feed-stale
+        title: Feed stale for more than 5 minutes
+        condition: C
+        for: 1m
+        noDataState: Alerting
+        execErrState: Error
+        labels:
+          severity: critical
+          team: dockline-ops
+        annotations:
+          summary: "The newest station report is {{ humanizeDuration $values.B.Value }} old."
+          description: >
+            data_freshness_seconds (Cube, fleet_status) is above 300 s. Check the ingestion
+            service (docker compose logs ingestion) and the GBFS feed.
+          runbook_url: https://github.com/Gnanasudharsan/dockline-nyc-bikeshare-ops/blob/main/grafana/README.md#feed-stale
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: cube
+            model:
+              refId: A
+              editorMode: code
+              rawQuery: true
+              format: table
+              rawSql: SELECT MEASURE(data_freshness_seconds) AS value FROM fleet_status
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              refId: B
+              type: reduce
+              expression: A
+              reducer: last
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator: {type: gt, params: [300]}
+
+      - uid: dockline-high-traffic-empty
+        title: High-traffic station empty for more than 10 minutes
+        condition: C
+        for: 0s
+        noDataState: OK
+        execErrState: Error
+        labels:
+          severity: warning
+          team: dockline-ops
+        annotations:
+          summary: "{{ $labels.station }} has had no bikes for {{ $values.B.Value }} minutes."
+          description: >
+            One of the busiest 10% of stations at this hour (fleet_status.is_high_traffic)
+            has been empty for more than 10 minutes. Add it to the next truck route
+            (Rebalancing Board).
+          runbook_url: https://github.com/Gnanasudharsan/dockline-nyc-bikeshare-ops/blob/main/grafana/README.md#high-traffic-station-empty
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: cube
+            model:
+              refId: A
+              editorMode: code
+              rawQuery: true
+              format: table
+              rawSql: >-
+                SELECT station_name AS station, MEASURE(longest_empty_minutes) AS value
+                FROM fleet_status
+                WHERE is_high_traffic = true AND is_in_service = true AND minutes_empty IS NOT NULL
+                GROUP BY 1
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              refId: B
+              type: reduce
+              expression: A
+              reducer: last
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator: {type: gt, params: [10]}
+
+      - uid: dockline-ingestion-failure
+        title: Ingestion runs failing
+        condition: C
+        for: 0s
+        noDataState: OK
+        execErrState: Error
+        labels:
+          severity: critical
+          team: dockline-ops
+        annotations:
+          summary: "{{ $values.B.Value }} ingestion run(s) failed in the last 10 minutes."
+          description: >
+            A run in ops.ingestion_runs ended with status 'failed' after all retries.
+            The error_message column says why.
+          runbook_url: https://github.com/Gnanasudharsan/dockline-nyc-bikeshare-ops/blob/main/grafana/README.md#ingestion-runs-failing
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: warehouse
+            model:
+              refId: A
+              editorMode: code
+              rawQuery: true
+              format: table
+              rawSql: >-
+                SELECT count(*) AS value FROM ops.ingestion_runs
+                WHERE status = 'failed' AND started_at > now() - interval '10 minutes'
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              refId: B
+              type: reduce
+              expression: A
+              reducer: last
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator: {type: gt, params: [0]}

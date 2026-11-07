@@ -1,0 +1,51 @@
+# Grafana datasources, provisioned at startup. Credentials come from the container
+# environment (see docker-compose.yml); nothing secret is stored in this file.
+apiVersion: 1
+
+deleteDatasources:
+  - name: Cube
+    orgId: 1
+  - name: Warehouse
+    orgId: 1
+
+datasources:
+  # Every metric on every dashboard comes from Cube's SQL API (Postgres wire protocol).
+  # Queries select MEASURE(...) from cubes, so no metric is ever re-defined in Grafana.
+  - name: Cube
+    uid: cube
+    type: grafana-postgresql-datasource
+    access: proxy
+    url: cube:15432
+    user: $__env{CUBEJS_SQL_USER}
+    isDefault: true
+    editable: false
+    jsonData:
+      database: db
+      sslmode: disable
+      postgresVersion: 1400
+      timescaledb: false
+      maxOpenConns: 10
+      maxIdleConns: 2
+      connMaxLifetime: 14400
+    secureJsonData:
+      password: $__env{CUBEJS_SQL_PASSWORD}
+
+  # Read-only warehouse access for operational data that is not a business metric:
+  # alert annotations (ops.pipeline_events), ingestion run status, and the time-travel
+  # variable. Uses the dockline_reader role (migration 0010).
+  - name: Warehouse
+    uid: warehouse
+    type: grafana-postgresql-datasource
+    access: proxy
+    url: timescaledb:5432
+    user: dockline_reader
+    editable: false
+    jsonData:
+      database: $__env{POSTGRES_DB}
+      sslmode: disable
+      postgresVersion: 1600
+      timescaledb: true
+      maxOpenConns: 5
+      maxIdleConns: 2
+    secureJsonData:
+      password: $__env{DOCKLINE_READER_PASSWORD}
