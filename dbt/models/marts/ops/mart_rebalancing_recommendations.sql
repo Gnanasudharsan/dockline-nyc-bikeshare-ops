@@ -16,6 +16,21 @@ with latest as (
 
 ),
 
+last_with_bikes as (
+
+    -- End of the most recent bucket in which the station had at least one bike. For an
+    -- empty station, now minus this is how long it has been empty (5-minute accuracy).
+    select
+        station_id,
+        max(bucket_start) + interval '5 minutes' as had_bikes_until
+    from {{ ref('stg_gbfs__station_status_5min') }}
+    where
+        bucket_start >= {{ as_of_timestamp() }} - interval '6 hours'
+        and max_bikes_available > 0
+    group by station_id
+
+),
+
 stations as (
 
     select *
@@ -66,10 +81,20 @@ current_state as (
             and (latest.is_renting or latest.is_returning),
             false
         ) as is_in_service,
-        coalesce(turnover.typical_hourly_turnover, 0) as typical_hourly_turnover
+        coalesce(turnover.typical_hourly_turnover, 0) as typical_hourly_turnover,
+        case
+            when latest.bikes_available = 0 then greatest(
+                    0,
+                    round(extract(epoch from ({{ as_of_timestamp() }} - coalesce(
+                        last_with_bikes.had_bikes_until,
+                        {{ as_of_timestamp() }} - interval '6 hours'
+                    ))) / 60.0, 1)
+                )
+        end as minutes_empty
     from stations
     left join latest on stations.station_id = latest.station_id
     left join typical_turnover as turnover on stations.station_id = turnover.station_id
+    left join last_with_bikes on stations.station_id = last_with_bikes.station_id
 
 ),
 
@@ -136,5 +161,9 @@ select
                 order by bikes_to_move * (1 + ln(1 + typical_hourly_turnover)) desc, station_id
             )
     end as priority_rank,
+    -- Busiest tenth of stations at this hour of day (by typical turnover).
+    typical_hourly_turnover > 0
+    and percent_rank() over (order by typical_hourly_turnover)
+    >= {{ var('high_traffic_percentile') }} as is_high_traffic,
     {{ as_of_timestamp() }} as computed_at
 from recommended

@@ -20,6 +20,16 @@ models:
                 values: [starving, balanced, flooding, offline]
       - name: priority_rank
         description: 1 = most urgent. Null when no action is needed.
+      - name: minutes_empty
+        description: >
+          For stations with no bikes now, minutes since the end of the last 5-minute
+          bucket in which they had a bike. Looks back 6 hours, so 360 means "at
+          least 6 hours". Null when the station has bikes.
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments: {min_value: 0, max_value: 361}
+      - name: is_high_traffic
+        description: In the busiest 10% of stations by typical turnover at this hour of day.
     data_tests:
       - dbt_utils.expression_is_true:
           arguments:

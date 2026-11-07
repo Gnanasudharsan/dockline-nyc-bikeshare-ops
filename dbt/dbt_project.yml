@@ -30,6 +30,8 @@ vars:
   flooding_fill_ratio: 0.8
   # Weekday peak commute windows, local time, [start, end) hours.
   peak_hours: [7, 8, 9, 16, 17, 18, 19]
+  # High-traffic stations (alerting): top share of stations by typical hourly turnover.
+  high_traffic_percentile: 0.9
   # Chronic problem stations: share of in-service peak minutes empty (or full).
   chronic_lookback_days: 14
   chronic_share_threshold: 0.25

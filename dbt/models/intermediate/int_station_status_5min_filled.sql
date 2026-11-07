@@ -1,6 +1,7 @@
 {{
     config(
         materialized='incremental',
+        tags=['live'],
         unique_key=['station_id', 'bucket_start'],
         incremental_strategy='delete+insert',
         on_schema_change='fail',
