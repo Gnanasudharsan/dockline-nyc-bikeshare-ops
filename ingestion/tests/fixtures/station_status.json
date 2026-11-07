@@ -1,0 +1,339 @@
+{
+ "data": {
+  "stations": [
+   {
+    "station_id": "162d5859-b735-4ff7-9613-01b21f22c1cd",
+    "num_bikes_available": 0,
+    "num_bikes_disabled": 0,
+    "num_docks_available": 0,
+    "num_docks_disabled": 0,
+    "is_installed": 0,
+    "is_renting": 0,
+    "is_returning": 0,
+    "last_reported": 1793885398,
+    "vehicle_types_available": [
+     {
+      "vehicle_type_id": "1",
+      "count": 0
+     },
+     {
+      "vehicle_type_id": "2",
+      "count": 0
+     }
+    ],
+    "num_ebikes_available": 0
+   },
+   {
+    "station_id": "66db93a1-0aca-11e7-82f6-3863bb44ef7c",
+    "num_bikes_available": 0,
+    "num_bikes_disabled": 33,
+    "num_docks_available": 1,
+    "num_docks_disabled": 0,
+    "is_installed": 1,
+    "is_renting": 0,
+    "is_returning": 0,
+    "last_reported": 1794030627,
+    "vehicle_types_available": [
+     {
+      "vehicle_type_id": "1",
+      "count": 0
+     },
+     {
+      "vehicle_type_id": "2",
+      "count": 0
+     }
+    ],
+    "num_ebikes_available": 0,
+    "num_scooters_available": 0,
+    "num_scooters_unavailable": 0
+   },
+   {
+    "station_id": "ff745407-c087-4c0d-a965-98baf078f292",
+    "num_bikes_available": 0,
+    "num_bikes_disabled": 9,
+    "num_docks_available": 14,
+    "num_docks_disabled": 0,
+    "is_installed": 1,
+    "is_renting": 0,
+    "is_returning": 0,
+    "last_reported": 1794015808,
+    "vehicle_types_available": [
+     {
+      "vehicle_type_id": "1",
+      "count": 0
+     },
+     {
+      "vehicle_type_id": "2",
+      "count": 0
+     }
+    ],
+    "num_ebikes_available": 0,
+    "num_scooters_available": 0,
+    "num_scooters_unavailable": 0
+   },
+   {
+    "station_id": "292ad4f3-9fb0-44ec-9e61-613c711f73c1",
+    "num_bikes_available": 20,
+    "num_bikes_disabled": 2,
+    "num_docks_available": 0,
+    "num_docks_disabled": 0,
+    "is_installed": 1,
+    "is_renting": 1,
+    "is_returning": 1,
+    "last_reported": 1794031208,
+    "vehicle_types_available": [
+     {
+      "vehicle_type_id": "1",
+      "count": 3
+     },
+     {
+      "vehicle_type_id": "2",
+      "count": 17
+     }
+    ],
+    "num_ebikes_available": 17,
+    "num_scooters_available": 0,
+    "num_scooters_unavailable": 0
+   },
+   {
+    "station_id": "1786697771181570266",
+    "num_bikes_available": 37,
+    "num_bikes_disabled": 3,
+    "num_docks_available": 4,
+    "num_docks_disabled": 0,
+    "is_installed": 1,
+    "is_renting": 1,
+    "is_returning": 1,
+    "last_reported": 1794031209,
+    "vehicle_types_available": [
+     {
+      "vehicle_type_id": "1",
+      "count": 33
+     },
+     {
+      "vehicle_type_id": "2",
+      "count": 4
+     }
+    ],
+    "num_ebikes_available": 4,
+    "num_scooters_available": 0,
+    "num_scooters_unavailable": 0
+   },
+   {
+    "station_id": "a3d72b5b-9587-4f33-9722-c01e20a9b358",
+    "num_bikes_available": 22,
+    "num_bikes_disabled": 0,
+    "num_docks_available": 6,
+    "num_docks_disabled": 0,
+    "is_installed": 1,
+    "is_renting": 1,
+    "is_returning": 1,
+    "last_reported": 1794031211,
+    "vehicle_types_available": [
+     {
+      "vehicle_type_id": "1",
+      "count": 7
+     },
+     {
+      "vehicle_type_id": "2",
+      "count": 15
+     }
+    ],
+    "num_ebikes_available": 15,
+    "num_scooters_available": 0,
+    "num_scooters_unavailable": 0
+   },
+   {
+    "station_id": "1860189650739626488",
+    "num_bikes_available": 11,
+    "num_bikes_disabled": 5,
+    "num_docks_available": 5,
+    "num_docks_disabled": 0,
+    "is_installed": 1,
+    "is_renting": 1,
+    "is_returning": 1,
+    "last_reported": 1794031209,
+    "vehicle_types_available": [
+     {
+      "vehicle_type_id": "1",
+      "count": 2
+     },
+     {
+      "vehicle_type_id": "2",
+      "count": 9
+     }
+    ],
+    "num_ebikes_available": 9,
+    "num_scooters_available": 0,
+    "num_scooters_unavailable": 0
+   },
+   {
+    "station_id": "1848241684520917882",
+    "num_bikes_available": 5,
+    "num_bikes_disabled": 1,
+    "num_docks_available": 13,
+    "num_docks_disabled": 0,
+    "is_installed": 1,
+    "is_renting": 1,
+    "is_returning": 1,
+    "last_reported": 1794031209,
+    "vehicle_types_available": [
+     {
+      "vehicle_type_id": "1",
+      "count": 5
+     },
+     {
+      "vehicle_type_id": "2",
+      "count": 0
+     }
+    ],
+    "num_ebikes_available": 0,
+    "num_scooters_available": 0,
+    "num_scooters_unavailable": 0
+   },
+   {
+    "station_id": "66ddeaff-0aca-11e7-82f6-3863bb44ef7c",
+    "num_bikes_available": 23,
+    "num_bikes_disabled": 1,
+    "num_docks_available": 6,
+    "num_docks_disabled": 0,
+    "is_installed": 1,
+    "is_renting": 1,
+    "is_returning": 1,
+    "last_reported": 1794031210,
+    "vehicle_types_available": [
+     {
+      "vehicle_type_id": "1",
+      "count": 8
+     },
+     {
+      "vehicle_type_id": "2",
+      "count": 15
+     }
+    ],
+    "num_ebikes_available": 15,
+    "num_scooters_available": 0,
+    "num_scooters_unavailable": 0
+   },
+   {
+    "station_id": "66de85d2-0aca-11e7-82f6-3863bb44ef7c",
+    "num_bikes_available": 19,
+    "num_bikes_disabled": 3,
+    "num_docks_available": 23,
+    "num_docks_disabled": 0,
+    "is_installed": 1,
+    "is_renting": 1,
+    "is_returning": 1,
+    "last_reported": 1794031210,
+    "vehicle_types_available": [
+     {
+      "vehicle_type_id": "1",
+      "count": 17
+     },
+     {
+      "vehicle_type_id": "2",
+      "count": 1
+     }
+    ],
+    "num_ebikes_available": 2,
+    "num_scooters_available": 0,
+    "num_scooters_unavailable": 0
+   },
+   {
+    "station_id": "f62526d4-9c6a-4c76-be76-c64b5be669d2",
+    "num_bikes_available": 6,
+    "num_bikes_disabled": 1,
+    "num_docks_available": 14,
+    "num_docks_disabled": 0,
+    "is_installed": 1,
+    "is_renting": 1,
+    "is_returning": 1,
+    "last_reported": 1794031209,
+    "vehicle_types_available": [
+     {
+      "vehicle_type_id": "1",
+      "count": 3
+     },
+     {
+      "vehicle_type_id": "2",
+      "count": 3
+     }
+    ],
+    "num_ebikes_available": 3,
+    "num_scooters_available": 0,
+    "num_scooters_unavailable": 0
+   },
+   {
+    "station_id": "55a4dc76-d839-4e06-9bf4-2f343391343c",
+    "num_bikes_available": 12,
+    "num_bikes_disabled": 3,
+    "num_docks_available": 4,
+    "num_docks_disabled": 0,
+    "is_installed": 1,
+    "is_renting": 1,
+    "is_returning": 1,
+    "last_reported": 1794031210,
+    "vehicle_types_available": [
+     {
+      "vehicle_type_id": "1",
+      "count": 1
+     },
+     {
+      "vehicle_type_id": "2",
+      "count": 11
+     }
+    ],
+    "num_ebikes_available": 11,
+    "num_scooters_available": 0,
+    "num_scooters_unavailable": 0
+   },
+   {
+    "station_id": "1835618878584115330",
+    "num_bikes_available": 0,
+    "num_bikes_disabled": 0,
+    "num_docks_available": 0,
+    "num_docks_disabled": 0,
+    "is_installed": 1,
+    "is_renting": 0,
+    "is_returning": 0,
+    "last_reported": 86400,
+    "vehicle_types_available": [
+     {
+      "vehicle_type_id": "1",
+      "count": 0
+     },
+     {
+      "vehicle_type_id": "2",
+      "count": 0
+     }
+    ],
+    "num_ebikes_available": 0
+   },
+   {
+    "station_id": "66dc292c-0aca-11e7-82f6-3863bb44ef7c",
+    "num_bikes_available": 0,
+    "num_bikes_disabled": 0,
+    "num_docks_available": 0,
+    "num_docks_disabled": 0,
+    "is_installed": 0,
+    "is_renting": 0,
+    "is_returning": 0,
+    "last_reported": 86400,
+    "vehicle_types_available": [
+     {
+      "vehicle_type_id": "1",
+      "count": 0
+     },
+     {
+      "vehicle_type_id": "2",
+      "count": 0
+     }
+    ],
+    "num_ebikes_available": 0
+   }
+  ]
+ },
+ "last_updated": 1794031344,
+ "ttl": 60,
+ "version": "2.3"
+}
