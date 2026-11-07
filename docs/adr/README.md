@@ -23,3 +23,4 @@ New ADRs use the next number and the template in `0000-template.md`.
 | [0016](0016-live-5-minute-build-and-time-travel.md) | A 5-minute dbt build and time travel in Grafana | Accepted |
 | [0017](0017-power-bi-as-generated-text.md) | Power BI as generated, validated text | Accepted |
 | [0018](0018-ask-the-data.md) | Ask the Data: LLM plans, code validates, Cube answers | Accepted |
+| [0019](0019-website.md) | The website: static pages, live islands, and a map that respects phones | Accepted |

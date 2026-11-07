@@ -6,7 +6,7 @@ COMPOSE := docker compose
 .PHONY: help setup env up down logs ps test test-unit lint fmt clean migrate psql check-ingestion \
 	dbt-deps dbt-build dbt-docs dbt-freshness dagster-dev check-pipeline \
 	grafana-dashboards check-grafana grafana-public test-stale-alert powerbi powerbi-validate powerbi-reference \
-	ask eval eval-live
+	ask eval eval-live web-install web-dev web-build web-test web-screenshots
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
@@ -104,6 +104,26 @@ eval: ## Score Ask the Data on the 40-case eval set (replays the recorded live r
 eval-live: .env ## Re-run the eval against the configured LLM, run every query on Cube, re-record
 	set -a && . ./.env && set +a && CUBE_API_URL=http://localhost:$${CUBE_PORT:-4000}/cubejs-api/v1 \
 		uv run python evals/run_evals.py --live --execute
+
+web-install: ## Install the website's dependencies (Node 20.9+)
+	npm --prefix web ci
+
+web-dev: ## Run the website on http://localhost:3010 (needs the API: make up)
+	npm --prefix web run dev
+
+web-build: ## Lint, type-check, and build the website for production
+	npm --prefix web run lint
+	npm --prefix web run typecheck
+	npm --prefix web run format:check
+	npm --prefix web run build
+
+web-test: ## Website end-to-end tests against a mocked API (builds first)
+	npm --prefix web run build
+	cd web && npx playwright test --project=e2e
+
+web-screenshots: ## Every page x light/dark x mobile/desktop into docs/design/screenshots (needs make up)
+	npm --prefix web run build
+	cd web && npx playwright test --project=screenshots
 
 lint: ## Run every pre-commit hook on all files
 	uv run pre-commit run --all-files
