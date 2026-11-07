@@ -1,0 +1,44 @@
+# Dagster instance configuration (copied to $DAGSTER_HOME in the image).
+# Run, event, and schedule storage live in the "dagster" database on the warehouse
+# server, created by the migrate job (DOCKLINE_EXTRA_DATABASES).
+
+storage:
+  postgres:
+    postgres_db:
+      hostname: {env: POSTGRES_HOST}
+      port: {env: POSTGRES_PORT}
+      username: {env: POSTGRES_USER}
+      password: {env: POSTGRES_PASSWORD}
+      db_name: {env: DAGSTER_POSTGRES_DB}
+      # dagster-postgres is written for psycopg2 (it sends NOTIFY with client-side
+      # parameters). SQLAlchemy 2.1 defaults postgresql:// to psycopg 3, so pin it.
+      scheme: postgresql+psycopg2
+
+run_coordinator:
+  module: dagster._core.run_coordinator
+  class: QueuedRunCoordinator
+
+concurrency:
+  runs:
+    max_concurrent_runs: 3
+    # dbt builds never overlap (both dbt jobs carry this tag).
+    tag_concurrency_limits:
+      - key: dockline/dbt
+        limit: 1
+
+run_monitoring:
+  enabled: true
+  start_timeout_seconds: 180
+  max_runtime_seconds: 3600
+
+retention:
+  schedule:
+    purge_after_days: 30
+  sensor:
+    purge_after_days:
+      skipped: 7
+      failure: 30
+      success: 30
+
+telemetry:
+  enabled: false

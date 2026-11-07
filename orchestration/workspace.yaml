@@ -1,0 +1,5 @@
+# One code location, loaded in-process by the webserver and the daemon.
+load_from:
+  - python_module:
+      module_name: dockline_orchestration.definitions
+      working_directory: /app

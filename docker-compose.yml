@@ -23,6 +23,11 @@ x-ingestion-build: &ingestion-build
   context: .
   dockerfile: ingestion/Dockerfile
 
+x-orchestration-env: &orchestration-env
+  <<: *warehouse-env
+  DAGSTER_POSTGRES_DB: ${DAGSTER_POSTGRES_DB:-dagster}
+  DBT_TARGET: prod
+
 services:
   timescaledb:
     # Community (non-OSS) build: includes compression and continuous aggregates.
@@ -63,6 +68,8 @@ services:
       dockline.role: oneshot
     environment:
       <<: *warehouse-env
+      # Also creates Dagster's metadata database next to the warehouse.
+      DOCKLINE_EXTRA_DATABASES: ${DAGSTER_POSTGRES_DB:-dagster}
     depends_on:
       timescaledb:
         condition: service_healthy
@@ -102,6 +109,64 @@ services:
         limits:
           cpus: "0.5"
           memory: 384m
+    logging: *default-logging
+
+  # Dagster UI: asset lineage, runs, schedules, checks. http://localhost:3070
+  dagster-webserver:
+    build:
+      context: .
+      dockerfile: orchestration/Dockerfile
+    image: dockline-orchestration:local
+    command:
+      ["dagster-webserver", "-h", "0.0.0.0", "-p", "3000", "-w", "/app/orchestration/workspace.yaml"]
+    restart: unless-stopped
+    environment:
+      <<: *orchestration-env
+    ports:
+      - "${DAGSTER_BIND_ADDRESS:-127.0.0.1}:${DAGSTER_PORT:-3070}:3000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:3000/server_info', timeout=5)"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 768m
+    logging: *default-logging
+
+  # Runs schedules and sensors and launches runs (dbt builds run inside this container).
+  dagster-daemon:
+    image: dockline-orchestration:local
+    pull_policy: never
+    command: ["dagster-daemon", "run", "-w", "/app/orchestration/workspace.yaml"]
+    restart: unless-stopped
+    environment:
+      <<: *orchestration-env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "dagster-daemon", "liveness-check"]
+      interval: 60s
+      timeout: 30s
+      retries: 3
+      start_period: 120s
+    stop_grace_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 1536m
     logging: *default-logging
 
 volumes:

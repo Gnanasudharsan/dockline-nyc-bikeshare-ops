@@ -15,3 +15,6 @@ docs
 dbt/target
 dbt/dbt_packages
 node_modules
+dbt/logs
+orchestration/tests
+orchestration/.dagster_home
