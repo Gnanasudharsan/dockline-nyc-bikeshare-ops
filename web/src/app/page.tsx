@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { LiveHero } from "@/components/LiveHero";
-import { getInsights, getLiveKpis } from "@/lib/api";
+import { getInsights, getLiveKpis } from "@/lib/data";
+import { IS_SNAPSHOT } from "@/lib/mode";
 import { formatInt, formatPercent } from "@/lib/format";
 
 export const revalidate = 10;
@@ -13,15 +14,24 @@ export default async function HomePage() {
     {
       href: "/live",
       title: "Watch the network move",
-      body: "The live dashboard and a 24-hour replay show where stations empty and fill, hour by hour.",
+      body: IS_SNAPSHOT
+        ? "A 24-hour replay and trend charts show where stations empty and fill through the day."
+        : "The live dashboard and a 24-hour replay show where stations empty and fill, hour by hour.",
       action: "Open the live view",
     },
-    {
-      href: "/ask",
-      title: "Ask the data in plain English",
-      body: "Answers come only from certified metrics, with the definition, the query, and the numbers behind them.",
-      action: "Ask a question",
-    },
+    IS_SNAPSHOT
+      ? {
+          href: "/how-it-works",
+          title: "How it is built",
+          body: "From the public feed to certified metrics: the warehouse, the semantic layer, the tests, and the two ways to deploy it.",
+          action: "See how it works",
+        }
+      : {
+          href: "/ask",
+          title: "Ask the data in plain English",
+          body: "Answers come only from certified metrics, with the definition, the query, and the numbers behind them.",
+          action: "Ask a question",
+        },
     {
       href: "/insights",
       title: "Where the work is",
@@ -40,8 +50,9 @@ export default async function HomePage() {
           What Dockline does
         </h2>
         <p className="measure mt-2 text-slate">
-          It reads the public station feed about every minute, keeps every report in a time-series
-          warehouse, and turns it into certified metrics
+          {IS_SNAPSHOT
+            ? "This public deployment computes certified metrics straight from the public station feed, and keeps a 24-hour history from a snapshot every 10 minutes"
+            : "It reads the public station feed about every minute, keeps every report in a time-series warehouse, and turns it into certified metrics"}
           {kpis ? (
             <>
               {" "}

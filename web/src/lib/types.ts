@@ -98,3 +98,65 @@ export interface InsightsResponse {
   as_of: string;
   findings: Finding[];
 }
+
+// Snapshot mode (ADR 0022): /api/live and the data branch files.
+
+export interface LiveResponse {
+  kpis: LiveKpis;
+  stations: Station[];
+  /** "feed": computed from the live GBFS feed now; "snapshot": the workflow's last run. */
+  source: "feed" | "snapshot";
+}
+
+export interface LatestSnapshot {
+  generated_at: string;
+  kpis: LiveKpis;
+  stations: Station[];
+  weather: {
+    observed_hour: string;
+    temperature_c: number | null;
+    precipitation_mm: number | null;
+    weather_code: number | null;
+    condition: string;
+  } | null;
+}
+
+export type SeriesKey =
+  | "bikes_available"
+  | "ebikes_available"
+  | "docks_available"
+  | "fill_ratio"
+  | "empty_stations"
+  | "full_stations"
+  | "starving_stations"
+  | "balanced_stations"
+  | "flooding_stations"
+  | "offline_stations"
+  | "rebalance_need_bikes";
+
+export interface History24h {
+  generated_at: string;
+  interval_minutes: number;
+  frames: string[];
+  legend: Record<string, string>;
+  stations: Record<string, string>;
+  series: Record<SeriesKey, (number | null)[]>;
+}
+
+export interface DailyKpisDay {
+  date: string;
+  samples: number;
+  availability_rate: number | null;
+  empty_station_minutes: number;
+  full_station_minutes: number;
+  avg_bikes_available: number;
+  avg_docks_available: number;
+  max_empty_stations: number;
+  max_full_stations: number;
+}
+
+export interface DailyKpis {
+  generated_at: string;
+  interval_minutes: number;
+  days: DailyKpisDay[];
+}

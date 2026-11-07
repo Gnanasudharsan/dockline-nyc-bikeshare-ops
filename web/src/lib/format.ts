@@ -31,3 +31,24 @@ export function formatHour(iso: string): string {
     timeZone: "America/New_York",
   });
 }
+
+/** Weekday and time to the minute in New York, e.g. "Sat 6:40 PM". */
+export function formatDayTime(iso: string): string {
+  return new Date(iso).toLocaleString("en-US", {
+    weekday: "short",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: "America/New_York",
+  });
+}
+
+/** Whole seconds between an ISO time and now (never negative). */
+export function secondsSince(iso: string, nowMs: number): number {
+  return Math.max(0, Math.round((nowMs - new Date(iso).getTime()) / 1000));
+}
+
+/** "1 second ago", "45 seconds ago", "3 minutes ago". */
+export function formatAgo(seconds: number): string {
+  if (seconds < 120) return `${seconds} ${seconds === 1 ? "second" : "seconds"} ago`;
+  return `${Math.round(seconds / 60)} minutes ago`;
+}

@@ -32,6 +32,6 @@ async function getJson<T>(path: string, revalidateSeconds: number): Promise<T | 
   }
 }
 
-export const getLiveKpis = () => getJson<LiveKpis>("/v1/kpis/live", 10);
-export const getInsights = () => getJson<InsightsResponse>("/v1/insights", 900);
+export const getApiLiveKpis = () => getJson<LiveKpis>("/v1/kpis/live", 10);
+export const getApiInsights = () => getJson<InsightsResponse>("/v1/insights", 900);
 export const getMetrics = () => getJson<MetricsCatalog>("/v1/metrics", 3600);

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Chart } from "@/components/Chart";
-import { getInsights } from "@/lib/api";
+import { getInsights } from "@/lib/data";
 import { formatClock } from "@/lib/format";
+import { IS_SNAPSHOT } from "@/lib/mode";
 
 export const metadata: Metadata = {
   title: "Insights",
@@ -17,8 +18,11 @@ export default async function InsightsPage() {
     <div className="mx-auto max-w-[1000px] px-4 pt-10">
       <h1 className="headline text-3xl">Insights</h1>
       <p className="measure mt-3 text-slate">
-        Each finding is recomputed from the warehouse every 15 minutes. Where there is not yet
-        enough history to say something reliable, the finding says so instead of guessing.
+        {IS_SNAPSHOT
+          ? "Each finding is rebuilt from the live feed and the 10-minute snapshot history. "
+          : "Each finding is recomputed from the warehouse every 15 minutes. "}
+        Where there is not yet enough history to say something reliable, the finding says so instead
+        of guessing.
         {insights ? ` Last computed at ${formatClock(insights.as_of)} New York time.` : ""}
       </p>
       {!insights ? (

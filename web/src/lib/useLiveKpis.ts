@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { API_URL } from "./api";
+import { loadLive } from "./liveClient";
+import { IS_SNAPSHOT } from "./mode";
 import type { LiveKpis } from "./types";
+
+/** Snapshot mode refreshes from /api/live (cached ~30 s on the CDN). */
+const SNAPSHOT_POLL_MS = 30_000;
 
 export type LiveStatus = "live" | "connecting" | "unavailable";
 
@@ -10,6 +15,7 @@ export type LiveStatus = "live" | "connecting" | "unavailable";
  * Live network KPIs over Server-Sent Events (/v1/kpis/stream), starting from a
  * server-rendered snapshot so the first paint already has numbers.
  * Falls back to polling every 30 s if the stream cannot be opened.
+ * In snapshot mode there is no stream: it polls /api/live every 30 s.
  */
 export function useLiveKpis(initial: LiveKpis | null): {
   kpis: LiveKpis | null;
@@ -19,6 +25,26 @@ export function useLiveKpis(initial: LiveKpis | null): {
   const [status, setStatus] = useState<LiveStatus>(initial ? "live" : "connecting");
 
   useEffect(() => {
+    if (!IS_SNAPSHOT) return;
+    let active = true;
+    const load = () =>
+      loadLive()
+        .then((live) => {
+          if (!active) return;
+          setKpis(live.kpis);
+          setStatus("live");
+        })
+        .catch(() => active && setStatus("unavailable"));
+    void load();
+    const timer = setInterval(load, SNAPSHOT_POLL_MS);
+    return () => {
+      active = false;
+      clearInterval(timer);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (IS_SNAPSHOT) return;
     let closed = false;
     let pollTimer: ReturnType<typeof setInterval> | undefined;
     const source = new EventSource(`${API_URL}/v1/kpis/stream`);
