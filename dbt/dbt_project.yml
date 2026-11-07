@@ -83,6 +83,11 @@ models:
       +schema: marts
       +materialized: table
       +tags: ["hourly"]
+    # Power BI contract: views in the `bi` schema, the only schema dockline_bi can read.
+    bi:
+      +schema: bi
+      +materialized: view
+      +tags: ["hourly"]
 
 snapshots:
   dockline:

@@ -1,0 +1,56 @@
+version: 2
+
+# The Power BI contract (schema `bi`, read by the dockline_bi role). Column names and
+# types here are what powerbi/build_pbip.py declares in the TMDL model; a test keeps
+# them in sync.
+
+models:
+  - name: bi_station
+    description: Station versions (SCD2). Key station_key.
+    columns:
+      - name: station_key
+        data_tests: [unique, not_null]
+  - name: bi_borough
+    description: Boroughs; row-level security filters this table.
+    columns:
+      - name: borough
+        data_tests: [unique, not_null]
+  - name: bi_date
+    description: Calendar marked as the Power BI date table.
+    columns:
+      - name: date_key
+        data_tests: [unique, not_null]
+  - name: bi_hour
+    description: 24 local hours of the day.
+    columns:
+      - name: hour_of_day
+        data_tests: [unique, not_null]
+  - name: bi_weather
+    description: Hourly weather, keyed by whole hours since the epoch.
+    columns:
+      - name: weather_hour_key
+        data_tests: [unique, not_null]
+  - name: bi_station_hourly
+    description: Hourly station activity (DirectQuery fact).
+    columns:
+      - name: station_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('bi_station')
+                field: station_key
+  - name: bi_fleet_status
+    description: Live station state (DirectQuery, auto page refresh).
+    columns:
+      - name: station_key
+        data_tests:
+          - unique
+          - relationships:
+              arguments:
+                to: ref('bi_station')
+                field: station_key
+  - name: bi_chronic_stations
+    description: Chronic problem station verdicts.
+    columns:
+      - name: station_key
+        data_tests: [unique]

@@ -178,6 +178,9 @@ def test_dbt_build_produces_star_schema(
     )
     assert chronic == [("insufficient_data",)]
 
+    # The Power BI model declares exactly the columns the bi views expose.
+    assert_bi_views_match_power_bi_model(seeded_database)
+
     # A second (incremental) run is a no-op on the data.
     _dbt(["build", "--vars", json.dumps({"as_of": AS_OF})], tmp_path)
     assert _rows(seeded_database, "SELECT count(*) FROM marts.fct_station_status_5min") == [(72,)]
@@ -226,3 +229,41 @@ def test_stale_raw_tables_fail_checks_and_raise_alerts(warehouse: WarehouseResou
         ("check_failure", "critical", "raw.station_status is stale"),
         ("check_failure", "critical", "raw.weather_hourly is stale"),
     ]
+
+
+POSTGRES_TO_TMDL = {
+    "text": "string",
+    "integer": "int64",
+    "bigint": "int64",
+    "smallint": "int64",
+    "numeric": "double",
+    "real": "double",
+    "double precision": "double",
+    "boolean": "boolean",
+    "date": "dateTime",
+    "timestamp without time zone": "dateTime",
+}
+
+
+def assert_bi_views_match_power_bi_model(conninfo: str) -> None:
+    """Every TMDL column exists in its bi view with a compatible type, and vice versa."""
+    import importlib.util
+    import sys
+
+    path = DBT_PROJECT_DIR.parent / "powerbi" / "build_pbip.py"
+    spec = importlib.util.spec_from_file_location("build_pbip_for_test", path)
+    assert spec and spec.loader
+    build_pbip = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = build_pbip  # dataclasses need the module registered
+    spec.loader.exec_module(build_pbip)
+    rows = _rows(
+        conninfo,
+        "SELECT table_name, column_name, data_type FROM information_schema.columns "
+        "WHERE table_schema = 'bi'",
+    )
+    database: dict[str, dict[str, str]] = {}
+    for table, column, data_type in rows:
+        database.setdefault(str(table), {})[str(column)] = POSTGRES_TO_TMDL[str(data_type)]
+    for table in build_pbip.TABLES:
+        model = {column.name: column.data_type for column in table.columns}
+        assert model == database[table.view], table.name
