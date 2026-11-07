@@ -24,6 +24,7 @@ from dockline_api.ask import AskResponse, AskService, InputError, to_number
 from dockline_api.catalog import SUGGESTED_QUESTIONS, TOPICS
 from dockline_api.config import Settings
 from dockline_api.cube import CubeClient, CubeError
+from dockline_api.insights import InsightsResponse, all_findings
 from dockline_api.limits import RateLimiter
 from dockline_api.llm import build_llm
 
@@ -54,6 +55,29 @@ class AskRequest(BaseModel):
     """Body of POST /v1/ask."""
 
     question: str = Field(min_length=1, max_length=1000)
+
+
+STATE_CODES = {"starving": "s", "balanced": "b", "flooding": "f", "offline": "o"}
+
+
+def encode_replay(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    """Turn (station, hour, state) rows into hour labels plus one state string per station."""
+    hours = sorted({str(row["station_hourly.hour_start.hour"]) for row in rows})
+    index = {hour: position for position, hour in enumerate(hours)}
+    states: dict[str, list[str]] = {}
+    for row in rows:
+        station = str(row["station_hourly.station_id"])
+        codes = states.setdefault(station, ["-"] * len(hours))
+        codes[index[str(row["station_hourly.hour_start.hour"])]] = STATE_CODES.get(
+            str(row["station_hourly.imbalance_state_end"]), "-"
+        )
+    return {
+        "hours": [
+            hour.replace(".000", "") + ("Z" if not hour.endswith("Z") else "") for hour in hours
+        ],
+        "legend": STATE_CODES,
+        "stations": {station: "".join(codes) for station, codes in states.items()},
+    }
 
 
 def configure_logging(level: str) -> None:
@@ -178,6 +202,53 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "count": len(stations),
             "stations": stations,
         }
+
+    @app.get("/v1/stations/replay")
+    async def stations_replay(request: Request) -> dict[str, Any]:
+        """Each station's imbalance state at the end of each of the last 24 hours.
+
+        Encoded compactly for the website: one character per hour per station
+        (s = starving, b = balanced, f = flooding, o = offline, - = no data).
+        """
+        cube: CubeClient = request.app.state.cube
+        rows: list[dict[str, Any]] = []
+        try:
+            # 4 windows of 6 hours keep each Cube response well under its row limit.
+            for start, end in ((24, 18), (18, 12), (12, 6), (6, 0)):
+                rows += await cube.load(
+                    {
+                        "measures": ["station_hourly.station_hours"],
+                        "dimensions": [
+                            "station_hourly.station_id",
+                            "station_hourly.imbalance_state_end",
+                        ],
+                        "timeDimensions": [
+                            {
+                                "dimension": "station_hourly.hour_start",
+                                "granularity": "hour",
+                                "dateRange": f"from {start} hours ago to {end} hours ago"
+                                if end
+                                else f"from {start} hours ago to now",
+                            }
+                        ],
+                        "limit": 20000,
+                    }
+                )
+        except (CubeError, httpx.HTTPError) as error:
+            raise HTTPException(
+                503, "Replay is temporarily unavailable. Retry in a minute."
+            ) from error
+        return encode_replay(rows)
+
+    @app.get("/v1/insights", response_model=InsightsResponse)
+    async def insights(request: Request) -> InsightsResponse:
+        """Return findings for the Insights page (live numbers, honest about missing history)."""
+        try:
+            return await all_findings(request.app.state.cube)
+        except (CubeError, httpx.HTTPError) as error:
+            raise HTTPException(
+                503, "Insights are temporarily unavailable. Retry in a minute."
+            ) from error
 
     @app.get("/v1/metrics")
     async def metrics() -> dict[str, Any]:

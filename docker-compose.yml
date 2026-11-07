@@ -303,7 +303,7 @@ services:
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
       ASK_RATE_PER_MINUTE: ${ASK_RATE_PER_MINUTE:-6}
       ASK_DAILY_LIMIT: ${ASK_DAILY_LIMIT:-500}
-      WEB_ORIGINS: ${WEB_ORIGINS:-http://localhost:3000}
+      WEB_ORIGINS: ${WEB_ORIGINS:-http://localhost:3010}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       TZ: ${TZ:-America/New_York}
     ports:

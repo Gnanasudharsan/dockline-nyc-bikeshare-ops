@@ -89,9 +89,9 @@ def test_cors_allows_the_website_origin_only() -> None:
     test_client = client()
     allowed = test_client.options(
         "/v1/kpis/live",
-        headers={"Origin": "http://localhost:3000", "Access-Control-Request-Method": "GET"},
+        headers={"Origin": "http://localhost:3010", "Access-Control-Request-Method": "GET"},
     )
-    assert allowed.headers.get("access-control-allow-origin") == "http://localhost:3000"
+    assert allowed.headers.get("access-control-allow-origin") == "http://localhost:3010"
     denied = test_client.options(
         "/v1/kpis/live",
         headers={"Origin": "https://evil.example", "Access-Control-Request-Method": "GET"},

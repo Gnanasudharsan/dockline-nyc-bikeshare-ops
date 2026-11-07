@@ -37,7 +37,7 @@ class Settings(BaseSettings):
     sse_interval_seconds: float = Field(default=10.0, ge=2)
 
     # Browser origins allowed to call the API (comma separated), e.g. the website.
-    web_origins: str = "http://localhost:3000"
+    web_origins: str = "http://localhost:3010"
     log_level: str = "INFO"
 
     def allowed_origins(self) -> list[str]:

@@ -84,6 +84,8 @@ known-first-party = [
 "powerbi/scripts/*.py" = ["S310", "S603", "S607", "E501"]
 # The Ask the Data catalog holds one-line metric definitions (user-facing text).
 "api/src/dockline_api/catalog.py" = ["E501"]
+# Insights hold user-facing finding sentences; each helper's docstring states its finding.
+"api/src/dockline_api/insights.py" = ["E501", "D401"]
 
 [tool.mypy]
 python_version = "3.12"
