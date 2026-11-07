@@ -16,9 +16,9 @@ import pytest
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-COMPOSE_FILES = sorted(REPO_ROOT.glob("docker-compose*.yml")) + sorted(
-    (REPO_ROOT / "infra").glob("docker-compose*.yml")
-)
+# Complete Compose files. Override files (infra/docker-compose.prod.yml) only list what
+# they change; tests/test_production_config.py checks the merged result instead.
+COMPOSE_FILES = sorted(REPO_ROOT.glob("docker-compose*.yml"))
 ENV_EXAMPLE = REPO_ROOT / ".env.example"
 
 # Matches ${VAR}, ${VAR:-default}, ${VAR:?message} but not $${VAR},
