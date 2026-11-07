@@ -23,7 +23,7 @@ with certified metrics, and serves it to four surfaces:
 | 0 | Repository and foundation | Done |
 | 1 | Live ingestion and storage | Done |
 | 2 | dbt models and orchestration | Done |
-| 3 | Semantic layer and live Grafana dashboard | Planned |
+| 3 | Semantic layer and live Grafana dashboard | Done |
 | 4 | Power BI analyst report | Planned |
 | 5 | Ask the Data (governed natural-language Q&A) | Planned |
 | 6 | Public website | Planned |
@@ -79,13 +79,18 @@ Then:
 
 | What | Where |
 | --- | --- |
+| Grafana (live dashboards, alerts) | <http://localhost:3060> (admin password in `.env`) |
+| Public live dashboard URL | `make grafana-public` |
+| Cube (REST API / SQL API) | <http://localhost:4000>, `localhost:15432` |
 | Dagster (lineage, runs, schedules, checks) | <http://localhost:3070> |
 | Warehouse (psql) | `make psql`, or `localhost:5433` |
 | Ingestion health and data checks | `make check-ingestion` |
 | dbt marts and Dagster run checks | `make check-pipeline` |
 | dbt docs and lineage | `make dbt-docs` (<http://localhost:8080>) |
 
-Other targets: `make dbt-build`, `make lint`, `make logs`, `make down`, `make help`.
+`make env` creates `.env` with random local passwords and secrets (and adds new keys
+when a later phase introduces them). Other targets: `make check-grafana`,
+`make dbt-build`, `make lint`, `make logs`, `make down`, `make help`.
 Metric definitions: [`docs/metrics.md`](docs/metrics.md).
 
 ## Repository layout
