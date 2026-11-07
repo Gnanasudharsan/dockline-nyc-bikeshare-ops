@@ -1,10 +1,15 @@
 # Deploy on an Oracle Cloud Always Free ARM VM
 
 Everything runs on one Ampere A1 VM: Oracle's Always Free tier allows 4 OCPU, 24 GB
-RAM, and 200 GB of block storage. Nothing is exposed to the internet except SSH:
-Cloudflare Tunnel (an outbound connection) publishes the API and Grafana
-([cloudflare-tunnel.md](cloudflare-tunnel.md)). The website runs on Vercel
-([vercel.md](vercel.md)).
+RAM, and 200 GB of block storage. The API and Grafana get HTTPS in one of two ways
+([ADR 0021](../adr/0021-https-modes.md)):
+
+- **No domain:** free DuckDNS subdomains with Caddy and Let's Encrypt; ports 80 and 443
+  are open, to Caddy only ([duckdns-caddy.md](duckdns-caddy.md)).
+- **Your own domain:** Cloudflare Tunnel, an outbound connection; nothing but SSH is
+  open ([cloudflare-tunnel.md](cloudflare-tunnel.md)).
+
+The website runs on Vercel ([vercel.md](vercel.md)).
 
 ## 1. Create the VM (Oracle console)
 
@@ -16,7 +21,8 @@ Cloudflare Tunnel (an outbound connection) publishes the API and Grafana
 5. **SSH keys:** upload your public key.
 6. **Boot volume:** 100–200 GB (all within the free 200 GB).
 7. **Ingress rules:** in the subnet's security list, allow only **TCP 22 from your own
-   IP address**. Delete any other ingress rule. No HTTP or HTTPS port is needed.
+   IP address**. Delete any other ingress rule. Add TCP 80 and 443 from anywhere only
+   for the DuckDNS mode ([duckdns-caddy.md](duckdns-caddy.md)).
 
 ## 2. Harden the host
 
@@ -31,7 +37,8 @@ sudo ufw default deny incoming && sudo ufw allow OpenSSH && sudo ufw --force ena
 ```
 
 Oracle's Ubuntu images also ship iptables rules; with `ufw` active and no ingress rules
-in the security list, only SSH is reachable.
+in the security list, only SSH is reachable. The DuckDNS mode also needs
+`sudo ufw allow 80/tcp && sudo ufw allow 443/tcp`.
 
 ## 3. Install Docker Engine with the Compose plugin (arm64)
 
@@ -62,9 +69,11 @@ make env
 | --- | --- |
 | `POSTGRES_PASSWORD` | a long random value, for example from `openssl rand -hex 24` (the template's `change-me-local-only` is for laptops) |
 | `GROQ_API_KEY` (or `GEMINI_API_KEY`) and `LLM_PROVIDER` | your free-tier key |
-| `PUBLIC_DOMAIN` | your domain on Cloudflare, for example `example.org` |
+| `COMPOSE_PROFILES` | `duckdns` or `cloudflare` (the HTTPS mode) |
+| `PUBLIC_API_HOST`, `PUBLIC_GRAFANA_HOST` | the public hostnames, for example `dockline-api.duckdns.org` or `api.example.org` |
 | `PROD_WEB_ORIGINS` | the website's URL, for example `https://dockline.vercel.app` |
-| `CLOUDFLARE_TUNNEL_TOKEN` | from [cloudflare-tunnel.md](cloudflare-tunnel.md) |
+| `DUCKDNS_DOMAINS`, `DUCKDNS_TOKEN` | DuckDNS mode: from [duckdns-caddy.md](duckdns-caddy.md) |
+| `CLOUDFLARE_TUNNEL_TOKEN` | Cloudflare mode: from [cloudflare-tunnel.md](cloudflare-tunnel.md) |
 | `CUBESTORE_IMAGE_TAG` | keep the arm64 default (`v1.8.20-arm64v8`) |
 
 `.env` never leaves the VM. It is git-ignored, and `chmod 600 .env` is a good idea.
@@ -111,7 +120,7 @@ tunnel.
 
 In the GitHub repository, set **Settings → Secrets and variables → Actions → Variables**:
 
-- `PUBLIC_API_URL = https://api.<domain>`
+- `PUBLIC_API_URL = https://<PUBLIC_API_HOST>`
 - `PUBLIC_SITE_URL = <website URL>`
 
 The **Uptime** workflow then checks every 15 minutes and emails you when a check fails.

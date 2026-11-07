@@ -7,8 +7,8 @@
 
 | Name | Value |
 | --- | --- |
-| `NEXT_PUBLIC_API_URL` | `https://api.<domain>` |
-| `NEXT_PUBLIC_GRAFANA_URL` | `https://grafana.<domain>` |
+| `NEXT_PUBLIC_API_URL` | `https://<PUBLIC_API_HOST>` |
+| `NEXT_PUBLIC_GRAFANA_URL` | `https://<PUBLIC_GRAFANA_HOST>` |
 | `NEXT_PUBLIC_GRAFANA_PUBLIC_DASHBOARD` | the token at the end of the URL that `make grafana-public` printed on the VM |
 | `NEXT_PUBLIC_SITE_URL` | the site's final URL, for example `https://dockline.vercel.app` |
 

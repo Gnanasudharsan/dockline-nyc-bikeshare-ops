@@ -6,6 +6,19 @@ phases are tagged `phase-N` until the `v1.0.0` release.
 
 ## [Unreleased]
 
+### Added
+- A second HTTPS mode for deploying without a domain (ADR 0021): Caddy with the
+  rate-limit plugin and automatic Let's Encrypt certificates, plus a DuckDNS updater,
+  under the `duckdns` Compose profile. Cloudflare Tunnel moves to the `cloudflare`
+  profile. Caddy adds security headers, unbuffered SSE, and 10 `/v1/ask` requests per
+  minute per IP. Guide: `docs/deploy/duckdns-caddy.md`.
+
+### Changed
+- `PUBLIC_DOMAIN` is replaced by `PUBLIC_API_HOST` and `PUBLIC_GRAFANA_HOST`, since
+  DuckDNS names do not share a parent domain.
+- The API trusts `X-Forwarded-For` in production, so its per-visitor `/v1/ask` limit
+  sees visitors rather than the proxy.
+
 ## [v1.0.0] — 2026-11-07
 
 First complete release: ingestion, warehouse, dbt + Dagster, Cube, Grafana, Power BI,

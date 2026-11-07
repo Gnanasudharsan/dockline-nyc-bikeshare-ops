@@ -57,7 +57,7 @@ numbers only from Cube; Power BI mirrors its measures by name, and tests enforce
 | Analyst BI | Power BI project generated as text (TMDL + PBIR) and validated with Microsoft's schemas and parser | [`powerbi/`](powerbi/) |
 | API + Ask the Data | FastAPI; the LLM returns a JSON plan over an allowlisted catalog, strict validation builds the Cube query, and answers are checked against the returned numbers | [`api/`](api/), [`evals/`](evals/) |
 | Website | Next.js, TypeScript strict, Tailwind, MapLibre + OpenFreeMap, ECharts; light/dark; WCAG 2.2 AA | [`web/`](web/), [`docs/design/`](docs/design/) |
-| Deployment | Oracle Always Free ARM VM, Cloudflare Tunnel (no open ports), Vercel, nightly backups, uptime checks | [`infra/`](infra/), [`docs/deploy/`](docs/deploy/) |
+| Deployment | Oracle Always Free ARM VM, HTTPS via Caddy + DuckDNS or Cloudflare Tunnel, Vercel, nightly backups, uptime checks | [`infra/`](infra/), [`docs/deploy/`](docs/deploy/) |
 
 Everything runs on free tiers or open-source software, and every image runs on
 `linux/arm64`.
@@ -119,9 +119,10 @@ local Ollama. Run `make help` for every target.
 
 ## Deploy it
 
-One Oracle Cloud Always Free ARM VM, Cloudflare Tunnel for `api.` and `grafana.`
-(nothing listens on a public port), and Vercel for the website. Step by step:
-[Oracle VM](docs/deploy/oracle-vm.md) · [Cloudflare Tunnel](docs/deploy/cloudflare-tunnel.md)
+One Oracle Cloud Always Free ARM VM, HTTPS through Caddy with free DuckDNS subdomains
+or a Cloudflare Tunnel ([ADR 0021](docs/adr/0021-https-modes.md)), and Vercel for the
+website. Step by step: [Oracle VM](docs/deploy/oracle-vm.md) ·
+[DuckDNS and Caddy](docs/deploy/duckdns-caddy.md) · [Cloudflare Tunnel](docs/deploy/cloudflare-tunnel.md)
 · [Vercel](docs/deploy/vercel.md) · [Operations, backups, and restores](docs/deploy/operations.md).
 
 ## Project status
@@ -150,7 +151,7 @@ powerbi/        Power BI project (generated), validators, guides
 api/            FastAPI service and Ask the Data
 evals/          Ask the Data evaluation set and recorded run
 web/            Next.js website
-infra/          production override, backups
+infra/          production override, Caddy, DuckDNS updater, backups
 docs/           ADRs, metrics catalog, design plan and screenshots, deployment guides
 ```
 

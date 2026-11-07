@@ -3,7 +3,10 @@
 The tunnel is an outbound connection from the VM to Cloudflare, so no port on the VM
 is open to the internet. Cloudflare provides TLS for `api.<domain>` and
 `grafana.<domain>`. Requirements: a free Cloudflare account and a domain whose DNS is
-on Cloudflare.
+on Cloudflare. No domain? Use [DuckDNS and Caddy](duckdns-caddy.md) instead.
+
+In the VM's `.env`, set `COMPOSE_PROFILES=cloudflare`, `PUBLIC_API_HOST=api.<domain>`
+and `PUBLIC_GRAFANA_HOST=grafana.<domain>`.
 
 ## 1. Create the tunnel
 
