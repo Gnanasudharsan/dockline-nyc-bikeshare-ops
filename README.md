@@ -26,7 +26,7 @@ with certified metrics, and serves it to four surfaces:
 | 3 | Semantic layer and live Grafana dashboard | Done |
 | 4 | Power BI analyst report | Done |
 | 5 | Ask the Data (governed natural-language Q&A) | Done |
-| 6 | Public website | Planned |
+| 6 | Public website | Done |
 | 7 | Deployment and launch | Planned |
 
 ## Architecture (target)
@@ -79,6 +79,7 @@ Then:
 
 | What | Where |
 | --- | --- |
+| Website (`make web-dev`) | <http://localhost:3010> |
 | Grafana (live dashboards, alerts) | <http://localhost:3060> (admin password in `.env`) |
 | Public live dashboard URL | `make grafana-public` |
 | Cube (REST API / SQL API) | <http://localhost:4000>, `localhost:15432` |

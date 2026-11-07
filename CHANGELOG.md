@@ -6,6 +6,32 @@ phases are tagged `phase-N` until the `v1.0.0` release.
 
 ## [Unreleased]
 
+## [phase-6] — 2026-11-07
+
+### Added
+- Public website (`web/`): Next.js App Router, TypeScript strict, Tailwind 4, MapLibre
+  GL JS 5 with OpenFreeMap tiles, Apache ECharts.
+  - **Home:** full-bleed live station map by imbalance, a live sentence, and a KPI strip
+    over Server-Sent Events.
+  - **Live:** a 24-hour replay and the Grafana embed.
+  - **Ask:** answers, numbers, definitions, the query, and refusals.
+  - **Insights:** five findings with charts and recommendations.
+  - **How it works:** architecture SVG, the data path, the metric catalog, quality gates.
+  - **About.**
+  - Light/dark themes, skip link, landmarks, live regions, a reduced-motion mode, OG
+    image, sitemap, robots, and a strict CSP.
+- Design plan (`docs/design/design-plan.md`) written first, then 24 screenshots
+  (light/dark × 360/1440 px), a critique, fixes, and a review log.
+- Lighthouse 99–100 in all four categories on every page, mobile and desktop.
+- API: `GET /v1/stations/replay` (24 hourly frames, compact encoding) and
+  `GET /v1/insights` (five findings computed from Cube, explicit about missing history).
+- Playwright end-to-end tests against a mocked API (CI); CI website job (lint, types,
+  format, build, e2e). `make web-install|web-dev|web-build|web-test|web-screenshots`.
+- ADR 0019.
+
+### Changed
+- The API allows `http://localhost:3010` by default; the site runs on 3010 locally.
+
 ## [phase-5] — 2026-11-07
 
 ### Added
