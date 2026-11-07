@@ -39,13 +39,25 @@ jobs:
       - name: Mypy (strict)
         run: uv run mypy
 
+      - name: SQLFluff (dbt models)
+        working-directory: dbt
+        run: uv run sqlfluff lint models
+
+      - name: dbt deps and parse
+        working-directory: dbt
+        env:
+          POSTGRES_PASSWORD: parse-only
+        run: |
+          uv run dbt deps
+          uv run dbt parse
+
       - name: Pytest (unit + integration against a TimescaleDB container)
         run: uv run pytest
 
       - name: Pre-commit file hygiene
         # Ruff and mypy ran above; gitleaks runs in the secret-scan job.
         env:
-          SKIP: ruff,ruff-format,mypy,gitleaks
+          SKIP: ruff,ruff-format,mypy,gitleaks,sqlfluff
         run: uv run pre-commit run --all-files --show-diff-on-failure
 
   secret-scan:
@@ -78,7 +90,7 @@ jobs:
           docker compose config --quiet
 
       - name: Build, migrate, start, and wait for health
-        run: docker compose up -d --build --wait --wait-timeout 180
+        run: docker compose up -d --build --wait --wait-timeout 300
 
       - name: Smoke test — live GBFS rows landed and the poll was audited
         run: |
@@ -88,6 +100,23 @@ jobs:
           echo "station_status rows: $rows, successful status runs: $runs"
           test "$rows" -gt 0
           test "$runs" -gt 0
+
+      - name: dbt build inside the orchestration image, on live data
+        run: |
+          docker compose exec -T dagster-daemon \
+            dbt build --project-dir /app/dbt --profiles-dir /app/dbt --target prod
+          query() { docker compose exec -T timescaledb psql -U dockline -d dockline -tAc "$1"; }
+          facts=$(query "SELECT count(*) FROM marts.fct_station_status_5min")
+          board=$(query "SELECT count(*) FROM marts.mart_rebalancing_recommendations")
+          echo "fct_station_status_5min rows: $facts, rebalancing board rows: $board"
+          test "$board" -gt 0
+
+      - name: Dagster loads the code location with every schedule running
+        run: |
+          query='{"query":"{ schedulesOrError(repositorySelector:{repositoryLocationName:\"dockline_orchestration.definitions\", repositoryName:\"__repository__\"}) { ... on Schedules { results { name scheduleState { status } } } } }"}'
+          response=$(curl -sf localhost:3070/graphql -H 'content-type: application/json' -d "$query")
+          echo "$response"
+          test "$(echo "$response" | grep -o '"RUNNING"' | wc -l)" -eq 3
 
       - name: Service logs
         if: failure()
