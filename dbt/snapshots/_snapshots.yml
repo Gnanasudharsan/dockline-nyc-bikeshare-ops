@@ -1,0 +1,15 @@
+version: 2
+
+snapshots:
+  - name: snap_stations
+    description: SCD Type 2 station history (one row per station version). Feeds dim_station.
+    columns:
+      - name: station_id
+        data_tests: [not_null]
+      - name: dbt_scd_id
+        data_tests: [unique, not_null]
+  - name: snap_daily_kpis
+    description: As-of history of daily KPIs per borough, captured once each day closes.
+    columns:
+      - name: dbt_scd_id
+        data_tests: [unique, not_null]

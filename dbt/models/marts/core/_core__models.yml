@@ -1,0 +1,181 @@
+version: 2
+
+models:
+  - name: dim_station
+    description: Station dimension (SCD Type 2) built from snap_stations.
+    columns:
+      - name: station_key
+        description: Surrogate key of one station version (dbt_scd_id).
+        data_tests: [unique, not_null]
+      - name: station_id
+        data_tests: [not_null]
+      - name: borough
+        data_tests: [not_null]
+      - name: valid_from
+        description: Version is valid from this time (inclusive). First version starts in 1900.
+      - name: valid_to
+        description: Version is valid until this time (exclusive). Current version = 9999-12-31.
+      - name: is_current
+      - name: is_listed_in_feed
+        description: Station appeared in station_information within the last 2 hours.
+    data_tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "valid_from < valid_to"
+      - dbt_expectations.expect_compound_columns_to_be_unique:
+          arguments:
+            column_list: [station_id, valid_from]
+
+  - name: dim_date
+    description: Calendar dimension (New York local dates, 2025–2030).
+    columns:
+      - name: date_key
+        data_tests: [unique, not_null]
+      - name: calendar_date
+        data_tests: [unique, not_null]
+
+  - name: dim_time
+    description: Time-of-day dimension at 5-minute grain (288 rows, local time).
+    columns:
+      - name: time_key
+        description: hour * 100 + minute, e.g. 1735 = 5:35 PM.
+        data_tests: [unique, not_null]
+      - name: is_peak_hour
+        description: Hour falls in a weekday commute peak (applies on weekdays only).
+    data_tests:
+      - dbt_expectations.expect_table_row_count_to_equal:
+          arguments: {value: 288}
+
+  - name: dim_weather
+    description: Hourly NYC weather with condition and temperature band.
+    columns:
+      - name: weather_hour
+        data_tests: [unique, not_null]
+      - name: temperature_band
+        data_tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - Freezing (below 0 °C)
+                  - Cold (0–10 °C)
+                  - Mild (10–20 °C)
+                  - Warm (20–28 °C)
+                  - Hot (28 °C and above)
+                  - Unknown
+
+  - name: fct_station_status_5min
+    description: >
+      Station state every 5 minutes (last known state at bucket end). Each row is 5
+      station-minutes. Kept for fact_5min_retention_days.
+    columns:
+      - name: station_id
+        data_tests: [not_null]
+      - name: bucket_start
+        description: Start of the 5-minute bucket.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              arguments:
+                datepart: hour
+                interval: 2
+              config:
+                severity: warn
+      - name: station_key
+        description: dim_station version valid at bucket_start.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_station')
+                field: station_key
+              config:
+                where: "bucket_start > now() - interval '1 day'"
+      - name: date_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+      - name: time_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_time')
+                field: time_key
+      - name: fill_ratio
+        description: bikes_available / (bikes_available + docks_available); null when offline.
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments: {min_value: 0, max_value: 1}
+              config:
+                where: "bucket_start > now() - interval '1 day'"
+      - name: imbalance_index
+        description: fill_ratio minus target_fill_ratio. Negative = starving, positive = flooding.
+      - name: imbalance_state
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [starving, balanced, flooding, offline]
+      - name: rebalance_need_bikes
+        description: Bikes to add (positive) or remove (negative) to reach the target fill.
+      - name: is_stale
+        description: No report for more than stale_report_minutes (or never reported).
+      - name: is_in_service
+        description: Reporting, installed, and renting or returning.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [station_id, bucket_start]
+          config:
+            where: "bucket_start > now() - interval '1 day'"
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "in_service_minutes + offline_minutes = 5"
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "empty_minutes <= in_service_minutes and full_minutes <= in_service_minutes and available_minutes <= in_service_minutes"
+
+  - name: fct_station_hourly
+    description: Station activity per clock hour, from fct_station_status_5min. Kept forever.
+    columns:
+      - name: station_key
+        data_tests: [not_null]
+      - name: hour_of_day
+        description: Local (New York) hour of day, 0–23.
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments: {min_value: 0, max_value: 23}
+      - name: bikes_added
+        description: Sum of positive 5-minute changes (returns plus trucks dropping bikes).
+      - name: bikes_removed
+        description: Sum of negative 5-minute changes (rentals plus trucks collecting bikes).
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [station_id, hour_start]
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "observed_minutes = in_service_minutes + offline_minutes and observed_minutes <= 60"
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "net_flow_bikes = bikes_added - bikes_removed"
+
+  - name: fct_daily_kpis
+    description: >
+      Daily KPIs per local service date and borough. Rates are recomputed from additive
+      minutes; snap_daily_kpis keeps the as-of history once a day is complete.
+    columns:
+      - name: kpi_id
+        data_tests: [unique, not_null]
+      - name: availability_rate
+        description: available_station_minutes / in_service_station_minutes.
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments: {min_value: 0, max_value: 1}
+      - name: is_complete_day
+        description: The local date has ended; values only change if late data arrives.
+    data_tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "empty_station_minutes + full_station_minutes <= in_service_station_minutes"

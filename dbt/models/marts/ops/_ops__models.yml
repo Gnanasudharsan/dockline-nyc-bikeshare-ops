@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: mart_rebalancing_recommendations
+    description: >
+      Live (view) list of current stations with fill ratio, imbalance state, bikes to
+      move, and a priority rank weighted by typical turnover at this hour.
+    columns:
+      - name: station_id
+        data_tests: [unique, not_null]
+      - name: recommended_action
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [Add bikes, Remove bikes, No action]
+      - name: imbalance_state
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [starving, balanced, flooding, offline]
+      - name: priority_rank
+        description: 1 = most urgent. Null when no action is needed.
+    data_tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "(recommended_action = 'No action') = (priority_rank is null)"
+
+  - name: mart_chronic_stations
+    description: >
+      Chronic problem stations: share of in-service weekday-peak minutes spent empty or
+      full over the trailing chronic_lookback_days.
+    columns:
+      - name: station_id
+        data_tests: [unique, not_null]
+      - name: chronic_status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [insufficient_data, chronic_empty, chronic_full, chronic_empty_and_full, ok]
+      - name: peak_empty_share
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments: {min_value: 0, max_value: 1}
