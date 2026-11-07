@@ -15,6 +15,20 @@ API (which reads only Cube) and embeds the public Grafana dashboard. Design rati
 | `/how-it-works` | Architecture diagram, the data path, the certified metric catalog, quality gates                                          |
 | `/about`        | Who, why, data sources and licenses                                                                                       |
 
+## Deployment modes
+
+`NEXT_PUBLIC_DEPLOY_MODE` selects where data comes from ([ADR 0022](../docs/adr/0022-snapshot-mode.md)):
+
+- `full` (default): the Dockline API and Grafana from the self-hosted stack.
+- `snapshot`: no backend. `/api/live` computes the certified live metrics from the
+  public GBFS feed (`src/lib/metrics.ts`), and `/api/snapshot/<name>` serves the 24-hour
+  history that the Snapshot workflow publishes to the `data` branch. Live shows a
+  10-minute replay and trend charts instead of Grafana; Ask explains that it needs the
+  full stack.
+
+`npm run test:unit` checks that `src/lib/metrics.ts` produces exactly the Python
+implementation's output on a recorded feed (`tests/fixtures/gbfs_parity`).
+
 ## Run it
 
 ```bash

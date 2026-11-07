@@ -26,3 +26,4 @@ New ADRs use the next number and the template in `0000-template.md`.
 | [0019](0019-website.md) | The website: static pages, live islands, and a map that respects phones | Accepted |
 | [0020](0020-deployment.md) | Deployment: one ARM VM, an outbound tunnel, and Vercel | Accepted |
 | [0021](0021-https-modes.md) | Two HTTPS modes: Cloudflare Tunnel or Caddy with DuckDNS | Accepted |
+| [0022](0022-snapshot-mode.md) | Snapshot mode: a public deployment without a server | Accepted |
