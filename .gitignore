@@ -62,3 +62,6 @@ backups/
 
 # Local editor/agent tooling
 .claude/
+
+# Local and production database dumps
+/backups/
