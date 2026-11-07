@@ -1,0 +1,17 @@
+.git
+.venv
+**/__pycache__
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+.env
+.env.*
+!.env.example
+ingestion/tests
+warehouse/tests
+web
+powerbi
+docs
+dbt/target
+dbt/dbt_packages
+node_modules

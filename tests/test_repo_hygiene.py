@@ -25,6 +25,17 @@ ENV_EXAMPLE = REPO_ROOT / ".env.example"
 # which Compose passes through to the container shell unchanged.
 COMPOSE_VARIABLE = re.compile(r"(?<!\$)\$\{([A-Z_][A-Z0-9_]*)")
 ALLOWED_RESTART_POLICIES = {"always", "unless-stopped", "on-failure"}
+# One-shot jobs (e.g. migrations) run to completion and exit, so they have no
+# healthcheck and must not restart. They opt out explicitly with this label.
+ONESHOT_LABEL = ("dockline.role", "oneshot")
+
+
+def is_oneshot(service: dict[str, Any]) -> bool:
+    """Return True if the service is labelled as a run-to-completion job."""
+    labels = service.get("labels", {})
+    if isinstance(labels, list):
+        labels = dict(item.split("=", 1) for item in labels)
+    return bool(labels.get(ONESHOT_LABEL[0]) == ONESHOT_LABEL[1])
 
 
 def load_services(compose_file: Path) -> dict[str, dict[str, Any]]:
@@ -63,6 +74,8 @@ def test_service_has_healthcheck(
 ) -> None:
     if file_name != "docker-compose.yml":
         pytest.skip("override files may inherit the healthcheck from the base file")
+    if is_oneshot(service):
+        pytest.skip("one-shot jobs exit when done; their exit code is their health")
     healthcheck = service.get("healthcheck", {})
     assert healthcheck.get("test"), f"{service_name} needs a healthcheck"
     assert not healthcheck.get("disable", False), f"{service_name} disables its healthcheck"
@@ -75,6 +88,9 @@ def test_service_has_restart_policy(
     if file_name != "docker-compose.yml":
         pytest.skip("override files may inherit the restart policy from the base file")
     restart = str(service.get("restart", "")).split(":")[0]
+    if is_oneshot(service):
+        assert restart == "no", f"one-shot job {service_name} must use restart: 'no'"
+        return
     assert restart in ALLOWED_RESTART_POLICIES, f"{service_name} needs a restart policy"
 
 
@@ -123,3 +139,17 @@ def test_env_example_has_no_real_secrets() -> None:
         key, value = line.split("=", 1)
         if key.endswith(("_API_KEY", "_TOKEN", "_SECRET")):
             assert value == "", f"{key} must be empty in .env.example"
+
+
+def test_services_that_build_images_use_arm64_compatible_bases() -> None:
+    """Every Dockerfile must start from an official multi-arch base image."""
+    allowed_prefixes = ("python:", "node:", "timescale/", "grafana/", "cubejs/", "caddy:")
+    for dockerfile in REPO_ROOT.glob("*/Dockerfile"):
+        bases = [
+            line.split()[1]
+            for line in dockerfile.read_text().splitlines()
+            if line.upper().startswith("FROM ")
+        ]
+        assert bases, f"{dockerfile} has no FROM line"
+        for base in bases:
+            assert base.startswith(allowed_prefixes), f"{dockerfile}: unexpected base {base}"

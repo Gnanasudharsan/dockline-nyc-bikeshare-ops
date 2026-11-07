@@ -3,7 +3,7 @@ SHELL := /bin/bash
 
 COMPOSE := docker compose
 
-.PHONY: help setup env up down logs ps test lint fmt clean
+.PHONY: help setup env up down logs ps test test-unit lint fmt clean migrate psql check-ingestion
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-8s\033[0m %s\n", $$1, $$2}'
@@ -18,8 +18,8 @@ env: .env ## Create .env from .env.example if it does not exist
 	cp .env.example .env
 	@echo "Created .env from .env.example. Review it before running in production."
 
-up: .env ## Start the stack and wait until every service is healthy
-	$(COMPOSE) up -d --wait
+up: .env ## Build and start the stack, waiting until every service is healthy
+	$(COMPOSE) up -d --build --wait
 
 down: ## Stop the stack (data volumes are kept)
 	$(COMPOSE) down
@@ -30,8 +30,20 @@ logs: ## Follow logs for all services
 ps: ## Show service status and health
 	$(COMPOSE) ps
 
-test: ## Run the test suite
+test: ## Run all tests (integration tests start a throwaway TimescaleDB container)
 	uv run pytest
+
+test-unit: ## Run unit tests only (no Docker needed)
+	uv run pytest -m "not integration"
+
+migrate: .env ## Apply pending warehouse migrations
+	$(COMPOSE) run --rm --build migrate
+
+psql: .env ## Open a psql shell on the warehouse
+	$(COMPOSE) exec timescaledb sh -c 'psql -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"'
+
+check-ingestion: .env ## Run the Phase 1 acceptance queries
+	$(COMPOSE) exec -T timescaledb sh -c 'psql -U "$$POSTGRES_USER" -d "$$POSTGRES_DB" -v ON_ERROR_STOP=1' < warehouse/checks/phase1_acceptance.sql
 
 lint: ## Run every pre-commit hook on all files
 	uv run pre-commit run --all-files
