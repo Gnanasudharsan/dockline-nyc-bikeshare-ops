@@ -6,6 +6,8 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
+        # Syntax only: Compose overrides use custom tags such as !override.
+        args: ["--unsafe"]
       - id: check-json
       - id: check-toml
       - id: check-merge-conflict
