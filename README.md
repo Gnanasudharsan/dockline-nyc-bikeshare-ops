@@ -25,7 +25,7 @@ with certified metrics, and serves it to four surfaces:
 | 2 | dbt models and orchestration | Done |
 | 3 | Semantic layer and live Grafana dashboard | Done |
 | 4 | Power BI analyst report | Done |
-| 5 | Ask the Data (governed natural-language Q&A) | Planned |
+| 5 | Ask the Data (governed natural-language Q&A) | Done |
 | 6 | Public website | Planned |
 | 7 | Deployment and launch | Planned |
 
@@ -83,6 +83,7 @@ Then:
 | Public live dashboard URL | `make grafana-public` |
 | Cube (REST API / SQL API) | <http://localhost:4000>, `localhost:15432` |
 | Power BI project (open in Desktop) | [`powerbi/Dockline.pbip`](powerbi/), checklist in [`powerbi/VERIFY.md`](powerbi/VERIFY.md) |
+| API (live KPIs, SSE, Ask the Data) | <http://localhost:8070/docs>, `make ask Q="..."` |
 | Dagster (lineage, runs, schedules, checks) | <http://localhost:3070> |
 | Warehouse (psql) | `make psql`, or `localhost:5433` |
 | Ingestion health and data checks | `make check-ingestion` |

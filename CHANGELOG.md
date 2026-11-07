@@ -6,6 +6,30 @@ phases are tagged `phase-N` until the `v1.0.0` release.
 
 ## [Unreleased]
 
+## [phase-5] — 2026-11-07
+
+### Added
+- FastAPI service (`api/`, port 8070), reading every metric from Cube:
+  - `GET /v1/kpis/live`: network KPIs right now
+  - `GET /v1/kpis/stream`: a Server-Sent Events update every 10 s
+  - `GET /v1/stations/live`: stations with position and state, for the website map
+  - `GET /v1/metrics`: the metric catalog
+  - `POST /v1/ask`: Ask the Data
+- Ask the Data (ADR 0018):
+  - **How it works:** the LLM writes only a JSON plan over an allowlisted catalog;
+    strict validation builds the Cube query. There is no SQL anywhere in the path.
+  - **Defenses:** input limits, an injection screen, grounded answers (with a
+    template fallback), and fixed refusal suggestions. Rate limits are 6 per minute per
+    client and 500 per day.
+  - **Responses** include the answer, metric definitions, the validated query, the rows,
+    and data freshness.
+  - **Providers:** Groq (default), Gemini, or Ollama.
+- `evals/ask_the_data.jsonl` (40 cases), `evals/run_evals.py`, and a recorded live run.
+  The live run scored 31/32 answerable (96.9%) and 8/8 refusals; CI replays it and
+  enforces ≥ 85% and 100%.
+- `make ask`, `make eval`, `make eval-live`. CI checks the API, the stream, and the
+  stations endpoint in the stack.
+
 ## [phase-4] — 2026-11-07
 
 ### Added
