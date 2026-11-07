@@ -84,9 +84,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Validate compose file
+      - name: Create .env (random local credentials) and validate the compose file
         run: |
-          cp .env.example .env
+          make env
+          # GitHub runners are amd64; Cube Store publishes amd64 and arm64 under different tags.
+          sed -i 's/^CUBESTORE_IMAGE_TAG=.*/CUBESTORE_IMAGE_TAG=v1.8.20/' .env
           docker compose config --quiet
 
       - name: Build, migrate, start, and wait for health
@@ -111,12 +113,17 @@ jobs:
           echo "fct_station_status_5min rows: $facts, rebalancing board rows: $board"
           test "$board" -gt 0
 
+      - name: Every Grafana dashboard query runs through Cube without errors
+        run: |
+          set -a && . ./.env && set +a
+          python3 grafana/check_dashboards.py
+
       - name: Dagster loads the code location with every schedule running
         run: |
           query='{"query":"{ schedulesOrError(repositorySelector:{repositoryLocationName:\"dockline_orchestration.definitions\", repositoryName:\"__repository__\"}) { ... on Schedules { results { name scheduleState { status } } } } }"}'
           response=$(curl -sf localhost:3070/graphql -H 'content-type: application/json' -d "$query")
           echo "$response"
-          test "$(echo "$response" | grep -o '"RUNNING"' | wc -l)" -eq 3
+          test "$(echo "$response" | grep -o '"RUNNING"' | wc -l)" -eq 4
 
       - name: Service logs
         if: failure()
