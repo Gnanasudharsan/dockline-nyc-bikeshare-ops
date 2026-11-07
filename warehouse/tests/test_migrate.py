@@ -12,6 +12,7 @@ from dockline_warehouse.migrate import (
     MigrationError,
     discover_migrations,
     ensure_databases,
+    ensure_role_password,
     extra_databases_from_env,
     migrate,
 )
@@ -133,3 +134,16 @@ def test_extra_databases_from_env(monkeypatch: pytest.MonkeyPatch) -> None:
     assert extra_databases_from_env() == ["dagster", "other"]
     monkeypatch.delenv("DOCKLINE_EXTRA_DATABASES")
     assert extra_databases_from_env() == []
+
+
+@pytest.mark.integration
+def test_reader_role_can_read_but_not_write(migrated_database: str) -> None:
+    ensure_role_password(migrated_database, "dockline_reader", "reader-test-password")
+    params = psycopg.conninfo.conninfo_to_dict(migrated_database)
+    params["user"] = "dockline_reader"
+    params["password"] = "reader-test-password"
+    reader = psycopg.conninfo.make_conninfo(**{k: str(v) for k, v in params.items()})
+    with psycopg.connect(reader, autocommit=True) as conn:
+        assert conn.execute("SELECT count(*) FROM raw.station_status").fetchone() == (0,)
+        with pytest.raises(psycopg.errors.InsufficientPrivilege):
+            conn.execute("DELETE FROM ops.ingestion_runs")

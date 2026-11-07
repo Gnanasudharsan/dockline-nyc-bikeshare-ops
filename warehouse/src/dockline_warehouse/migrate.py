@@ -191,6 +191,21 @@ def ensure_databases(conninfo: str, names: list[str]) -> list[str]:
     return created
 
 
+def ensure_role_password(conninfo: str, role: str, password: str) -> None:
+    """Set the login password of an existing role (idempotent).
+
+    Passwords never live in migration files; they come from the environment and are
+    re-applied on every migrate run, so rotating one is: change .env, rerun migrate.
+    """
+    with psycopg.connect(conninfo, autocommit=True) as conn:
+        conn.execute(
+            sql.SQL("ALTER ROLE {} WITH LOGIN PASSWORD {}").format(
+                sql.Identifier(role), sql.Literal(password)
+            )
+        )
+    logger.info("password set for role %s", role)
+
+
 def extra_databases_from_env() -> list[str]:
     """Parse DOCKLINE_EXTRA_DATABASES (comma separated) into a list of names."""
     raw = os.environ.get("DOCKLINE_EXTRA_DATABASES", "")
@@ -205,6 +220,9 @@ def main() -> int:
     try:
         applied = migrate(conninfo, directory)
         ensure_databases(conninfo, extra_databases_from_env())
+        reader_password = os.environ.get("DOCKLINE_READER_PASSWORD", "")
+        if reader_password:
+            ensure_role_password(conninfo, "dockline_reader", reader_password)
     except (MigrationError, psycopg.Error) as error:
         logger.error("%s", error)
         return 1
