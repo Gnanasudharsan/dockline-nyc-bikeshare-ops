@@ -15,6 +15,8 @@ from dockline_orchestration.schedules import (
     daily_schedule,
     hourly_dbt_job,
     hourly_schedule,
+    live_dbt_job,
+    live_schedule,
     raw_freshness_job,
     raw_freshness_schedule,
 )
@@ -22,8 +24,8 @@ from dockline_orchestration.schedules import (
 defs = dg.Definitions(
     assets=[*RAW_ASSET_SPECS, dockline_dbt_assets],
     asset_checks=raw_freshness_checks,
-    jobs=[hourly_dbt_job, daily_dbt_job, raw_freshness_job],
-    schedules=[hourly_schedule, daily_schedule, raw_freshness_schedule],
+    jobs=[live_dbt_job, hourly_dbt_job, daily_dbt_job, raw_freshness_job],
+    schedules=[live_schedule, hourly_schedule, daily_schedule, raw_freshness_schedule],
     sensors=[alert_on_run_failure],
     resources={
         "dbt": DbtCliResource(project_dir=dbt_project),

@@ -14,6 +14,9 @@ from dockline_orchestration.project import DbtProject, dbt_project, ensure_manif
 HOURLY_MART_FRESHNESS = dg.FreshnessPolicy.time_window(
     fail_window=timedelta(hours=2), warn_window=timedelta(minutes=75)
 )
+LIVE_MART_FRESHNESS = dg.FreshnessPolicy.time_window(
+    fail_window=timedelta(minutes=30), warn_window=timedelta(minutes=15)
+)
 DAILY_MART_FRESHNESS = dg.FreshnessPolicy.time_window(
     fail_window=timedelta(hours=26), warn_window=timedelta(hours=25)
 )
@@ -31,6 +34,8 @@ def freshness_policy_for(dbt_resource_props: Mapping[str, Any]) -> dg.FreshnessP
     tags = set(dbt_resource_props.get("tags", []))
     if "daily" in tags:
         return DAILY_MART_FRESHNESS
+    if "live" in tags:
+        return LIVE_MART_FRESHNESS
     return HOURLY_MART_FRESHNESS
 
 

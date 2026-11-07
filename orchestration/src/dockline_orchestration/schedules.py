@@ -23,6 +23,13 @@ hourly_dbt_job = dg.define_asset_job(
     tags=DBT_RUN_TAGS,
 )
 
+live_dbt_job = dg.define_asset_job(
+    name="live_dbt_build",
+    description="The carried-forward 5-minute grid and 5-minute fact (Grafana rewind).",
+    selection=build_dbt_asset_selection([dockline_dbt_assets], dbt_select="tag:live"),
+    tags=DBT_RUN_TAGS,
+)
+
 daily_dbt_job = dg.define_asset_job(
     name="daily_dbt_build",
     description="Daily KPIs, the as-of KPI snapshot, and chronic problem stations.",
@@ -40,6 +47,15 @@ hourly_schedule = dg.ScheduleDefinition(
     name="hourly_dbt_build_schedule",
     job=hourly_dbt_job,
     cron_schedule="5 * * * *",
+    execution_timezone=TIMEZONE,
+    default_status=dg.DefaultScheduleStatus.RUNNING,
+)
+
+live_schedule = dg.ScheduleDefinition(
+    name="live_dbt_build_schedule",
+    job=live_dbt_job,
+    # Two minutes after each 5-minute bucket closes; skips :05 (the hourly build).
+    cron_schedule="2,12,17,22,27,32,37,42,47,52,57 * * * *",
     execution_timezone=TIMEZONE,
     default_status=dg.DefaultScheduleStatus.RUNNING,
 )

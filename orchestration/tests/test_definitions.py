@@ -8,6 +8,7 @@ import pytest
 from dockline_orchestration.assets import (
     DAILY_MART_FRESHNESS,
     HOURLY_MART_FRESHNESS,
+    LIVE_MART_FRESHNESS,
     freshness_policy_for,
 )
 from dockline_orchestration.checks import RAW_FRESHNESS_RULES, evaluate_freshness
@@ -42,6 +43,13 @@ def test_hourly_job_builds_facts_but_not_daily_models() -> None:
     assert "snapshots/snap_daily_kpis" not in hourly
 
 
+def test_live_job_builds_only_the_5_minute_models() -> None:
+    assert _selected("live_dbt_build") == {
+        "intermediate/int_station_status_5min_filled",
+        "marts/fct_station_status_5min",
+    }
+
+
 def test_daily_job_builds_kpis_snapshot_and_chronic_stations() -> None:
     assert _selected("daily_dbt_build") == {
         "marts/fct_daily_kpis",
@@ -53,6 +61,7 @@ def test_daily_job_builds_kpis_snapshot_and_chronic_stations() -> None:
 @pytest.mark.parametrize(
     ("schedule_name", "cron"),
     [
+        ("live_dbt_build_schedule", "2,12,17,22,27,32,37,42,47,52,57 * * * *"),
         ("hourly_dbt_build_schedule", "5 * * * *"),
         ("daily_dbt_build_schedule", "30 0 * * *"),
         ("raw_freshness_checks_schedule", "*/5 * * * *"),
@@ -84,6 +93,9 @@ def test_freshness_policies_only_on_mart_tables() -> None:
     )
     assert freshness_policy_for(props(["dockline", "marts", "core", "x"], ["hourly", "daily"])) == (
         DAILY_MART_FRESHNESS
+    )
+    assert freshness_policy_for(props(["dockline", "marts", "core", "x"], ["hourly", "live"])) == (
+        LIVE_MART_FRESHNESS
     )
     assert freshness_policy_for(props(["dockline", "marts", "ops", "v"], [], "view")) is None
     assert freshness_policy_for(props(["dockline", "staging", "x"], ["hourly"])) is None
