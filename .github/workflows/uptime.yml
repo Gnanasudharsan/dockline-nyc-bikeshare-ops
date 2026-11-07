@@ -1,0 +1,34 @@
+name: Uptime
+
+# Checks the public deployment every 15 minutes. A failed run notifies the repository
+# owner by email. Set repository variables PUBLIC_API_URL (https://api.<domain>) and
+# PUBLIC_SITE_URL (the website) to enable it; without them it skips.
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: ${{ vars.PUBLIC_API_URL != '' }}
+    steps:
+      - name: API is healthy and Cube answers
+        run: |
+          body=$(curl -sf --max-time 20 "${{ vars.PUBLIC_API_URL }}/health")
+          echo "$body"
+          echo "$body" | grep -q '"status":"ok"'
+
+      - name: Station data is fresh (newest report under 10 minutes old)
+        run: |
+          age=$(curl -sf --max-time 20 "${{ vars.PUBLIC_API_URL }}/v1/kpis/live" | python3 -c "import json, sys; print(int(json.load(sys.stdin)['data_freshness_seconds']))")
+          echo "data_freshness_seconds=$age"
+          test "$age" -lt 600
+
+      - name: Website responds
+        if: ${{ vars.PUBLIC_SITE_URL != '' }}
+        run: curl -sf --max-time 20 -o /dev/null -w "%{http_code} in %{time_total}s\n" "${{ vars.PUBLIC_SITE_URL }}"
