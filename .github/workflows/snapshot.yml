@@ -1,0 +1,73 @@
+name: Snapshot
+
+# Snapshot mode (ADR 0022): every 10 minutes, poll GBFS and Open-Meteo, compute the
+# certified KPIs with the ingestion package, and publish three JSON files to the
+# `data` branch: latest.json, history-24h.json, daily-kpis.json. The website reads them
+# from raw.githubusercontent.com.
+#
+# The data branch is an orphan branch kept at a single commit that each run replaces
+# (force-push to `data` only), so the repository does not grow. main is never touched.
+# A failed scheduled run emails the repository owner, like the Uptime workflow.
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Overlapping runs cancel the older one; the newest snapshot wins.
+concurrency:
+  group: snapshot
+  cancel-in-progress: true
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Install Python and the ingestion package
+        run: |
+          uv python install 3.12
+          uv sync --locked --package dockline-ingestion
+
+      - name: Restore the previous snapshot from the data branch
+        run: |
+          mkdir -p snapshot
+          if git ls-remote --exit-code --heads origin data >/dev/null; then
+            git fetch --depth 1 origin data
+            git archive FETCH_HEAD | tar -x -C snapshot
+            rm -f snapshot/README.md
+          else
+            echo "No data branch yet; starting a new history."
+          fi
+
+      - name: Poll the feeds and update the history
+        run: uv run --package dockline-ingestion python -m dockline_ingestion.snapshot --dir snapshot
+
+      - name: Publish to the data branch (one commit, replaced each run)
+        working-directory: snapshot
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import json, pathlib
+          for name in ("latest.json", "history-24h.json", "daily-kpis.json"):
+              path = pathlib.Path(name)
+              json.loads(path.read_text())
+              print(f"{name}: {path.stat().st_size / 1024:.0f} KB")
+          PY
+          cp ../infra/snapshot/DATA_BRANCH_README.md README.md
+          git init -q -b data
+          git config user.name "Gnanasudharsan"
+          git config user.email "84964314+Gnanasudharsan@users.noreply.github.com"
+          git add -A
+          git commit -q -m "chore(data): snapshot $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push -q --force "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" HEAD:data

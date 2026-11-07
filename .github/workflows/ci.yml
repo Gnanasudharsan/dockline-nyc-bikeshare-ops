@@ -99,6 +99,9 @@ jobs:
           npm run typecheck
           npm run format:check
 
+      - name: Metric parity (TypeScript /api/live vs the Python snapshot KPIs, same fixture)
+        run: npm run test:unit
+
       - name: Production build (the API is absent here, so pages render their unavailable states)
         run: npm run build
 
