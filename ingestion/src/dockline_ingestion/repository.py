@@ -28,6 +28,7 @@ class RunStats:
     rejection_reasons: dict[str, int] = field(default_factory=dict)
     source_version: str | None = None
     source_last_updated: datetime | None = None
+    not_modified: bool = False
 
 
 async def start_run(conn: AsyncConnection[Any], feed: str) -> int:
@@ -62,6 +63,7 @@ async def finish_run(
             records_inserted    = %(inserted)s,
             records_duplicate   = %(duplicate)s,
             records_rejected    = %(rejected)s,
+            not_modified        = %(not_modified)s,
             rejection_reasons   = %(rejection_reasons)s,
             latency_ms          = %(latency_ms)s,
             error_message       = %(error_message)s
@@ -76,6 +78,7 @@ async def finish_run(
             "inserted": stats.inserted,
             "duplicate": stats.duplicate,
             "rejected": stats.rejected,
+            "not_modified": stats.not_modified,
             "rejection_reasons": Jsonb(stats.rejection_reasons),
             "latency_ms": latency_ms,
             "error_message": error_message,

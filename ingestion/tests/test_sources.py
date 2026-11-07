@@ -66,3 +66,18 @@ def test_retryable_statuses(status: int, expected: bool) -> None:
         "x", request=request, response=httpx.Response(status, request=request)
     )
     assert is_retryable(error) is expected
+
+
+async def test_conditional_fetch_sends_etag_and_handles_304(respx_mock: respx.MockRouter) -> None:
+    route = respx_mock.get(STATUS_URL).mock(
+        side_effect=[
+            httpx.Response(200, json={"v": 1}, headers={"ETag": '"abc"'}),
+            httpx.Response(304),
+        ]
+    )
+    async with httpx.AsyncClient() as http:
+        client = GbfsClient(http, DISCOVERY_URL, "2.3", attempts=1)
+        assert await client.fetch_if_changed(STATUS_URL) == {"v": 1}
+        assert await client.fetch_if_changed(STATUS_URL) is None
+    assert "If-None-Match" not in route.calls[0].request.headers
+    assert route.calls[1].request.headers["If-None-Match"] == '"abc"'

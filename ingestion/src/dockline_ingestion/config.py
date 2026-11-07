@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     # Schedules
     station_information_interval_seconds: int = Field(default=3600, ge=60)
     weather_interval_seconds: int = Field(default=3600, ge=300)
-    min_status_poll_seconds: int = Field(default=15, ge=5)
+    min_status_poll_seconds: int = Field(default=10, ge=5)
     max_status_poll_seconds: int = Field(default=300, ge=15)
 
     # HTTP

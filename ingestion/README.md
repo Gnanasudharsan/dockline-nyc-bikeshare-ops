@@ -5,7 +5,7 @@ and writes validated rows into TimescaleDB.
 
 | Job | Schedule | Writes to |
 | --- | --- | --- |
-| `station_status` | when the current version expires (`last_updated + ttl + 5 s`); 15 s retry if unchanged; clamped to 15–300 s (ADR 0008) | `raw.station_status` |
+| `station_status` | when the current version expires (`last_updated + ttl + 5 s`); conditional `If-None-Match` checks every 10 s while unchanged (ADRs 0008, 0009) | `raw.station_status` |
 | `station_information` | hourly, and at startup (also re-resolves GBFS discovery) | `raw.station_information` |
 | `weather_hourly` | hourly (last 2 days + today's forecast) | `raw.weather_hourly` |
 

@@ -25,32 +25,28 @@ NOW = datetime(2026, 11, 7, 6, 20, 23, tzinfo=UTC)
 
 
 @pytest.mark.parametrize(
-    ("ttl", "updated_ago", "previous_ago", "expected"),
+    ("ttl", "updated_ago", "unchanged", "expected"),
     [
         # Fresh version published 1 s ago: wait until it expires + 5 s buffer.
-        (60, 1.0, 61.0, 64.0),
-        # Version is 59 s old (the case that phase-locked): poll again soon, not in 60 s.
-        (60, 59.0, 119.0, 15.0),
-        # Same version as last poll: the refresh hasn't reached us, retry at the minimum.
-        (60, 119.0, 119.0, 15.0),
-        # First poll ever (no previous version).
-        (60, 30.0, None, 35.0),
+        (60, 1.0, False, 64.0),
+        # New version that is already 59 s old (the case that phase-locked): poll soon.
+        (60, 59.0, False, 15.0),
+        # Same version as last poll (304 or same last_updated): retry at the minimum.
+        (60, 65.0, True, 15.0),
         # ttl 0 / missing means "no caching", not "poll in a tight loop": default 60 s.
-        (0, 1.0, 61.0, 64.0),
-        (None, 1.0, 61.0, 64.0),
+        (0, 1.0, False, 64.0),
+        (None, 1.0, False, 64.0),
         # Huge ttl clamped to the maximum.
-        (3600, 1.0, 61.0, 300.0),
+        (3600, 1.0, False, 300.0),
     ],
 )
 def test_next_status_delay(
-    ttl: int | None, updated_ago: float, previous_ago: float | None, expected: float
+    ttl: int | None, updated_ago: float, unchanged: bool, expected: float
 ) -> None:
     delay = next_status_delay(
         ttl_seconds=ttl,
         source_last_updated=NOW - timedelta(seconds=updated_ago),
-        previous_source_last_updated=(
-            None if previous_ago is None else NOW - timedelta(seconds=previous_ago)
-        ),
+        unchanged=unchanged,
         now=NOW,
         minimum=15,
         maximum=300,
@@ -62,7 +58,7 @@ def test_next_status_delay_without_source_timestamp_uses_ttl() -> None:
     delay = next_status_delay(
         ttl_seconds=60,
         source_last_updated=None,
-        previous_source_last_updated=None,
+        unchanged=False,
         now=NOW,
         minimum=15,
         maximum=300,
@@ -244,3 +240,32 @@ async def test_station_information_change_is_detected(
         "WHERE feed = 'station_information' ORDER BY run_id",
     )
     assert runs == [(14, 0), (1, 13)]
+
+
+@pytest.mark.integration
+async def test_not_modified_poll_is_recorded_and_skips_parsing(
+    service: IngestionService,
+    mocked_sources: respx.MockRouter,
+    migrated_database: str,
+) -> None:
+    from ingestion_test_support import load_fixture
+
+    payload = load_fixture("station_status.json")
+
+    def respond(request: httpx.Request) -> httpx.Response:
+        if request.headers.get("If-None-Match") == '"v1"':
+            return httpx.Response(304)
+        return httpx.Response(200, json=payload, headers={"ETag": '"v1"'})
+
+    mocked_sources.routes["status"].mock(side_effect=respond)
+    await service.refresh_station_information()
+    assert await service.poll_station_status()
+    assert await service.poll_station_status()
+    runs = query(
+        migrated_database,
+        "SELECT not_modified, records_fetched, records_inserted FROM ops.ingestion_runs "
+        "WHERE feed = 'station_status' ORDER BY run_id",
+    )
+    assert runs == [(False, 14, 12), (True, 0, 0)]
+    second_request = mocked_sources.routes["status"].calls.last.request
+    assert second_request.headers["If-None-Match"] == '"v1"'

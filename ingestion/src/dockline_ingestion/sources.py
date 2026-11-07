@@ -39,16 +39,35 @@ def is_retryable(error: BaseException) -> bool:
     return False
 
 
-async def get_json(
+@dataclass(frozen=True)
+class ConditionalResponse:
+    """Result of a conditional GET: ``body`` is None when the server answered 304."""
+
+    body: dict[str, Any] | None
+    etag: str | None
+
+    @property
+    def not_modified(self) -> bool:
+        """True if the server said the resource is unchanged since ``etag``."""
+        return self.body is None
+
+
+async def get_json_conditional(
     client: httpx.AsyncClient,
     url: str,
     *,
+    etag: str | None = None,
     params: dict[str, str] | None = None,
     attempts: int = 4,
     initial_wait_seconds: float = 1.0,
     max_wait_seconds: float = 20.0,
-) -> dict[str, Any]:
-    """GET ``url`` and return its JSON object, retrying transient failures with backoff."""
+) -> ConditionalResponse:
+    """GET ``url`` with retries; send ``If-None-Match`` when an ``etag`` is known.
+
+    A 304 Not Modified costs the feed almost nothing, so callers can check for a new
+    version more often without downloading the full payload each time.
+    """
+    headers = {"If-None-Match": etag} if etag else None
     retrying = AsyncRetrying(
         retry=retry_if_exception(is_retryable),
         stop=stop_after_attempt(attempts),
@@ -63,13 +82,38 @@ async def get_json(
     )
     async for attempt in retrying:
         with attempt:
-            response = await client.get(url, params=params)
+            response = await client.get(url, params=params, headers=headers)
+            if response.status_code == httpx.codes.NOT_MODIFIED:
+                return ConditionalResponse(body=None, etag=etag)
             response.raise_for_status()
             body = response.json()
             if not isinstance(body, dict):
                 raise ValueError(f"Expected a JSON object from {url}")
-            return body
+            return ConditionalResponse(body=body, etag=response.headers.get("ETag"))
     raise AssertionError("unreachable: tenacity re-raises the last error")  # pragma: no cover
+
+
+async def get_json(
+    client: httpx.AsyncClient,
+    url: str,
+    *,
+    params: dict[str, str] | None = None,
+    attempts: int = 4,
+    initial_wait_seconds: float = 1.0,
+    max_wait_seconds: float = 20.0,
+) -> dict[str, Any]:
+    """GET ``url`` and return its JSON object, retrying transient failures with backoff."""
+    result = await get_json_conditional(
+        client,
+        url,
+        params=params,
+        attempts=attempts,
+        initial_wait_seconds=initial_wait_seconds,
+        max_wait_seconds=max_wait_seconds,
+    )
+    if result.body is None:  # pragma: no cover - no etag sent, so no 304 expected
+        raise ValueError(f"Unexpected 304 from {url}")
+    return result.body
 
 
 @dataclass(frozen=True)
@@ -107,10 +151,23 @@ class GbfsClient:
         self._discovery_url = discovery_url
         self._preferred_version = preferred_version
         self._attempts = attempts
+        self._etags: dict[str, str] = {}
 
     async def fetch(self, url: str) -> dict[str, Any]:
         """Fetch one GBFS feed as JSON."""
         return await get_json(self._client, url, attempts=self._attempts)
+
+    async def fetch_if_changed(self, url: str) -> dict[str, Any] | None:
+        """Fetch a feed, or return None if it has not changed since the last fetch.
+
+        Remembers each URL's ETag and sends it back as ``If-None-Match``.
+        """
+        result = await get_json_conditional(
+            self._client, url, etag=self._etags.get(url), attempts=self._attempts
+        )
+        if result.etag:
+            self._etags[url] = result.etag
+        return result.body
 
     async def resolve_feeds(self) -> FeedUrls:
         """Find current feed URLs, preferring the configured GBFS version (ADR 0005).

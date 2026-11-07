@@ -52,7 +52,7 @@ def next_status_delay(
     *,
     ttl_seconds: int | None,
     source_last_updated: datetime | None,
-    previous_source_last_updated: datetime | None,
+    unchanged: bool,
     now: datetime,
     minimum: int,
     maximum: int,
@@ -64,14 +64,15 @@ def next_status_delay(
     phase-lock just before the feed refreshes and keep reading the previous version.
 
     - New version received: wait until it expires, plus a small publish buffer.
-    - Same version as last time (the refresh has not reached us yet): retry after
-      ``minimum`` seconds instead of waiting a whole ttl.
+    - Same version as last time (a 304, or the same ``last_updated``): the refresh has
+      not reached the CDN yet, so check again after ``minimum`` seconds. These checks
+      are conditional requests, so they cost the feed almost nothing.
     The result is always clamped to [minimum, maximum].
     """
     ttl = ttl_seconds if ttl_seconds and ttl_seconds > 0 else 60
     if source_last_updated is None:
         target = float(ttl)
-    elif source_last_updated == previous_source_last_updated:
+    elif unchanged:
         target = float(minimum)
     else:
         expires_at = source_last_updated.timestamp() + ttl + PUBLISH_BUFFER_SECONDS
@@ -104,7 +105,7 @@ class IngestionService:
         self._feeds: FeedUrls | None = None
         self._last_status_ttl: int | None = None
         self._last_source_updated: datetime | None = None
-        self._previous_source_updated: datetime | None = None
+        self._status_unchanged = False
 
     # ------------------------------------------------------------------ audit wrapper
 
@@ -155,11 +156,18 @@ class IngestionService:
 
     async def _station_status_job(self, run_id: int) -> RunStats:
         feeds = await self._feed_urls()
-        payload = await self._gbfs.fetch(feeds.station_status)
+        payload = await self._gbfs.fetch_if_changed(feeds.station_status)
+        if payload is None:
+            self._status_unchanged = True
+            return RunStats(
+                not_modified=True,
+                source_version=feeds.version,
+                source_last_updated=self._last_source_updated,
+            )
         fetched_at = self._clock()
         batch = parse_station_status(payload, fetched_at)
         self._last_status_ttl = batch.ttl
-        self._previous_source_updated = self._last_source_updated
+        self._status_unchanged = batch.source_last_updated == self._last_source_updated
         self._last_source_updated = batch.source_last_updated
         async with self._pool.connection() as conn, conn.transaction():
             inserted = await repository.insert_station_status(
@@ -230,7 +238,7 @@ class IngestionService:
             delay = next_status_delay(
                 ttl_seconds=self._last_status_ttl,
                 source_last_updated=self._last_source_updated,
-                previous_source_last_updated=self._previous_source_updated,
+                unchanged=self._status_unchanged,
                 now=utc_now(),
                 minimum=self._settings.min_status_poll_seconds,
                 maximum=self._settings.max_status_poll_seconds,
