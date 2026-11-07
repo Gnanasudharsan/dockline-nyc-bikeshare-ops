@@ -5,7 +5,8 @@ COMPOSE := docker compose
 
 .PHONY: help setup env up down logs ps test test-unit lint fmt clean migrate psql check-ingestion \
 	dbt-deps dbt-build dbt-docs dbt-freshness dagster-dev check-pipeline \
-	grafana-dashboards check-grafana grafana-public test-stale-alert powerbi powerbi-validate powerbi-reference
+	grafana-dashboards check-grafana grafana-public test-stale-alert powerbi powerbi-validate powerbi-reference \
+	ask eval eval-live
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
@@ -93,6 +94,16 @@ powerbi-validate: ## Validate the Power BI project: JSON schemas, theme, fields,
 
 powerbi-reference: .env ## Print Cube's current values to compare with Power BI (VERIFY.md)
 	set -a && . ./.env && set +a && uv run python powerbi/scripts/cube_reference_values.py
+
+ask: ## Ask the Data from the terminal: make ask Q="Which borough has the most empty stations?"
+	@python3 scripts/ask.py "$(Q)"
+
+eval: ## Score Ask the Data on the 40-case eval set (replays the recorded live run; no API key)
+	uv run python evals/run_evals.py
+
+eval-live: .env ## Re-run the eval against the configured LLM, run every query on Cube, re-record
+	set -a && . ./.env && set +a && CUBE_API_URL=http://localhost:$${CUBE_PORT:-4000}/cubejs-api/v1 \
+		uv run python evals/run_evals.py --live --execute
 
 lint: ## Run every pre-commit hook on all files
 	uv run pre-commit run --all-files
