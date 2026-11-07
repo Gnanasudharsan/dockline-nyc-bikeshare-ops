@@ -1,8 +1,10 @@
 name: Uptime
 
 # Checks the public deployment every 15 minutes. A failed run notifies the repository
-# owner by email. Set repository variables PUBLIC_API_URL (https://api.<domain>) and
-# PUBLIC_SITE_URL (the website) to enable it; without them it skips.
+# owner by email. Set repository variables PUBLIC_API_URL and PUBLIC_SITE_URL to enable
+# it; without them it skips.
+#   Full stack:    PUBLIC_API_URL = https://<api host>
+#   Snapshot mode: PUBLIC_API_URL = https://<site>/api/live (ADR 0022)
 on:
   schedule:
     - cron: "*/15 * * * *"
@@ -16,18 +18,41 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     if: ${{ vars.PUBLIC_API_URL != '' }}
+    env:
+      API: ${{ vars.PUBLIC_API_URL }}
+      SNAPSHOT: ${{ endsWith(vars.PUBLIC_API_URL, '/api/live') }}
     steps:
-      - name: API is healthy and Cube answers
+      - name: API is healthy and Cube answers (full stack)
+        if: ${{ env.SNAPSHOT != 'true' }}
         run: |
-          body=$(curl -sf --max-time 20 "${{ vars.PUBLIC_API_URL }}/health")
+          body=$(curl -sf --max-time 20 "$API/health")
           echo "$body"
           echo "$body" | grep -q '"status":"ok"'
 
       - name: Station data is fresh (newest report under 10 minutes old)
         run: |
-          age=$(curl -sf --max-time 20 "${{ vars.PUBLIC_API_URL }}/v1/kpis/live" | python3 -c "import json, sys; print(int(json.load(sys.stdin)['data_freshness_seconds']))")
+          url="$API/v1/kpis/live"
+          [ "$SNAPSHOT" = "true" ] && url="$API"
+          age=$(curl -sf --max-time 30 "$url" | python3 -c "
+          import json, sys
+          body = json.load(sys.stdin)
+          kpis = body.get('kpis', body)
+          print(int(kpis['data_freshness_seconds']))
+          ")
           echo "data_freshness_seconds=$age"
           test "$age" -lt 600
+
+      - name: Snapshot history is recent (last workflow run under 40 minutes ago)
+        if: ${{ env.SNAPSHOT == 'true' }}
+        run: |
+          curl -sf --max-time 30 "https://raw.githubusercontent.com/${{ github.repository }}/data/latest.json" | python3 -c "
+          import json, sys, time
+          from datetime import datetime, timezone
+          generated = json.load(sys.stdin)['generated_at']
+          age = time.time() - datetime.strptime(generated, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc).timestamp()
+          print(f'snapshot generated {generated}, {age / 60:.0f} minutes ago')
+          sys.exit(0 if age < 40 * 60 else 1)
+          "
 
       - name: Website responds
         if: ${{ vars.PUBLIC_SITE_URL != '' }}
