@@ -4,26 +4,30 @@ export type ImbalanceState = "starving" | "balanced" | "flooding" | "offline";
 
 export interface LiveKpis {
   as_of: string;
+  /** The feed's own last_updated time (snapshot mode only). */
+  feed_updated_at?: string | null;
   bikes_available: number;
   ebikes_available: number;
   docks_available: number;
-  fill_ratio: number;
+  fill_ratio: number | null;
   stations: number;
   stations_in_service: number;
   empty_stations: number;
   full_stations: number;
+  /** In service, renting and returning, with at least one bike and one dock (snapshot mode). */
+  available_stations?: number;
   starving_stations: number;
   balanced_stations: number;
   flooding_stations: number;
   offline_stations: number;
   rebalance_need_bikes: number;
-  data_freshness_seconds: number;
+  data_freshness_seconds: number | null;
 }
 
 export interface Station {
   station_id: string;
   station_name: string;
-  borough: string;
+  borough?: string;
   latitude: number;
   longitude: number;
   imbalance_state: ImbalanceState;

@@ -1,0 +1,2858 @@
+{
+ "kpis": {
+  "as_of": "2026-11-07T23:33:40Z",
+  "available_stations": 257,
+  "balanced_stations": 133,
+  "bikes_available": 3575,
+  "data_freshness_seconds": 52,
+  "docks_available": 3369,
+  "ebikes_available": 1333,
+  "empty_stations": 20,
+  "feed_updated_at": "2026-11-07T23:33:10Z",
+  "fill_ratio": 0.5148329493087558,
+  "flooding_stations": 78,
+  "full_stations": 17,
+  "offline_stations": 21,
+  "rebalance_need_bikes": 1641,
+  "starving_stations": 83,
+  "stations": 315,
+  "stations_in_service": 294
+ },
+ "stations": [
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.76408932350688,
+   "longitude": -73.91065120697021,
+   "station_bikes_available": 1,
+   "station_docks_available": 17,
+   "station_id": "00284700-9d22-42ce-8485-113fed9879c1",
+   "station_name": "28 Ave & 44 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.814232,
+   "longitude": -73.903927,
+   "station_bikes_available": 5,
+   "station_docks_available": 13,
+   "station_id": "002e6e9f-ced2-47b0-bc7e-ccf38c3b4b0f",
+   "station_name": "Prospect Ave & E 151 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.74446,
+   "longitude": -73.89764,
+   "station_bikes_available": 7,
+   "station_docks_available": 11,
+   "station_id": "00967b8f-1a4d-4131-a65a-17fa8ca89e28",
+   "station_name": "41 Ave & 67 St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.72479007746337,
+   "longitude": -73.98430064320564,
+   "station_bikes_available": 38,
+   "station_docks_available": 7,
+   "station_id": "0096fecb-3a56-4585-9204-aa9554f7bc49",
+   "station_name": "E 5 St & Ave A"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.735918,
+   "longitude": -74.000939,
+   "station_bikes_available": 45,
+   "station_docks_available": 3,
+   "station_id": "00d3e65e-b614-4408-aaa9-939ed96ce645",
+   "station_name": "Perry St & Greenwich Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.6756,
+   "longitude": -73.9415,
+   "station_bikes_available": 4,
+   "station_docks_available": 18,
+   "station_id": "00d94dfc-3695-47e1-aba6-7f319dd2eb08",
+   "station_name": "Bergen St & Kingston Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.67977,
+   "longitude": -73.9847,
+   "station_bikes_available": 27,
+   "station_docks_available": 2,
+   "station_id": "0109f17a-2378-4500-9648-88bdb31ec612",
+   "station_name": "Degraw St & 3 Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.756265,
+   "longitude": -73.964179,
+   "station_bikes_available": 8,
+   "station_docks_available": 52,
+   "station_id": "0138452a-b9f4-4aee-80b0-7fae9a122ffe",
+   "station_name": "E 54 St & 1 Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.7075188830923,
+   "longitude": -74.00108054280281,
+   "station_bikes_available": 42,
+   "station_docks_available": 3,
+   "station_id": "014a931b-8e1c-438a-8a22-f267ddd1e0d2",
+   "station_name": "Peck Slip & South St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.69715,
+   "longitude": -73.8936,
+   "station_bikes_available": 3,
+   "station_docks_available": 14,
+   "station_id": "016ee47a-4871-4209-91cb-bf3ceeddc991",
+   "station_name": "St Felix Ave & 61 St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.813539,
+   "longitude": -73.94521,
+   "station_bikes_available": 2,
+   "station_docks_available": 16,
+   "station_id": "01839a78-f228-4706-8f7f-147b857492f2",
+   "station_name": "Adam Clayton Powell Blvd & W 132 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.82923,
+   "longitude": -73.936996,
+   "station_bikes_available": 19,
+   "station_docks_available": 7,
+   "station_id": "0183d7d4-9e11-4429-94db-666a31239871",
+   "station_name": "W 155 St & Frederick Douglass Blvd"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.828199,
+   "longitude": -73.903719,
+   "station_bikes_available": 9,
+   "station_docks_available": 9,
+   "station_id": "0197e9da-ae03-40a7-8270-fe500bfc9e18",
+   "station_name": "Boston Rd & E 167 St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.823168,
+   "longitude": -73.955857,
+   "station_bikes_available": 5,
+   "station_docks_available": 23,
+   "station_id": "01a1343d-9c7b-4a83-8a5a-a600187f19c4",
+   "station_name": "Riverside Dr & W 138 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.68374,
+   "longitude": -73.9261,
+   "station_bikes_available": 6,
+   "station_docks_available": 13,
+   "station_id": "01b7973e-c92e-4fbe-890e-2c24de33ce0e",
+   "station_name": "Macon St & Patchen Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.68256425759694,
+   "longitude": -73.9798977971077,
+   "station_bikes_available": 29,
+   "station_docks_available": 3,
+   "station_id": "01f01352-50d4-484e-a611-576b18ac373a",
+   "station_name": "Bergen St & 4 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.812191,
+   "longitude": -73.937838,
+   "station_bikes_available": 11,
+   "station_docks_available": 10,
+   "station_id": "023127f2-a6e0-4fae-ba34-178acccb993e",
+   "station_name": "5 Ave & E 135 St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.851788,
+   "longitude": -73.916418,
+   "station_bikes_available": 2,
+   "station_docks_available": 15,
+   "station_id": "023cf549-bd85-4f9a-abd8-70ba29d7e86b",
+   "station_name": "W Tremont Ave & Montgomery Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.66131,
+   "longitude": -73.96091,
+   "station_bikes_available": 19,
+   "station_docks_available": 1,
+   "station_id": "0258da92-f770-4acc-b20b-91b78aff791e",
+   "station_name": "Flatbush Ave & Lincoln Rd"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.67374,
+   "longitude": -73.90852,
+   "station_bikes_available": 2,
+   "station_docks_available": 19,
+   "station_id": "026fd07d-d810-45dc-9237-a3d84dce4fa9",
+   "station_name": "Bergen St & Mother Gaston Blvd"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.651566,
+   "longitude": -73.972212,
+   "station_bikes_available": 23,
+   "station_docks_available": 0,
+   "station_id": "02fb0f6a-b1dc-4e1c-97f8-fe70462670a3",
+   "station_name": "Park Circle & East Dr"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.747148249032804,
+   "longitude": -73.92902433872223,
+   "station_bikes_available": 8,
+   "station_docks_available": 8,
+   "station_id": "034f7f3d-e632-475a-aa01-894480d153df",
+   "station_name": "Skillman Ave & Honeywell St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.67372,
+   "longitude": -73.92199,
+   "station_bikes_available": 4,
+   "station_docks_available": 14,
+   "station_id": "03872f6b-a522-4c41-a4f2-5d0c41779e7b",
+   "station_name": "St Marks Ave & Ralph Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.67709,
+   "longitude": -73.9008,
+   "station_bikes_available": 2,
+   "station_docks_available": 19,
+   "station_id": "038b7369-9c6e-4eb2-8569-f7461443302f",
+   "station_name": "Fulton St & Williams Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.823872,
+   "longitude": -73.908699,
+   "station_bikes_available": 7,
+   "station_docks_available": 16,
+   "station_id": "039d4cc9-8560-4d22-88c3-20753c54a50f",
+   "station_name": "3 Ave & E 163 St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.87812,
+   "longitude": -73.89192,
+   "station_bikes_available": 2,
+   "station_docks_available": 14,
+   "station_id": "04d557d6-6bc3-4244-b0f1-81ed1449ccd6",
+   "station_name": "Goulden Ave & W 205 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.76171227910671,
+   "longitude": -73.98655101656914,
+   "station_bikes_available": 32,
+   "station_docks_available": 28,
+   "station_id": "053312f2-e77e-4674-b28b-ad357fbcb4ee",
+   "station_name": "8 Ave & W 49 St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.70076,
+   "longitude": -73.93641,
+   "station_bikes_available": 2,
+   "station_docks_available": 16,
+   "station_id": "0575e356-72f4-4251-8e15-574cf60bd190",
+   "station_name": "Bushwick Ave & Forrest St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.67923,
+   "longitude": -73.92588,
+   "station_bikes_available": 5,
+   "station_docks_available": 12,
+   "station_id": "0579ff13-5d5b-4cbd-bc6e-3e9396591aef",
+   "station_name": "Sumpter St & Fulton St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.832314,
+   "longitude": -73.94102,
+   "station_bikes_available": 0,
+   "station_docks_available": 16,
+   "station_id": "058ee86d-ce2a-4597-99f7-f78f082b33e3",
+   "station_name": "St Nicholas Ave & W 157 St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.822545,
+   "longitude": -73.901824,
+   "station_bikes_available": 4,
+   "station_docks_available": 17,
+   "station_id": "05969d95-8a64-4007-abf1-afb847f2d426",
+   "station_name": "E 163 St & Union Ave"
+  },
+  {
+   "imbalance_state": "offline",
+   "latitude": 40.754164,
+   "longitude": -73.908906,
+   "station_bikes_available": null,
+   "station_docks_available": null,
+   "station_id": "05b9e7cd-f3a2-4d48-b7c4-f5fbe09d9de3",
+   "station_name": "Broadway & 51 St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.75414519263519,
+   "longitude": -73.9960889518261,
+   "station_bikes_available": 0,
+   "station_docks_available": 27,
+   "station_id": "05c5e17c-7aa9-49b7-9da3-9db4858ec1fc",
+   "station_name": "W 35 St & 9 Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.837576,
+   "longitude": -73.910489,
+   "station_bikes_available": 2,
+   "station_docks_available": 20,
+   "station_id": "05d03a63-b5f2-40d9-9a3d-d2fe666a307f",
+   "station_name": "College Ave & E 170 St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.742684734875695,
+   "longitude": -73.98671329021454,
+   "station_bikes_available": 2,
+   "station_docks_available": 70,
+   "station_id": "06109e92-4363-445a-9743-0457f6799530",
+   "station_name": "Madison Ave & E 26 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.817166,
+   "longitude": -73.914737,
+   "station_bikes_available": 10,
+   "station_docks_available": 4,
+   "station_id": "062f0ac2-b3b6-4c15-b470-92ce9b592635",
+   "station_name": "Bergen Ave & E 152 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.74288,
+   "longitude": -73.89283,
+   "station_bikes_available": 4,
+   "station_docks_available": 14,
+   "station_id": "062ffe5a-aa91-412d-8210-23d562c7e7f8",
+   "station_name": "72 St & Woodside Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.7701477,
+   "longitude": -73.9120938,
+   "station_bikes_available": 6,
+   "station_docks_available": 2,
+   "station_id": "0630217a-3913-47d9-9540-cf85688296a5",
+   "station_name": "37 St & 24 Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.717318403855785,
+   "longitude": -73.99067759513855,
+   "station_bikes_available": 38,
+   "station_docks_available": 0,
+   "station_id": "063e7e78-b810-4a2f-8045-a82a0d69d752",
+   "station_name": "Orchard St & Grand St"
+  },
+  {
+   "imbalance_state": "offline",
+   "latitude": 40.71221958009051,
+   "longitude": -74.01047229766846,
+   "station_bikes_available": null,
+   "station_docks_available": null,
+   "station_id": "06439006-11b6-44f0-8545-c9d39035f32a",
+   "station_name": "Vesey St & Church St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.74215636827728,
+   "longitude": -73.92662644386292,
+   "station_bikes_available": 3,
+   "station_docks_available": 14,
+   "station_id": "067b53bd-33bf-4698-8103-3931a5f32a37",
+   "station_name": "39 St & 47 Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.756351,
+   "longitude": -73.936515,
+   "station_bikes_available": 2,
+   "station_docks_available": 15,
+   "station_id": "067d5007-bda5-4697-b0a2-ccc2837f295c",
+   "station_name": "24 St & 38 Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.7552433,
+   "longitude": -73.9485678,
+   "station_bikes_available": 21,
+   "station_docks_available": 5,
+   "station_id": "0687075b-cf2d-4130-a859-fe841aafbd3f",
+   "station_name": "Vernon Blvd & 41 Rd"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.835302,
+   "longitude": -73.895133,
+   "station_bikes_available": 2,
+   "station_docks_available": 15,
+   "station_id": "068b919c-f649-4091-8e12-ccf37191cad5",
+   "station_name": "Wilkins Ave & Crotona Park E"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.71790852734058,
+   "longitude": -73.908454477787,
+   "station_bikes_available": 7,
+   "station_docks_available": 12,
+   "station_id": "06e5447e-35b8-45cb-b3bb-937791a6f8ae",
+   "station_name": "59 St & 59 Rd"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.764496,
+   "longitude": -73.904632,
+   "station_bikes_available": 8,
+   "station_docks_available": 15,
+   "station_id": "06f0d251-e1e3-435c-8c5f-9b991a14ca4a",
+   "station_name": "49 St & 25 Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.68158,
+   "longitude": -73.91959,
+   "station_bikes_available": 3,
+   "station_docks_available": 16,
+   "station_id": "079b5a90-1d2b-40b2-b1e9-71c075f16b89",
+   "station_name": "Chauncey St & Howard Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.68995,
+   "longitude": -73.9365,
+   "station_bikes_available": 1,
+   "station_docks_available": 18,
+   "station_id": "081d243e-d75e-4e2a-bdae-a990b2397532",
+   "station_name": "Lewis Ave & Greene Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.67261,
+   "longitude": -73.91977,
+   "station_bikes_available": 1,
+   "station_docks_available": 18,
+   "station_id": "085da8d4-9465-46f0-82d1-10c9c9177d64",
+   "station_name": "Prospect Pl & Howard Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.847305,
+   "longitude": -73.933291,
+   "station_bikes_available": 2,
+   "station_docks_available": 16,
+   "station_id": "08b9c491-a589-4e75-996c-2455c26fb356",
+   "station_name": "Audubon Ave & W 179 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.7656251,
+   "longitude": -73.9136695,
+   "station_bikes_available": 7,
+   "station_docks_available": 16,
+   "station_id": "08bf2fe0-219d-48cd-87c5-6163b3a2eafd",
+   "station_name": "Steinway St & 28 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.7739825,
+   "longitude": -73.9309134,
+   "station_bikes_available": 17,
+   "station_docks_available": 19,
+   "station_id": "0927e331-866f-4d99-99b4-04edde99117a",
+   "station_name": "27 Ave & 9 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.823429,
+   "longitude": -73.924689,
+   "station_bikes_available": 10,
+   "station_docks_available": 9,
+   "station_id": "09a0c507-7cda-4f3f-9988-78de0baa28e4",
+   "station_name": "Grand Concourse & E 156 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.74021356884924,
+   "longitude": -73.93537044525146,
+   "station_bikes_available": 4,
+   "station_docks_available": 13,
+   "station_id": "09b00240-4c2a-4900-9d09-f13344461c02",
+   "station_name": "31 Pl & Hunters Point Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.738046142482766,
+   "longitude": -73.99642959237099,
+   "station_bikes_available": 9,
+   "station_docks_available": 61,
+   "station_id": "09dfc0e3-a448-477c-bb3c-9467dc51ef8d",
+   "station_name": "W 15 St & 6 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.7923272,
+   "longitude": -73.9383,
+   "station_bikes_available": 17,
+   "station_docks_available": 6,
+   "station_id": "0b613329-b8c8-4b8c-ad40-79952aa41157",
+   "station_name": "1 Ave & E 110 St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.640125,
+   "longitude": -74.015726,
+   "station_bikes_available": 22,
+   "station_docks_available": 4,
+   "station_id": "0b857ee5-3d10-4152-952e-95fbaf06677a",
+   "station_name": "59 St & 5 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.826406,
+   "longitude": -73.937948,
+   "station_bikes_available": 18,
+   "station_docks_available": 13,
+   "station_id": "0b94cc1e-2327-4679-99d9-3b21ddc02051",
+   "station_name": "Macombs Pl & W 152 St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.73698221818716,
+   "longitude": -74.02778059244156,
+   "station_bikes_available": 26,
+   "station_docks_available": 1,
+   "station_id": "0bb12c94-efdb-40ac-98fe-9521ba373b57",
+   "station_name": "South Waterfront Walkway - Sinatra Dr & 1 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.638196,
+   "longitude": -74.013821,
+   "station_bikes_available": 11,
+   "station_docks_available": 10,
+   "station_id": "0bd9bd58-42e6-4680-9d19-83943372221f",
+   "station_name": "6 Ave & 60 St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.830471,
+   "longitude": -73.904556,
+   "station_bikes_available": 3,
+   "station_docks_available": 16,
+   "station_id": "0c106e83-c47a-4233-b5e4-62bbb75d0bed",
+   "station_name": "Fulton Ave & E 168 St"
+  },
+  {
+   "imbalance_state": "offline",
+   "latitude": 40.74005708567285,
+   "longitude": -74.0052741765976,
+   "station_bikes_available": null,
+   "station_docks_available": null,
+   "station_id": "0c923abb-298a-4a47-b132-9fae73cc59e6",
+   "station_name": "Hudson St & W 13 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.65798,
+   "longitude": -73.96051,
+   "station_bikes_available": 15,
+   "station_docks_available": 7,
+   "station_id": "0cb63737-64c9-42a9-9479-280d49ed015a",
+   "station_name": "Flatbush Ave & Fenimore St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.660906,
+   "longitude": -73.983074,
+   "station_bikes_available": 6,
+   "station_docks_available": 14,
+   "station_id": "0cc38ba1-4625-4821-9a6f-e490525cbce2",
+   "station_name": "Windsor Pl & 8 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.74193,
+   "longitude": -73.90913,
+   "station_bikes_available": 7,
+   "station_docks_available": 12,
+   "station_id": "0cde9bcd-0dcb-45dc-9c9a-3e5485b5452e",
+   "station_name": "Queens Blvd & 56 St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.72984830346529,
+   "longitude": -73.97455215454102,
+   "station_bikes_available": 6,
+   "station_docks_available": 42,
+   "station_id": "0dc63044-e19c-474d-9df1-c3e504d03b07",
+   "station_name": "Ave C & E 16 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.67313,
+   "longitude": -73.91387,
+   "station_bikes_available": 9,
+   "station_docks_available": 10,
+   "station_id": "0dd71c6d-11ee-4ad4-ba99-36b9ad36112c",
+   "station_name": "St Marks Ave & Thomas S. Boyland St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.823498,
+   "longitude": -73.94386,
+   "station_bikes_available": 0,
+   "station_docks_available": 24,
+   "station_id": "0ddb965d-95ef-4ce3-bde6-81a56ac1fbd2",
+   "station_name": "Edgecombe Ave & W 145 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.76547569244953,
+   "longitude": -73.91811579465866,
+   "station_bikes_available": 6,
+   "station_docks_available": 22,
+   "station_id": "0de1f95f-8b1b-4e5e-9eff-73c63265b0ab",
+   "station_name": "35 St & 30 Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.852253,
+   "longitude": -73.931308,
+   "station_bikes_available": 0,
+   "station_docks_available": 22,
+   "station_id": "0df3a035-5a38-4ec2-826a-0a5376e8d8a0",
+   "station_name": "W 186 St & St Nicholas Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.7987859,
+   "longitude": -73.9523,
+   "station_bikes_available": 17,
+   "station_docks_available": 17,
+   "station_id": "0e003543-3656-448f-8a93-029d265f2e26",
+   "station_name": "Lenox Ave & W 111 St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.6595,
+   "longitude": -73.95041,
+   "station_bikes_available": 19,
+   "station_docks_available": 0,
+   "station_id": "0e240143-2f86-4754-8345-4994750d99f1",
+   "station_name": "Nostrand Ave & Rutland Rd"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.72248188638219,
+   "longitude": -73.95921930670738,
+   "station_bikes_available": 25,
+   "station_docks_available": 0,
+   "station_id": "0e3dedfb-df10-4900-a67b-95349a81bc5c",
+   "station_name": "N 11 St & Kent Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.811314,
+   "longitude": -73.907729,
+   "station_bikes_available": 1,
+   "station_docks_available": 18,
+   "station_id": "0e405c35-322f-4705-8ea7-769eb3fd028a",
+   "station_name": "Wales Ave & E 147 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.763154,
+   "longitude": -73.920827,
+   "station_bikes_available": 6,
+   "station_docks_available": 15,
+   "station_id": "0e5be726-2452-42a0-9be8-ea85c8408e4c",
+   "station_name": "31 Ave & 34 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.863211,
+   "longitude": -73.920827,
+   "station_bikes_available": 13,
+   "station_docks_available": 5,
+   "station_id": "0e82ab9f-8c93-4302-b9df-342f8135a05c",
+   "station_name": "W 204 St & Nagle Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.6716,
+   "longitude": -73.93378,
+   "station_bikes_available": 2,
+   "station_docks_available": 19,
+   "station_id": "0e8bfd72-c494-4d3e-85e2-4f98b801fe3b",
+   "station_name": "Sterling Pl & Schenectady Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.666197,
+   "longitude": -73.992466,
+   "station_bikes_available": 21,
+   "station_docks_available": 8,
+   "station_id": "0eacb768-c7d5-4499-9182-9a1331d9280c",
+   "station_name": "16 St & 4 Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.69385,
+   "longitude": -73.90974,
+   "station_bikes_available": 1,
+   "station_docks_available": 0,
+   "station_id": "0ebdda6a-37e4-4ff4-94e8-3947f49d8e24",
+   "station_name": "Knickerbocker Ave & Hancock St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.657743,
+   "longitude": -74.001141,
+   "station_bikes_available": 17,
+   "station_docks_available": 2,
+   "station_id": "0efa08a3-1c38-48fe-ab37-8c9b72b20126",
+   "station_name": "30 St & 4 Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.732647,
+   "longitude": -73.99011,
+   "station_bikes_available": 33,
+   "station_docks_available": 1,
+   "station_id": "0f45bcf6-7028-4584-a51e-4129847dbebc",
+   "station_name": "4 Ave & E 12 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.797520781247556,
+   "longitude": -73.9489397406578,
+   "station_bikes_available": 17,
+   "station_docks_available": 16,
+   "station_id": "0f51cb84-e386-44ac-947f-a969f7617d17",
+   "station_name": "W 111 St & 5 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.83173,
+   "longitude": -73.922394,
+   "station_bikes_available": 9,
+   "station_docks_available": 11,
+   "station_id": "0f536c08-dde3-40af-a66d-1fe1e7edecd2",
+   "station_name": "Gerard Ave & E 165 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.805159,
+   "longitude": -73.954692,
+   "station_bikes_available": 19,
+   "station_docks_available": 14,
+   "station_id": "0f6fd186-656a-41b3-ba4a-456d22da177c",
+   "station_name": "Frederick Douglass Blvd & W 117 St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.7428,
+   "longitude": -73.89584,
+   "station_bikes_available": 0,
+   "station_docks_available": 18,
+   "station_id": "0f9423bd-98dd-4919-b6e3-28880ff7ecca",
+   "station_name": "Woodside Ave & 69 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.75905795418586,
+   "longitude": -73.91897544264793,
+   "station_bikes_available": 19,
+   "station_docks_available": 13,
+   "station_id": "0f98907a-d4cc-45e0-b174-7d9dfda74106",
+   "station_name": "Steinway St & Broadway"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.7628138,
+   "longitude": -73.9342862,
+   "station_bikes_available": 11,
+   "station_docks_available": 10,
+   "station_id": "0fa27bd7-b182-4e7a-b5bb-90f4249cb368",
+   "station_name": "34 Ave & 21 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.7529728216068,
+   "longitude": -73.98734897375107,
+   "station_bikes_available": 41,
+   "station_docks_available": 26,
+   "station_id": "0fde06c2-632c-46a9-8866-f4e855604f74",
+   "station_name": "Broadway & W 38 St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.67568,
+   "longitude": -73.91396,
+   "station_bikes_available": 3,
+   "station_docks_available": 12,
+   "station_id": "101c813e-02a8-4b6b-bd5d-981c1ea62019",
+   "station_name": "Pacific St & Thomas S. Boyland St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.70413,
+   "longitude": -73.90737,
+   "station_bikes_available": 1,
+   "station_docks_available": 17,
+   "station_id": "1057229c-f8f8-4014-80cd-f40421c61cf0",
+   "station_name": "Onderdonk Ave & Gates Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.820877,
+   "longitude": -73.939249,
+   "station_bikes_available": 5,
+   "station_docks_available": 17,
+   "station_id": "1064b4b0-e9c8-4139-ac48-f118305dbe69",
+   "station_name": "W 144 St & Adam Clayton Powell Blvd"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.87207,
+   "longitude": -73.88459,
+   "station_bikes_available": 2,
+   "station_docks_available": 14,
+   "station_id": "1096fc76-794e-4343-8eb0-0dd6c9a48266",
+   "station_name": "E 201 St & Briggs Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.812735,
+   "longitude": -73.923697,
+   "station_bikes_available": 0,
+   "station_docks_available": 15,
+   "station_id": "10c13fe2-34cb-4aff-bea1-4f5ce877769b",
+   "station_name": "E 142 St & 3 Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.741981599940225,
+   "longitude": -74.00831580162048,
+   "station_bikes_available": 68,
+   "station_docks_available": 9,
+   "station_id": "116dbc02-a3c1-4b65-9f73-2a09a2aa1379",
+   "station_name": "10 Ave & W 14 St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.764126,
+   "longitude": -73.980973,
+   "station_bikes_available": 4,
+   "station_docks_available": 57,
+   "station_id": "1198e739-787c-4ce4-aa63-ffaf98506e9c",
+   "station_name": "7 Ave & W 55 St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.810893,
+   "longitude": -73.927311,
+   "station_bikes_available": 4,
+   "station_docks_available": 19,
+   "station_id": "11a8d465-b4eb-466b-a6ca-055f73994231",
+   "station_name": "Lincoln Ave & E 138 St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.71921,
+   "longitude": -73.9124,
+   "station_bikes_available": 18,
+   "station_docks_available": 1,
+   "station_id": "1202a491-9f76-4609-9b5c-eb7723ab5b45",
+   "station_name": "57 St & Grand Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.660937794931684,
+   "longitude": -73.98680448532104,
+   "station_bikes_available": 7,
+   "station_docks_available": 13,
+   "station_id": "122111c9-9a61-4372-a756-fb2495611cb6",
+   "station_name": "7 Ave & 17 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.7531106,
+   "longitude": -73.9279917,
+   "station_bikes_available": 7,
+   "station_docks_available": 18,
+   "station_id": "12279d2b-29f6-4e02-a7f0-244970f7edd5",
+   "station_name": "37 Ave & 35 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.6972,
+   "longitude": -73.90674,
+   "station_bikes_available": 7,
+   "station_docks_available": 9,
+   "station_id": "1318e05a-2506-43c6-b49d-4c1f7f69a267",
+   "station_name": "Hancock St & Wyckoff Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.804372,
+   "longitude": -73.951475,
+   "station_bikes_available": 9,
+   "station_docks_available": 16,
+   "station_id": "138094a0-cd7d-4014-9b21-4fb2afd3980e",
+   "station_name": "Adam Clayton Powell Blvd & W 118 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.858498,
+   "longitude": -73.89637,
+   "station_bikes_available": 3,
+   "station_docks_available": 11,
+   "station_id": "13b82a41-c25b-428f-a07b-5f5d8340c6f2",
+   "station_name": "Tiebout Ave & E 184 St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.69517,
+   "longitude": -73.90311,
+   "station_bikes_available": 9,
+   "station_docks_available": 2,
+   "station_id": "141ba25c-f4ea-4cec-ae7e-022401e23087",
+   "station_name": "Norman St & Wyckoff Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.822217,
+   "longitude": -73.928939,
+   "station_bikes_available": 22,
+   "station_docks_available": 2,
+   "station_id": "141eb0e0-e78d-411a-a0be-202a6424cc93",
+   "station_name": "River Ave & E 151 St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.84741,
+   "longitude": -73.911359,
+   "station_bikes_available": 2,
+   "station_docks_available": 15,
+   "station_id": "1431ec5c-242d-401b-b672-dbf95155999b",
+   "station_name": "Townsend Ave & E 175 St"
+  },
+  {
+   "imbalance_state": "offline",
+   "latitude": 40.77095553869235,
+   "longitude": -73.95356208096926,
+   "station_bikes_available": null,
+   "station_docks_available": null,
+   "station_id": "14391923-6727-4359-92e9-03e0b5094753",
+   "station_name": "E 77 St & 1 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.702013,
+   "longitude": -73.923769,
+   "station_bikes_available": 8,
+   "station_docks_available": 14,
+   "station_id": "145bbc0d-8976-45ae-9565-158ba564d3d1",
+   "station_name": "Suydam St & Knickerbocker Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.8107922,
+   "longitude": -73.9430681,
+   "station_bikes_available": 18,
+   "station_docks_available": 3,
+   "station_id": "14f928c6-9a51-40a2-b7e6-a74e8b351dbf",
+   "station_name": "Lenox Ave & W 130 St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.86932465640094,
+   "longitude": -73.91519755125046,
+   "station_bikes_available": 14,
+   "station_docks_available": 1,
+   "station_id": "158e7752-27e2-4912-be0b-eb15405aa096",
+   "station_name": "10 Ave & W 215 St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.68973,
+   "longitude": -73.93353,
+   "station_bikes_available": 0,
+   "station_docks_available": 15,
+   "station_id": "1597ea95-0b6b-425a-8d13-ed86ee0754b5",
+   "station_name": "Lexington Ave & Stuyvesant Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.850121,
+   "longitude": -73.910765,
+   "station_bikes_available": 2,
+   "station_docks_available": 22,
+   "station_id": "15cb007b-bfca-4ad7-bfc6-44bf3d36785a",
+   "station_name": "Jerome Ave & W 177 St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.70929,
+   "longitude": -73.89441,
+   "station_bikes_available": 18,
+   "station_docks_available": 2,
+   "station_id": "15e1568b-f502-47a2-9d3d-b5aaa1edc239",
+   "station_name": "Palmetto St & Traffic Ave"
+  },
+  {
+   "imbalance_state": "offline",
+   "latitude": 40.646377,
+   "longitude": -74.023087,
+   "station_bikes_available": 0,
+   "station_docks_available": 7,
+   "station_id": "160e21da-6dd2-47ff-8385-e13c8cdce4fa",
+   "station_name": "57 St & 1 Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.818212,
+   "longitude": -73.955277,
+   "station_bikes_available": 0,
+   "station_docks_available": 19,
+   "station_id": "16280b32-7e5b-4a18-930b-212eac10faaa",
+   "station_name": "Old Broadway & W 133 St"
+  },
+  {
+   "imbalance_state": "offline",
+   "latitude": 40.68700231292619,
+   "longitude": -73.97664964199066,
+   "station_bikes_available": 0,
+   "station_docks_available": 0,
+   "station_id": "162d5859-b735-4ff7-9613-01b21f22c1cd",
+   "station_name": "Lafayette Ave & Ft Greene Pl"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.70408,
+   "longitude": -73.90408,
+   "station_bikes_available": 5,
+   "station_docks_available": 13,
+   "station_id": "16836c76-c412-4ec3-bac8-3c6a5a3d9745",
+   "station_name": "Madison St & Woodward Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.8029263,
+   "longitude": -73.9379,
+   "station_bikes_available": 7,
+   "station_docks_available": 19,
+   "station_id": "16a4effc-282e-4053-b47b-31f734d50c08",
+   "station_name": "E 123 St & Lexington Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.743540273428685,
+   "longitude": -73.92435193061829,
+   "station_bikes_available": 5,
+   "station_docks_available": 17,
+   "station_id": "16c54bf4-194b-4f26-9c49-a42901b4748d",
+   "station_name": "40 St & Queens Blvd"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.74893,
+   "longitude": -73.89981,
+   "station_bikes_available": 13,
+   "station_docks_available": 7,
+   "station_id": "16cbe771-8fca-4437-b9d2-374e00da6c3a",
+   "station_name": "37 Ave & 63 St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.8649213,
+   "longitude": -73.9024238,
+   "station_bikes_available": 0,
+   "station_docks_available": 15,
+   "station_id": "16e17ca1-b2dc-47d0-8c8b-199cb4736fe7",
+   "station_name": "Aqueduct Ave & W 190 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.651173,
+   "longitude": -74.011405,
+   "station_bikes_available": 16,
+   "station_docks_available": 7,
+   "station_id": "16e70b05-5b73-4930-9dcf-f79e5ce9eaf5",
+   "station_name": "44 St & 3 Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.66967,
+   "longitude": -73.9503,
+   "station_bikes_available": 0,
+   "station_docks_available": 24,
+   "station_id": "174bf571-e597-463d-84bc-611c4a13d85e",
+   "station_name": "Eastern Pkwy & Nostrand Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.725819,
+   "longitude": -73.950815,
+   "station_bikes_available": 25,
+   "station_docks_available": 2,
+   "station_id": "1786375069262703476",
+   "station_name": "Norman Ave & Leonard St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.722767,
+   "longitude": -73.957021,
+   "station_bikes_available": 39,
+   "station_docks_available": 0,
+   "station_id": "1786375597504305174",
+   "station_name": "Wythe Ave & N 13 St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.729803,
+   "longitude": -73.959099,
+   "station_bikes_available": 30,
+   "station_docks_available": 1,
+   "station_id": "1786687245202023014",
+   "station_name": "Greenpoint Ave & West St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.735217,
+   "longitude": -73.954926,
+   "station_bikes_available": 8,
+   "station_docks_available": 24,
+   "station_id": "1786696251091417274",
+   "station_name": "Eagle St & Manhattan Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.721226,
+   "longitude": -73.941845,
+   "station_bikes_available": 3,
+   "station_docks_available": 18,
+   "station_id": "1786696384892428996",
+   "station_name": "Monitor St & Meeker Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.708323,
+   "longitude": -73.948732,
+   "station_bikes_available": 2,
+   "station_docks_available": 25,
+   "station_id": "1786696564295760054",
+   "station_name": "Scholes St & Lorimer St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.712628,
+   "longitude": -73.960575,
+   "station_bikes_available": 27,
+   "station_docks_available": 1,
+   "station_id": "1786696780996714874",
+   "station_name": "Driggs Ave & S 2 St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.718389,
+   "longitude": -73.961501,
+   "station_bikes_available": 38,
+   "station_docks_available": 1,
+   "station_id": "1786697003367719132",
+   "station_name": "N 5 St & Wythe Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.720253,
+   "longitude": -73.957082,
+   "station_bikes_available": 46,
+   "station_docks_available": 0,
+   "station_id": "1786697166576476490",
+   "station_name": "N 10 St & Berry St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.719876,
+   "longitude": -73.963865,
+   "station_bikes_available": 34,
+   "station_docks_available": 7,
+   "station_id": "1786697528321024934",
+   "station_name": "N 5 St & Northside Piers"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.716425,
+   "longitude": -73.96594,
+   "station_bikes_available": 44,
+   "station_docks_available": 0,
+   "station_id": "1786697771181570266",
+   "station_name": "Kent Ave & Grand St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.713532,
+   "longitude": -73.9459867,
+   "station_bikes_available": 22,
+   "station_docks_available": 0,
+   "station_id": "1786697932047949952",
+   "station_name": "Manhattan Ave & Devoe St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.714731,
+   "longitude": -73.966612,
+   "station_bikes_available": 36,
+   "station_docks_available": 8,
+   "station_id": "1786698158713921798",
+   "station_name": "S 2 St & Kent Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.710709,
+   "longitude": -73.959724,
+   "station_bikes_available": 35,
+   "station_docks_available": 0,
+   "station_id": "1786698321265653818",
+   "station_name": "S 4 St & Roebling St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.710888,
+   "longitude": -73.968329,
+   "station_bikes_available": 41,
+   "station_docks_available": 8,
+   "station_id": "1786698815186893280",
+   "station_name": "Broadway & Kent Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.716967,
+   "longitude": -73.956388,
+   "station_bikes_available": 48,
+   "station_docks_available": 2,
+   "station_id": "1786698974100683436",
+   "station_name": "N 7 St & Driggs Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.73224,
+   "longitude": -73.94383,
+   "station_bikes_available": 9,
+   "station_docks_available": 8,
+   "station_id": "1786699974232881542",
+   "station_name": "Greenpoint Ave & Monitor St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.7277,
+   "longitude": -73.94395,
+   "station_bikes_available": 11,
+   "station_docks_available": 16,
+   "station_id": "1786700154621508184",
+   "station_name": "N Henry St & Norman Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.67972,
+   "longitude": -73.93467,
+   "station_bikes_available": 10,
+   "station_docks_available": 5,
+   "station_id": "1789e458-c466-4d77-aba6-365f5c3823ed",
+   "station_name": "Lewis Ave & Fulton St"
+  },
+  {
+   "imbalance_state": "offline",
+   "latitude": 40.641269,
+   "longitude": -74.017651,
+   "station_bikes_available": 0,
+   "station_docks_available": 11,
+   "station_id": "178bad16-1b02-4264-94c0-a8fd0faa60fe",
+   "station_name": "59 St & 4 Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.72054,
+   "longitude": -73.959,
+   "station_bikes_available": 47,
+   "station_docks_available": 0,
+   "station_id": "1791188268875152272",
+   "station_name": "N 9 St & Wythe Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.761865,
+   "longitude": -73.977242,
+   "station_bikes_available": 3,
+   "station_docks_available": 59,
+   "station_id": "1791472201147965920",
+   "station_name": "W 54 St & 6 Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.7123,
+   "longitude": -73.89397,
+   "station_bikes_available": 18,
+   "station_docks_available": 4,
+   "station_id": "1792225684155730482",
+   "station_name": "65 Ln & Metropolitan Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.709957,
+   "longitude": -74.016538,
+   "station_bikes_available": 23,
+   "station_docks_available": 20,
+   "station_id": "1794096824496960148",
+   "station_name": "South End Ave & Albany St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.74526,
+   "longitude": -73.99062,
+   "station_bikes_available": 37,
+   "station_docks_available": 26,
+   "station_id": "1794096976946852066",
+   "station_name": "W 27 St & 6 Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.72655,
+   "longitude": -73.90321,
+   "station_bikes_available": 19,
+   "station_docks_available": 1,
+   "station_id": "1794852638057746848",
+   "station_name": "63 St & Borden Ave"
+  },
+  {
+   "imbalance_state": "offline",
+   "latitude": 40.82319448542357,
+   "longitude": -73.88762910982096,
+   "station_bikes_available": null,
+   "station_docks_available": null,
+   "station_id": "1795146692060860976",
+   "station_name": "Longfellow Ave & Aldus St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.649681,
+   "longitude": -73.967829,
+   "station_bikes_available": 12,
+   "station_docks_available": 5,
+   "station_id": "1796642668661690940",
+   "station_name": "Caton Ave & Argyle Rd"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.71107,
+   "longitude": -73.903,
+   "station_bikes_available": 7,
+   "station_docks_available": 11,
+   "station_id": "1797078913880883846",
+   "station_name": "60 Pl & Bleecker St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.67487503856169,
+   "longitude": -74.01048018571481,
+   "station_bikes_available": 18,
+   "station_docks_available": 2,
+   "station_id": "1799624430022654108",
+   "station_name": "Dwight St & Dikeman St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.68044,
+   "longitude": -73.92842,
+   "station_bikes_available": 8,
+   "station_docks_available": 12,
+   "station_id": "17aba164-9d41-4336-9767-2218b8994ded",
+   "station_name": "Chauncey St & Malcolm X Blvd"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.6691783,
+   "longitude": -73.9554162,
+   "station_bikes_available": 6,
+   "station_docks_available": 13,
+   "station_id": "17aeb1e3-fd18-4cf9-9473-17dfa5b0a312",
+   "station_name": "Union St & Bedford Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.69985,
+   "longitude": -73.97141,
+   "station_bikes_available": 4,
+   "station_docks_available": 18,
+   "station_id": "17ba4945-b202-4667-965f-211d80622646",
+   "station_name": "Dock 72 Way & Market St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.834263,
+   "longitude": -73.917641,
+   "station_bikes_available": 4,
+   "station_docks_available": 24,
+   "station_id": "17c45d34-0d8d-46ba-9078-e9a2a7c5867c",
+   "station_name": "Grand Concourse & E 167 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.82090903827738,
+   "longitude": -73.92753845245076,
+   "station_bikes_available": 8,
+   "station_docks_available": 18,
+   "station_id": "1804894168423871442",
+   "station_name": "Walton Ave & E 151 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.72532,
+   "longitude": -73.9368,
+   "station_bikes_available": 17,
+   "station_docks_available": 14,
+   "station_id": "1808184356986544410",
+   "station_name": "Van Dam St & Meeker Ave"
+  },
+  {
+   "imbalance_state": "offline",
+   "latitude": 40.642031,
+   "longitude": -73.981073,
+   "station_bikes_available": 0,
+   "station_docks_available": 0,
+   "station_id": "180b83a0-329c-4069-87be-df862cb1baed",
+   "station_name": "Church Ave & Story St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.785851052913884,
+   "longitude": -73.95482444378061,
+   "station_bikes_available": 36,
+   "station_docks_available": 3,
+   "station_id": "1813395029173762108",
+   "station_name": "E 94 St & Madison Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.72693,
+   "longitude": -73.95863,
+   "station_bikes_available": 27,
+   "station_docks_available": 6,
+   "station_id": "1814548067447122618",
+   "station_name": "Calyer St & West St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.65485,
+   "longitude": -73.96217,
+   "station_bikes_available": 22,
+   "station_docks_available": 7,
+   "station_id": "1814900353536621062",
+   "station_name": "Parkside Ave & Ocean Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.65272,
+   "longitude": -73.94994,
+   "station_bikes_available": 18,
+   "station_docks_available": 1,
+   "station_id": "1814900632709495794",
+   "station_name": "Linden Blvd & Nostrand Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.65458,
+   "longitude": -73.94716,
+   "station_bikes_available": 16,
+   "station_docks_available": 5,
+   "station_id": "1814900752968579218",
+   "station_name": "New York Ave & Lenox Rd"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.65577,
+   "longitude": -73.9432,
+   "station_bikes_available": 6,
+   "station_docks_available": 14,
+   "station_id": "1814900898997467540",
+   "station_name": "Clarkson Ave & E 37 St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.65496,
+   "longitude": -73.93765,
+   "station_bikes_available": 18,
+   "station_docks_available": 2,
+   "station_id": "1814901062206225038",
+   "station_name": "Lenox Rd & E 43 St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.64466,
+   "longitude": -73.96322,
+   "station_bikes_available": 21,
+   "station_docks_available": 1,
+   "station_id": "1814906692908349788",
+   "station_name": "E 17 St & Beverley Rd"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.64741,
+   "longitude": -73.95933,
+   "station_bikes_available": 16,
+   "station_docks_available": 1,
+   "station_id": "1814906873296976512",
+   "station_name": "Albemarle Rd & E 21 St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.64499,
+   "longitude": -73.95818,
+   "station_bikes_available": 26,
+   "station_docks_available": 2,
+   "station_id": "1814907062275537820",
+   "station_name": "Beverley Rd & Flatbush Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.64034,
+   "longitude": -73.96603,
+   "station_bikes_available": 22,
+   "station_docks_available": 2,
+   "station_id": "1814907277023901890",
+   "station_name": "Cortelyou Rd & Argyle Rd"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.64173,
+   "longitude": -73.96364,
+   "station_bikes_available": 24,
+   "station_docks_available": 0,
+   "station_id": "1814907423052790164",
+   "station_name": "E 16 St & Cortelyou Rd"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.65592,
+   "longitude": -73.94068,
+   "station_bikes_available": 24,
+   "station_docks_available": 4,
+   "station_id": "1815967051912860522",
+   "station_name": "Clarkson Ave & E 40 St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.65007,
+   "longitude": -73.96001,
+   "station_bikes_available": 23,
+   "station_docks_available": 0,
+   "station_id": "1815967159287043052",
+   "station_name": "E 21 St & Church Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.64672,
+   "longitude": -73.96637,
+   "station_bikes_available": 17,
+   "station_docks_available": 1,
+   "station_id": "1815967313905864892",
+   "station_name": "Rugby Rd & Albemarle Rd"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.65074,
+   "longitude": -73.94986,
+   "station_bikes_available": 24,
+   "station_docks_available": 6,
+   "station_id": "1815967442754883940",
+   "station_name": "Church Ave & Nostrand Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.65182,
+   "longitude": -73.93135,
+   "station_bikes_available": 20,
+   "station_docks_available": 1,
+   "station_id": "1815967674683118258",
+   "station_name": "E 49 St & Church Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.64915,
+   "longitude": -73.94368,
+   "station_bikes_available": 13,
+   "station_docks_available": 6,
+   "station_id": "1815968026870435892",
+   "station_name": "Brooklyn Ave & Snyder Ave"
+  },
+  {
+   "imbalance_state": "offline",
+   "latitude": 40.64683,
+   "longitude": -73.94933,
+   "station_bikes_available": 0,
+   "station_docks_available": 0,
+   "station_id": "1815968147129520346",
+   "station_name": "Tilden Ave & Nostrand Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.64575,
+   "longitude": -73.94331,
+   "station_bikes_available": 1,
+   "station_docks_available": 19,
+   "station_id": "1815968237323833702",
+   "station_name": "Brooklyn Ave & Beverley Rd"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.64795,
+   "longitude": -73.93182,
+   "station_bikes_available": 16,
+   "station_docks_available": 10,
+   "station_id": "1815968345907104578",
+   "station_name": "E 48 St & Tilden Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.64535,
+   "longitude": -73.93268,
+   "station_bikes_available": 10,
+   "station_docks_available": 12,
+   "station_id": "1815968422007427668",
+   "station_name": "Schenectady Ave & Cortelyou Rd"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.65237,
+   "longitude": -73.95623,
+   "station_bikes_available": 10,
+   "station_docks_available": 10,
+   "station_id": "1817431953833509324",
+   "station_name": "Caton Ave & Bedford Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.6533,
+   "longitude": -73.93644,
+   "station_bikes_available": 14,
+   "station_docks_available": 7,
+   "station_id": "1817432104157364846",
+   "station_name": "Troy Ave & Linden Blvd"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.64435,
+   "longitude": -73.96591,
+   "station_bikes_available": 24,
+   "station_docks_available": 1,
+   "station_id": "1817432233006383832",
+   "station_name": "Rugby Rd & Beverley Rd"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.64796,
+   "longitude": -73.9556,
+   "station_bikes_available": 10,
+   "station_docks_available": 8,
+   "station_id": "1817432346178415570",
+   "station_name": "Bedford Ave & Albemarle Rd"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.6487143313713,
+   "longitude": -73.95207855180962,
+   "station_bikes_available": 17,
+   "station_docks_available": 1,
+   "station_id": "1817432434869846072",
+   "station_name": "Rogers Ave & Snyder Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.65116,
+   "longitude": -73.94577,
+   "station_bikes_available": 21,
+   "station_docks_available": 3,
+   "station_id": "1817432606668538118",
+   "station_name": "E 34 St & Church Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.65127,
+   "longitude": -73.93818,
+   "station_bikes_available": 18,
+   "station_docks_available": 4,
+   "station_id": "1817432709747753390",
+   "station_name": "Church Ave & E 42 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.63966,
+   "longitude": -73.96807,
+   "station_bikes_available": 14,
+   "station_docks_available": 4,
+   "station_id": "1817432787057164808",
+   "station_name": "Cortelyou Rd & Stratford Rd"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.64483,
+   "longitude": -73.93853,
+   "station_bikes_available": 10,
+   "station_docks_available": 10,
+   "station_id": "1817432954560889524",
+   "station_name": "Cortelyou Rd & Albany Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.64621,
+   "longitude": -73.93067,
+   "station_bikes_available": 2,
+   "station_docks_available": 16,
+   "station_id": "1817433126359581672",
+   "station_name": "Beverley Rd & E 49 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.65378286163502,
+   "longitude": -73.95270188179111,
+   "station_bikes_available": 8,
+   "station_docks_available": 12,
+   "station_id": "1817627670084542818",
+   "station_name": "Rogers Ave & Lenox Rd"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.6532,
+   "longitude": -73.96639,
+   "station_bikes_available": 15,
+   "station_docks_available": 4,
+   "station_id": "1817803079955479336",
+   "station_name": "Parkside Ave & Parade Pl"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.77423301703027,
+   "longitude": -73.91274864321404,
+   "station_bikes_available": 24,
+   "station_docks_available": 0,
+   "station_id": "1817822909864556798",
+   "station_name": "23 Ave & 31 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.64873,
+   "longitude": -73.96084,
+   "station_bikes_available": 13,
+   "station_docks_available": 4,
+   "station_id": "1819720453019329398",
+   "station_name": "Ocean Ave & Tennis Ct"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.65302,
+   "longitude": -73.94599,
+   "station_bikes_available": 18,
+   "station_docks_available": 4,
+   "station_id": "1820420022433309054",
+   "station_name": "E 34 St & Linden Blvd"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.64661,
+   "longitude": -73.95401,
+   "station_bikes_available": 16,
+   "station_docks_available": 1,
+   "station_id": "1820420129807491554",
+   "station_name": "Tilden Ave & Lott St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.64491,
+   "longitude": -73.95487,
+   "station_bikes_available": 21,
+   "station_docks_available": 2,
+   "station_id": "1820420224296772166",
+   "station_name": "Bedford Ave & Beverley Rd"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.64235,
+   "longitude": -73.96951,
+   "station_bikes_available": 12,
+   "station_docks_available": 4,
+   "station_id": "1822663031356509142",
+   "station_name": "Matthews Ct & Coney Island Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.64507,
+   "longitude": -73.9488,
+   "station_bikes_available": 23,
+   "station_docks_available": 1,
+   "station_id": "1822663143025657920",
+   "station_name": "Beverley Rd & Nostrand Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.65630069792407,
+   "longitude": -73.93647529780917,
+   "station_bikes_available": 7,
+   "station_docks_available": 10,
+   "station_id": "1823008749757202820",
+   "station_name": "Clarkson Ave & Troy Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.64725,
+   "longitude": -73.94352,
+   "station_bikes_available": 16,
+   "station_docks_available": 6,
+   "station_id": "1823008917260927616",
+   "station_name": "Brooklyn Ave & Tilden Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.64958,
+   "longitude": -73.96316,
+   "station_bikes_available": 24,
+   "station_docks_available": 5,
+   "station_id": "1826348248869574940",
+   "station_name": "E 18 St & Church Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.75675,
+   "longitude": -73.89595,
+   "station_bikes_available": 3,
+   "station_docks_available": 16,
+   "station_id": "1826348745879909352",
+   "station_name": "71 St & 32 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.839586,
+   "longitude": -73.900277,
+   "station_bikes_available": 5,
+   "station_docks_available": 10,
+   "station_id": "18267c09-1916-48d8-951c-caf88c89edd1",
+   "station_name": "3 Ave & E 172 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.73937600789778,
+   "longitude": -74.00520807425661,
+   "station_bikes_available": 45,
+   "station_docks_available": 65,
+   "station_id": "1827839088308194240",
+   "station_name": "Gansevoort St & Hudson St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.64949,
+   "longitude": -73.95408,
+   "station_bikes_available": 15,
+   "station_docks_available": 1,
+   "station_id": "1828964993433043090",
+   "station_name": "Lott St & Erasmus St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.64868,
+   "longitude": -73.94635,
+   "station_bikes_available": 18,
+   "station_docks_available": 4,
+   "station_id": "1828965172312150882",
+   "station_name": "New York Ave & Snyder Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.64521,
+   "longitude": -73.97073,
+   "station_bikes_available": 5,
+   "station_docks_available": 11,
+   "station_id": "1828965347681089818",
+   "station_name": "Turner Pl & Coney Island Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.64454,
+   "longitude": -73.94486,
+   "station_bikes_available": 15,
+   "station_docks_available": 3,
+   "station_id": "1828965671716082498",
+   "station_name": "Cortelyou Rd & E 34 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.7488,
+   "longitude": -73.89451,
+   "station_bikes_available": 15,
+   "station_docks_available": 6,
+   "station_id": "1828965887815635862",
+   "station_name": "71 St & 37 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.75473,
+   "longitude": -73.89458,
+   "station_bikes_available": 14,
+   "station_docks_available": 4,
+   "station_id": "1828966104320053340",
+   "station_name": "72 St & Northern Blvd"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.76013,
+   "longitude": -73.89741,
+   "station_bikes_available": 19,
+   "station_docks_available": 0,
+   "station_id": "1828966227118051662",
+   "station_name": "30 Ave & 70 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.75704,
+   "longitude": -73.8924,
+   "station_bikes_available": 8,
+   "station_docks_available": 9,
+   "station_id": "1828966363527611286",
+   "station_name": "32 Ave & 75 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.75473,
+   "longitude": -73.8918,
+   "station_bikes_available": 8,
+   "station_docks_available": 8,
+   "station_id": "1828966490867110420",
+   "station_name": "75 St & Northern Blvd"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.75886,
+   "longitude": -73.89081,
+   "station_bikes_available": 13,
+   "station_docks_available": 7,
+   "station_id": "1828966626550010820",
+   "station_name": "77 St & 31 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.76205,
+   "longitude": -73.895,
+   "station_bikes_available": 14,
+   "station_docks_available": 4,
+   "station_id": "1828966747840428256",
+   "station_name": "73 St & 25 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.76428,
+   "longitude": -73.89156,
+   "station_bikes_available": 11,
+   "station_docks_available": 6,
+   "station_id": "1828966882896859944",
+   "station_name": "77 St & 24 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.76466,
+   "longitude": -73.88803,
+   "station_bikes_available": 12,
+   "station_docks_available": 7,
+   "station_id": "1828967027013302842",
+   "station_name": "81 St & 24 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.76646,
+   "longitude": -73.88674,
+   "station_bikes_available": 4,
+   "station_docks_available": 13,
+   "station_id": "1828967208126648828",
+   "station_name": "23 Ave & 83 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.76109,
+   "longitude": -73.88838,
+   "station_bikes_available": 11,
+   "station_docks_available": 5,
+   "station_id": "1828967346753327602",
+   "station_name": "30 Ave & 80 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.76109,
+   "longitude": -73.88632,
+   "station_bikes_available": 6,
+   "station_docks_available": 12,
+   "station_id": "1828967499459705054",
+   "station_name": "82 St & 30 Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.75763,
+   "longitude": -73.88682,
+   "station_bikes_available": 3,
+   "station_docks_available": 13,
+   "station_id": "1828967607558607844",
+   "station_name": "32 Ave & 81 St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.75374,
+   "longitude": -73.88604,
+   "station_bikes_available": 0,
+   "station_docks_available": 23,
+   "station_id": "1828967717120678322",
+   "station_name": "81 St & 34 Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.74797,
+   "longitude": -73.88204,
+   "station_bikes_available": 6,
+   "station_docks_available": 24,
+   "station_id": "1828967830172187422",
+   "station_name": "84 St & Roosevelt Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.74825,
+   "longitude": -73.87936,
+   "station_bikes_available": 2,
+   "station_docks_available": 19,
+   "station_id": "1828967979464708718",
+   "station_name": "87 St & Roosevelt Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.75,
+   "longitude": -73.88062,
+   "station_bikes_available": 6,
+   "station_docks_available": 14,
+   "station_id": "1828968082192898522",
+   "station_name": "86 St & 37 Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.7523,
+   "longitude": -73.88093,
+   "station_bikes_available": 3,
+   "station_docks_available": 17,
+   "station_id": "1828968199249922252",
+   "station_name": "86 St & 35 Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.75601,
+   "longitude": -73.88266,
+   "station_bikes_available": 0,
+   "station_docks_available": 21,
+   "station_id": "1828968327357059242",
+   "station_name": "85 St & Northern Blvd"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.75793,
+   "longitude": -73.88401,
+   "station_bikes_available": 1,
+   "station_docks_available": 18,
+   "station_id": "1828968462257099768",
+   "station_name": "32 Ave & 84 St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.75958,
+   "longitude": -73.88219,
+   "station_bikes_available": 0,
+   "station_docks_available": 14,
+   "station_id": "1828968611856235508",
+   "station_name": "31 Ave & 86 St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.76156,
+   "longitude": -73.88167,
+   "station_bikes_available": 1,
+   "station_docks_available": 20,
+   "station_id": "1828968691399885056",
+   "station_name": "87 St & 30 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.76328,
+   "longitude": -73.88404,
+   "station_bikes_available": 12,
+   "station_docks_available": 6,
+   "station_id": "1828968794479100296",
+   "station_name": "25 Ave & 85 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.7654,
+   "longitude": -73.88256,
+   "station_bikes_available": 7,
+   "station_docks_available": 12,
+   "station_id": "1828968883163894358",
+   "station_name": "24 Ave & 87 St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.76022,
+   "longitude": -73.87774,
+   "station_bikes_available": 19,
+   "station_docks_available": 2,
+   "station_id": "1828968994833044184",
+   "station_name": "91 St & 31 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.75836,
+   "longitude": -73.87824,
+   "station_bikes_available": 14,
+   "station_docks_available": 5,
+   "station_id": "1828969112306680612",
+   "station_name": "90 St & 32 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.76313,
+   "longitude": -73.8772,
+   "station_bikes_available": 9,
+   "station_docks_available": 8,
+   "station_id": "1828969323789472168",
+   "station_name": "92 St & Astoria Blvd"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.75748,
+   "longitude": -73.86843,
+   "station_bikes_available": 2,
+   "station_docks_available": 18,
+   "station_id": "1828969417249358046",
+   "station_name": "100 St & Northern Blvd"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.75138,
+   "longitude": -73.86242,
+   "station_bikes_available": 3,
+   "station_docks_available": 16,
+   "station_id": "1828969515711812276",
+   "station_name": "104 St & 38 Ave"
+  },
+  {
+   "imbalance_state": "offline",
+   "latitude": 40.75165,
+   "longitude": -73.85915,
+   "station_bikes_available": 0,
+   "station_docks_available": 11,
+   "station_id": "1828969634783171152",
+   "station_name": "108 St & 39 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.75397,
+   "longitude": -73.862,
+   "station_bikes_available": 6,
+   "station_docks_available": 11,
+   "station_id": "1828969726487003714",
+   "station_name": "37 Ave & 106 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.75755,
+   "longitude": -73.86454,
+   "station_bikes_available": 9,
+   "station_docks_available": 12,
+   "station_id": "1828969851041055492",
+   "station_name": "104 St & Northern Blvd"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.65326,
+   "longitude": -73.96172,
+   "station_bikes_available": 8,
+   "station_docks_available": 19,
+   "station_id": "1831178352265562334",
+   "station_name": "Ocean Ave & Crooke Ave"
+  },
+  {
+   "imbalance_state": "offline",
+   "latitude": 40.64243139706092,
+   "longitude": -74.0255355834961,
+   "station_bikes_available": 0,
+   "station_docks_available": 1,
+   "station_id": "18326827-dcae-47e0-8518-c4bb9e21eef6",
+   "station_name": "Keegan Rd & 2 Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.78621,
+   "longitude": -73.9756,
+   "station_bikes_available": 31,
+   "station_docks_available": 1,
+   "station_id": "1833865926273309136",
+   "station_name": "W 84 St & Amsterdam Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.75257,
+   "longitude": -73.89538,
+   "station_bikes_available": 15,
+   "station_docks_available": 5,
+   "station_id": "1834145064843958330",
+   "station_name": "34 Ave & 71 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.75297,
+   "longitude": -73.89236,
+   "station_bikes_available": 15,
+   "station_docks_available": 8,
+   "station_id": "1834145204469569922",
+   "station_name": "34 Ave & 74 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.74908,
+   "longitude": -73.89172,
+   "station_bikes_available": 7,
+   "station_docks_available": 19,
+   "station_id": "1834145330979754058",
+   "station_name": "74 St & 37 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.76424,
+   "longitude": -73.8812,
+   "station_bikes_available": 5,
+   "station_docks_available": 12,
+   "station_id": "1834145468418707676",
+   "station_name": "88 St & Astoria Blvd"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.75085,
+   "longitude": -73.87509,
+   "station_bikes_available": 1,
+   "station_docks_available": 15,
+   "station_id": "1834145589124844432",
+   "station_name": "92 St & 37 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.66509,
+   "longitude": -73.94824,
+   "station_bikes_available": 9,
+   "station_docks_available": 10,
+   "station_id": "1834145868297717964",
+   "station_name": "New York Ave & Montgomery St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.75301,
+   "longitude": -73.87266,
+   "station_bikes_available": 1,
+   "station_docks_available": 21,
+   "station_id": "1835244925191295588",
+   "station_name": "95 St & 35 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.75502,
+   "longitude": -73.87285,
+   "station_bikes_available": 15,
+   "station_docks_available": 7,
+   "station_id": "1835246381185208614",
+   "station_name": "34 Ave & Junction Blvd"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.75712,
+   "longitude": -73.8722,
+   "station_bikes_available": 3,
+   "station_docks_available": 16,
+   "station_id": "1835246658344669972",
+   "station_name": "96 St & Northern Blvd"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.76086,
+   "longitude": -73.87308,
+   "station_bikes_available": 5,
+   "station_docks_available": 15,
+   "station_id": "1835246815877178358",
+   "station_name": "30 Ave & 96 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.76589,
+   "longitude": -73.87789,
+   "station_bikes_available": 8,
+   "station_docks_available": 12,
+   "station_id": "1835246937517543544",
+   "station_name": "24 Ave & 92 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.7702,
+   "longitude": -73.87587,
+   "station_bikes_available": 12,
+   "station_docks_available": 8,
+   "station_id": "1835247196073118026",
+   "station_name": "Ditmars Blvd & 94 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.76619,
+   "longitude": -73.87561,
+   "station_bikes_available": 16,
+   "station_docks_available": 7,
+   "station_id": "1835247352748090208",
+   "station_name": "Jackson Mill Rd & 24 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.76447,
+   "longitude": -73.87369,
+   "station_bikes_available": 11,
+   "station_docks_available": 10,
+   "station_id": "1835247469495105628",
+   "station_name": "25 Ave & 96 St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.75896,
+   "longitude": -73.86976,
+   "station_bikes_available": 2,
+   "station_docks_available": 15,
+   "station_id": "1835247598942507168",
+   "station_name": "99 St & 32 Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.75404,
+   "longitude": -73.86887,
+   "station_bikes_available": 1,
+   "station_docks_available": 20,
+   "station_id": "1835247745828931742",
+   "station_name": "99 St & 35 Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.75243,
+   "longitude": -73.86717,
+   "station_bikes_available": 0,
+   "station_docks_available": 15,
+   "station_id": "1835249197527877718",
+   "station_name": "100 St & 37 Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.75055,
+   "longitude": -73.86725,
+   "station_bikes_available": 2,
+   "station_docks_available": 25,
+   "station_id": "1835249317786962140",
+   "station_name": "99 St & 38 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.75584,
+   "longitude": -73.86621,
+   "station_bikes_available": 6,
+   "station_docks_available": 16,
+   "station_id": "1835249448692130546",
+   "station_name": "102 St & 34 Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.76134,
+   "longitude": -73.86666,
+   "station_bikes_available": 2,
+   "station_docks_available": 16,
+   "station_id": "1835249854657874848",
+   "station_name": "31 Ave & 103 St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.76574,
+   "longitude": -73.87012,
+   "station_bikes_available": 22,
+   "station_docks_available": 1,
+   "station_id": "1835249964093653018",
+   "station_name": "100 St & Humphreys St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.7683,
+   "longitude": -73.87331,
+   "station_bikes_available": 10,
+   "station_docks_available": 9,
+   "station_id": "1835250080052323168",
+   "station_name": "97 St & 23 Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.76894,
+   "longitude": -73.86832,
+   "station_bikes_available": 20,
+   "station_docks_available": 4,
+   "station_id": "1835250199411134468",
+   "station_name": "Ditmars Blvd & 102 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.76138,
+   "longitude": -73.86035,
+   "station_bikes_available": 6,
+   "station_docks_available": 22,
+   "station_id": "1835250318514342456",
+   "station_name": "Ditmars Blvd & 31 Dr"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.66219,
+   "longitude": -73.94293,
+   "station_bikes_available": 9,
+   "station_docks_available": 6,
+   "station_id": "1835250442210857240",
+   "station_name": "Kingston Ave & E New York Ave"
+  },
+  {
+   "imbalance_state": "offline",
+   "latitude": 40.79338,
+   "longitude": -73.94329,
+   "station_bikes_available": null,
+   "station_docks_available": null,
+   "station_id": "1835618878584115330",
+   "station_name": "3 Ave & E 109 St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.74937,
+   "longitude": -73.88714,
+   "station_bikes_available": 2,
+   "station_docks_available": 19,
+   "station_id": "1836581441921155232",
+   "station_name": "79 St & 37 Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.7529,
+   "longitude": -73.87536,
+   "station_bikes_available": 3,
+   "station_docks_available": 21,
+   "station_id": "1836581534415880440",
+   "station_name": "92 St & 35 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.74864,
+   "longitude": -73.87619,
+   "station_bikes_available": 7,
+   "station_docks_available": 12,
+   "station_id": "1836581628905160976",
+   "station_name": "Elmhurst Ave & Roosevelt Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.74888,
+   "longitude": -73.87368,
+   "station_bikes_available": 0,
+   "station_docks_available": 24,
+   "station_id": "1836581714456697424",
+   "station_name": "93 St & Roosevelt Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.75091,
+   "longitude": -73.89111,
+   "station_bikes_available": 9,
+   "station_docks_available": 15,
+   "station_id": "1836581807397045112",
+   "station_name": "75 St & 35 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.76196,
+   "longitude": -73.87042,
+   "station_bikes_available": 13,
+   "station_docks_available": 10,
+   "station_id": "1838070626762830158",
+   "station_name": "99 St & Astoria Blvd"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.75996,
+   "longitude": -73.86224,
+   "station_bikes_available": 4,
+   "station_docks_available": 14,
+   "station_id": "1838070703178521596",
+   "station_name": "107 St & 32 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.75614,
+   "longitude": -73.86084,
+   "station_bikes_available": 15,
+   "station_docks_available": 8,
+   "station_id": "1838070776953752336",
+   "station_name": "34 Ave & 108 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.75788,
+   "longitude": -73.85763,
+   "station_bikes_available": 8,
+   "station_docks_available": 5,
+   "station_id": "1838070843306263244",
+   "station_name": "112 St & Northern Blvd"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.75696,
+   "longitude": -73.85612,
+   "station_bikes_available": 8,
+   "station_docks_available": 14,
+   "station_id": "1838070940162509196",
+   "station_name": "34 Ave & 113 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.75475,
+   "longitude": -73.8549,
+   "station_bikes_available": 23,
+   "station_docks_available": 6,
+   "station_id": "1838071008881986168",
+   "station_name": "37 Ave & 113 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.7532,
+   "longitude": -73.853,
+   "station_bikes_available": 22,
+   "station_docks_available": 8,
+   "station_id": "1838071090619298218",
+   "station_name": "114 St & 39 Ave"
+  },
+  {
+   "imbalance_state": "offline",
+   "latitude": 40.75179,
+   "longitude": -73.88568,
+   "station_bikes_available": 0,
+   "station_docks_available": 21,
+   "station_id": "1838617691511229014",
+   "station_name": "81 St & 35 Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.75727,
+   "longitude": -73.89024,
+   "station_bikes_available": 2,
+   "station_docks_available": 20,
+   "station_id": "1838618090943186984",
+   "station_name": "32 Ave & 77 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.76454,
+   "longitude": -73.87171,
+   "station_bikes_available": 9,
+   "station_docks_available": 9,
+   "station_id": "1838685618105506490",
+   "station_name": "98 St & 25 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.6577,
+   "longitude": -73.9398,
+   "station_bikes_available": 14,
+   "station_docks_available": 4,
+   "station_id": "1838999304404452058",
+   "station_name": "Winthrop St & Albany Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.6582,
+   "longitude": -73.9338,
+   "station_bikes_available": 17,
+   "station_docks_available": 4,
+   "station_id": "1838999521825487230",
+   "station_name": "Winthrop St & Schenectady Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.7408139,
+   "longitude": -74.0274062,
+   "station_bikes_available": 11,
+   "station_docks_available": 2,
+   "station_id": "1839334257267825432",
+   "station_name": "4 St & River St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.75874,
+   "longitude": -73.87535,
+   "station_bikes_available": 1,
+   "station_docks_available": 18,
+   "station_id": "1840504138040045682",
+   "station_name": "Jackson Mill Rd & 93 St"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.76521,
+   "longitude": -73.86483,
+   "station_bikes_available": 11,
+   "station_docks_available": 6,
+   "station_id": "1840540852548303628",
+   "station_name": "Butler St & 27 Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.75397,
+   "longitude": -73.85748,
+   "station_bikes_available": 4,
+   "station_docks_available": 17,
+   "station_id": "1840540966407039246",
+   "station_name": "111 St & 37 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.74751,
+   "longitude": -73.89372,
+   "station_bikes_available": 8,
+   "station_docks_available": 10,
+   "station_id": "1841240663447542046",
+   "station_name": "72 St & Broadway"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.71036129922581,
+   "longitude": -73.96530389785767,
+   "station_bikes_available": 24,
+   "station_docks_available": 8,
+   "station_id": "18415ea7-efce-408d-bcb9-4693fb088dda",
+   "station_name": "Broadway & Berry St"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.76399,
+   "longitude": -73.8669,
+   "station_bikes_available": 14,
+   "station_docks_available": 2,
+   "station_id": "1841926579628419438",
+   "station_name": "Gillmore St & 27 Ave"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.74718,
+   "longitude": -73.88675,
+   "station_bikes_available": 7,
+   "station_docks_available": 15,
+   "station_id": "1843486189591985058",
+   "station_name": "79 St & Roosevelt Ave"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.74586,
+   "longitude": -73.88539,
+   "station_bikes_available": 2,
+   "station_docks_available": 23,
+   "station_id": "1843486301383097150",
+   "station_name": "41 Ave & 80 St"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.74638,
+   "longitude": -73.88322,
+   "station_bikes_available": 0,
+   "station_docks_available": 22,
+   "station_id": "1843486390605672640",
+   "station_name": "Ithaca St & Baxter Ave"
+  },
+  {
+   "imbalance_state": "offline",
+   "latitude": 40.7411,
+   "longitude": -73.88837,
+   "station_bikes_available": 0,
+   "station_docks_available": 16,
+   "station_id": "1843486464469891376",
+   "station_name": "76 St & 45 Ave"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.741,
+   "longitude": -73.88027,
+   "station_bikes_available": 21,
+   "station_docks_available": 1,
+   "station_id": "1843486597735840252",
+   "station_name": "South Railroad Ave & Broadway"
+  },
+  {
+   "imbalance_state": "offline",
+   "latitude": 40.709,
+   "longitude": -73.95,
+   "station_bikes_available": 5,
+   "station_docks_available": 5,
+   "station_id": "zz-closed",
+   "station_name": "Edge case zz-closed"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.708000000000006,
+   "longitude": -73.95,
+   "station_bikes_available": 0,
+   "station_docks_available": 10,
+   "station_id": "zz-empty",
+   "station_name": "Edge case zz-empty"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.711000000000006,
+   "longitude": -73.95,
+   "station_bikes_available": 2,
+   "station_docks_available": 8,
+   "station_id": "zz-fill-0.2",
+   "station_name": "Edge case zz-fill-0.2"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.711000000000006,
+   "longitude": -73.95,
+   "station_bikes_available": 8,
+   "station_docks_available": 2,
+   "station_id": "zz-fill-0.8",
+   "station_name": "Edge case zz-fill-0.8"
+  },
+  {
+   "imbalance_state": "flooding",
+   "latitude": 40.707,
+   "longitude": -73.95,
+   "station_bikes_available": 10,
+   "station_docks_available": 0,
+   "station_id": "zz-full",
+   "station_name": "Edge case zz-full"
+  },
+  {
+   "imbalance_state": "offline",
+   "latitude": 40.709,
+   "longitude": -73.95,
+   "station_bikes_available": null,
+   "station_docks_available": null,
+   "station_id": "zz-future",
+   "station_name": "Edge case zz-future"
+  },
+  {
+   "imbalance_state": "offline",
+   "latitude": 40.712,
+   "longitude": -73.95,
+   "station_bikes_available": null,
+   "station_docks_available": null,
+   "station_id": "zz-info-only",
+   "station_name": "Edge case info only"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.712,
+   "longitude": -73.95,
+   "station_bikes_available": 3,
+   "station_docks_available": 4,
+   "station_id": "zz-int-flags",
+   "station_name": "Edge case zz-int-flags"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.711000000000006,
+   "longitude": -73.95,
+   "station_bikes_available": 0,
+   "station_docks_available": 0,
+   "station_id": "zz-no-slots",
+   "station_name": "Edge case zz-no-slots"
+  },
+  {
+   "imbalance_state": "offline",
+   "latitude": 40.716,
+   "longitude": -73.95,
+   "station_bikes_available": 5,
+   "station_docks_available": 5,
+   "station_id": "zz-not-installed",
+   "station_name": "Edge case zz-not-installed"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.714000000000006,
+   "longitude": -73.95,
+   "station_bikes_available": 0,
+   "station_docks_available": 9,
+   "station_id": "zz-return-only",
+   "station_name": "Edge case zz-return-only"
+  },
+  {
+   "imbalance_state": "starving",
+   "latitude": 40.713,
+   "longitude": -73.95,
+   "station_bikes_available": 0,
+   "station_docks_available": 7,
+   "station_id": "zz-round-half",
+   "station_name": "Edge case zz-round-half"
+  },
+  {
+   "imbalance_state": "offline",
+   "latitude": 40.711000000000006,
+   "longitude": -73.95,
+   "station_bikes_available": null,
+   "station_docks_available": null,
+   "station_id": "zz-sentinel",
+   "station_name": "Edge case zz-sentinel"
+  },
+  {
+   "imbalance_state": "balanced",
+   "latitude": 40.713,
+   "longitude": -73.95,
+   "station_bikes_available": 5,
+   "station_docks_available": 5,
+   "station_id": "zz-stale-1800",
+   "station_name": "Edge case zz-stale-1800"
+  },
+  {
+   "imbalance_state": "offline",
+   "latitude": 40.713,
+   "longitude": -73.95,
+   "station_bikes_available": 5,
+   "station_docks_available": 5,
+   "station_id": "zz-stale-1801",
+   "station_name": "Edge case zz-stale-1801"
+  }
+ ]
+}
