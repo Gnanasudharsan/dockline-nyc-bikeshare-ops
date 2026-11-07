@@ -6,6 +6,35 @@ phases are tagged `phase-N` until the `v1.0.0` release.
 
 ## [Unreleased]
 
+## [phase-4] — 2026-11-07
+
+### Added
+- Power BI project `powerbi/Dockline.pbip`, generated as text by
+  `powerbi/build_pbip.py` (ADR 0017):
+  - TMDL semantic model with 8 DirectQuery tables and parameters `DbHost`, `DbPort`,
+    `DbName`
+  - 33 DAX measures with the same names as their Cube measures, in display folders
+  - a `Date` table marked as the date table, sort-by columns, and 7 relationships
+  - row-level security: one role per borough, filtering `Borough`
+  - PBIR report with five pages: Executive Summary, Live Operations (automatic page
+    refresh), Station Performance, Weather Impact, Rebalancing
+  - Dockline theme (`powerbi/theme/dockline.json`)
+- dbt `bi` schema: Power BI-shaped views (local timestamps, integer keys, borough
+  table). An integration test keeps them identical to the TMDL columns.
+- Migration 0011: read-only `dockline_bi` login that can see only the `bi` schema.
+- Validation without Power BI Desktop, also run in CI:
+  - Microsoft's JSON schemas for every PBIR/PBIP file, at a pinned commit
+  - Microsoft's report theme schema
+  - every visual, sort, filter, relationship, and RLS field reference
+  - TMDL parsed by Microsoft's `TmdlSerializer` (.NET 8 tool)
+- `powerbi/VERIFY.md` (Desktop checklist, VM networking), `powerbi/BUILD_GUIDE.md`
+  (with manual page specs), and the generated `powerbi/dax/measures.md`.
+- `make powerbi`, `make powerbi-validate`, `make powerbi-reference` (Cube values to
+  compare in Desktop).
+
+### Changed
+- Cube's hourly pre-aggregation refreshes every 15 minutes instead of hourly.
+
 ## [phase-3] — 2026-11-07
 
 ### Added
