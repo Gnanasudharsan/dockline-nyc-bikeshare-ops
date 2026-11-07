@@ -1,15 +1,35 @@
 import type { Metadata } from "next";
 import { LazyEmbed } from "@/components/LazyEmbed";
 import { ReplayMap } from "@/components/ReplayMap";
+import { TrendPanels } from "@/components/TrendPanels";
 import { GRAFANA_PUBLIC_DASHBOARD, GRAFANA_URL } from "@/lib/api";
+import { IS_SNAPSHOT } from "@/lib/mode";
+import { getDailyKpis, getHistory } from "@/lib/snapshot";
 
 export const metadata: Metadata = {
   title: "Live",
-  description: "The live Citi Bike network: Grafana dashboard and a 24-hour station replay.",
+  description: "The live Citi Bike network: a 24-hour station replay and network trends.",
   alternates: { canonical: "/live" },
 };
 
-export default function LivePage() {
+// Snapshot history changes every 10 minutes; re-read it at most every 5.
+export const revalidate = 300;
+
+export default async function LivePage() {
+  if (IS_SNAPSHOT) {
+    const [history, daily] = await Promise.all([getHistory(), getDailyKpis()]);
+    return (
+      <div className="mx-auto max-w-[1200px] px-4 pt-10">
+        <h1 className="headline text-3xl">Live network</h1>
+        <p className="measure mt-3 text-slate">
+          Replay the last 24 hours station by station, then see how the network&apos;s certified
+          metrics moved. The history comes from a snapshot of the public feed every 10 minutes.
+        </p>
+        <ReplayMap />
+        <TrendPanels history={history} daily={daily} />
+      </div>
+    );
+  }
   const embed = GRAFANA_PUBLIC_DASHBOARD
     ? `${GRAFANA_URL}/public-dashboards/${GRAFANA_PUBLIC_DASHBOARD}?theme=light&kiosk`
     : null;

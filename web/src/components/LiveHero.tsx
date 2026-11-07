@@ -17,6 +17,8 @@ const StationMap = dynamic(() => import("./StationMap").then((m) => m.StationMap
   ),
 });
 import { formatAge, formatClock, formatInt } from "@/lib/format";
+import { IS_SNAPSHOT } from "@/lib/mode";
+import { FeedAge } from "./FeedAge";
 import type { LiveKpis } from "@/lib/types";
 
 const KPIS: { key: keyof LiveKpis; label: string }[] = [
@@ -121,11 +123,26 @@ export function LiveHero({ initial }: { initial: LiveKpis | null }) {
               }
             />
           </div>
-          <p className="mt-3 text-sm text-slate" role="status">
+          {IS_SNAPSHOT && kpis && status !== "unavailable" && !failed ? (
+            // Not a live region: the age ticks every second and must not be announced.
+            <p className="mt-3 text-sm text-slate">
+              <FeedAge kpis={kpis} />
+            </p>
+          ) : null}
+          <p
+            className={
+              IS_SNAPSHOT && kpis && status !== "unavailable" && !failed
+                ? "sr-only"
+                : "mt-3 text-sm text-slate"
+            }
+            role="status"
+          >
             {status === "unavailable" || failed
               ? `Live data is unavailable right now${kpis ? `; showing numbers from ${formatClock(kpis.as_of)}` : ""}. Retrying automatically.`
               : kpis
-                ? `Updated ${formatClock(kpis.as_of)} · newest station report ${formatAge(kpis.data_freshness_seconds)} old · updates every 10 s`
+                ? IS_SNAPSHOT
+                  ? ""
+                  : `Updated ${formatClock(kpis.as_of)} · newest station report ${formatAge(kpis.data_freshness_seconds)} old · updates every 10 s`
                 : "Connecting to the live feed…"}
           </p>
         </div>

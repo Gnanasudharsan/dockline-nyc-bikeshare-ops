@@ -12,8 +12,21 @@ const StationMap = dynamic(() => import("./StationMap").then((m) => m.StationMap
   ssr: false,
   loading: () => <div className="mt-4 aspect-[4/3] w-full bg-surface md:aspect-[16/8]" />,
 });
-import { formatHour } from "@/lib/format";
-import type { ImbalanceState, ReplayResponse } from "@/lib/types";
+import { formatDayTime, formatHour } from "@/lib/format";
+import { IS_SNAPSHOT } from "@/lib/mode";
+import type { History24h, ImbalanceState, ReplayResponse } from "@/lib/types";
+
+/** Frames and per-station state codes, from the API (hourly) or the snapshot history (10 min). */
+interface Replay {
+  frames: string[];
+  stations: Record<string, string>;
+}
+
+// Full stack: hourly frames from the API. Snapshot mode: 10-minute frames from the
+// history the snapshot workflow publishes (served same-origin by /api/snapshot).
+const REPLAY_URL = IS_SNAPSHOT ? "/api/snapshot/history-24h" : `${API_URL}/v1/stations/replay`;
+const EXPECTED_FRAMES = IS_SNAPSHOT ? 144 : 24;
+const formatFrame = IS_SNAPSHOT ? formatDayTime : formatHour;
 
 const CODES: Record<string, ImbalanceState> = {
   s: "starving",
@@ -22,10 +35,10 @@ const CODES: Record<string, ImbalanceState> = {
   o: "offline",
 };
 
-/** The last 24 hours, one frame per hour, with play/pause and a keyboard-friendly slider. */
+/** The last 24 hours (hourly, or every 10 minutes in snapshot mode), with play/pause and a keyboard-friendly slider. */
 export function ReplayMap() {
   const { stations } = useStations();
-  const [replay, setReplay] = useState<ReplayResponse | null>(null);
+  const [replay, setReplay] = useState<Replay | null>(null);
   const [failed, setFailed] = useState(false);
   const [frame, setFrame] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -33,22 +46,26 @@ export function ReplayMap() {
   const [interactive, setInteractive] = useState(false);
 
   useEffect(() => {
-    fetch(`${API_URL}/v1/stations/replay`)
+    fetch(REPLAY_URL)
       .then((response) =>
         response.ok ? response.json() : Promise.reject(new Error(String(response.status))),
       )
-      .then((body: ReplayResponse) => {
-        setReplay(body);
-        setFrame(Math.max(0, body.hours.length - 1));
+      .then((body: ReplayResponse | History24h) => {
+        const frames = "frames" in body ? body.frames : body.hours;
+        setReplay({ frames, stations: body.stations });
+        setFrame(Math.max(0, frames.length - 1));
       })
       .catch(() => setFailed(true));
   }, []);
 
   useEffect(() => {
     if (!playing || !replay) return;
-    const timer = setInterval(() => {
-      setFrame((current) => (current + 1) % replay.hours.length);
-    }, 900);
+    const timer = setInterval(
+      () => {
+        setFrame((current) => (current + 1) % replay.frames.length);
+      },
+      IS_SNAPSHOT ? 300 : 900,
+    );
     return () => clearInterval(timer);
   }, [playing, replay]);
 
@@ -82,18 +99,19 @@ export function ReplayMap() {
     [stations, states],
   );
 
-  const hour = replay?.hours[frame];
+  const hour = replay?.frames[frame];
   const mapLabel = hour
-    ? `Station states at ${formatHour(hour)}: ${counts.starving} starving, ${counts.balanced} balanced, ${counts.flooding} flooding, ${counts.offline} offline.`
+    ? `Station states at ${formatFrame(hour)}: ${counts.starving} starving, ${counts.balanced} balanced, ${counts.flooding} flooding, ${counts.offline} offline.`
     : "Replay map loading.";
   return (
     <section aria-labelledby="replay-heading" className="mt-10">
       <h2 id="replay-heading" className="headline text-xl">
-        The last 24 hours, hour by hour
+        {IS_SNAPSHOT ? "The last 24 hours, every 10 minutes" : "The last 24 hours, hour by hour"}
       </h2>
       <p className="measure mt-2 text-slate">
-        Each frame shows every station&apos;s state at the end of that hour. Play it to see stations
-        empty and fill through the day.
+        {IS_SNAPSHOT
+          ? "Each frame shows every station's state in one 10-minute snapshot. Play it to see stations empty and fill through the day."
+          : "Each frame shows every station's state at the end of that hour. Play it to see stations empty and fill through the day."}
       </p>
       <div className="mt-4 flex flex-wrap items-center gap-4">
         <button
@@ -105,23 +123,23 @@ export function ReplayMap() {
           {playing ? "Pause replay" : "Play replay"}
         </button>
         <label className="flex min-w-[260px] flex-1 items-center gap-3 text-sm">
-          <span className="text-slate">Hour</span>
+          <span className="text-slate">{IS_SNAPSHOT ? "Time" : "Hour"}</span>
           <input
             type="range"
             min={0}
-            max={Math.max(0, (replay?.hours.length ?? 1) - 1)}
+            max={Math.max(0, (replay?.frames.length ?? 1) - 1)}
             value={frame}
             onChange={(event) => {
               setPlaying(false);
               setFrame(Number(event.target.value));
             }}
             disabled={!replay}
-            aria-valuetext={hour ? formatHour(hour) : "loading"}
+            aria-valuetext={hour ? formatFrame(hour) : "loading"}
             className="w-full accent-[var(--signal)]"
           />
         </label>
-        <p className="num min-w-[9ch] font-semibold" aria-live="off">
-          {hour ? formatHour(hour) : "–"}
+        <p className="num min-w-[12ch] font-semibold" aria-live="off">
+          {hour ? formatFrame(hour) : "–"}
         </p>
       </div>
       <div className="mt-3">
@@ -154,10 +172,11 @@ export function ReplayMap() {
           )}
         </>
       )}
-      {replay && replay.hours.length < 24 ? (
+      {replay && replay.frames.length < EXPECTED_FRAMES ? (
         <p className="mt-2 text-sm text-slate">
-          History so far covers {replay.hours.length} of 24 hours; the replay fills in as data
-          accumulates.
+          {IS_SNAPSHOT
+            ? `History so far covers ${replay.frames.length} of ${EXPECTED_FRAMES} ten-minute snapshots; the replay fills in as data accumulates.`
+            : `History so far covers ${replay.frames.length} of 24 hours; the replay fills in as data accumulates.`}
         </p>
       ) : null}
     </section>
