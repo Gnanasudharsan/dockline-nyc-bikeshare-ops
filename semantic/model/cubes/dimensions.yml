@@ -1,0 +1,89 @@
+# Shared dimensions joined from the fact cubes.
+cubes:
+  - name: stations
+    title: Stations
+    description: Station dimension (SCD2). Facts join to the version valid at the time.
+    sql_table: marts.dim_station
+    dimensions:
+      - name: station_key
+        sql: station_key
+        type: string
+        primary_key: true
+      - name: station_id
+        sql: station_id
+        type: string
+      - name: station_name
+        sql: station_name
+        type: string
+      - name: borough
+        sql: borough
+        type: string
+      - name: neighborhood
+        sql: neighborhood
+        type: string
+      - name: capacity
+        sql: capacity
+        type: number
+      - name: latitude
+        sql: latitude
+        type: number
+      - name: longitude
+        sql: longitude
+        type: number
+      - name: has_ebike_charging
+        sql: has_ebike_charging
+        type: boolean
+      - name: is_current
+        sql: is_current
+        type: boolean
+
+  - name: weather
+    title: Weather
+    sql_table: marts.dim_weather
+    dimensions:
+      - name: weather_hour
+        sql: weather_hour
+        type: time
+        primary_key: true
+        public: true
+      - name: weather_condition
+        sql: weather_condition
+        type: string
+      - name: temperature_band
+        sql: temperature_band
+        type: string
+      - name: temperature_band_order
+        sql: temperature_band_order
+        type: number
+      - name: is_precipitating
+        sql: is_precipitating
+        type: boolean
+    measures:
+      - name: avg_temperature_c
+        sql: temperature_c
+        type: avg
+      - name: total_precipitation_mm
+        sql: precipitation_mm
+        type: sum
+
+  - name: dates
+    title: Dates
+    sql_table: marts.dim_date
+    dimensions:
+      - name: date_key
+        sql: date_key
+        type: number
+        primary_key: true
+      - name: calendar_date
+        sql: calendar_date
+        type: time
+      - name: day_of_week
+        sql: day_of_week
+        type: number
+      - name: day_name
+        sql: day_name
+        type: string
+      - name: day_type
+        description: Weekday or Weekend.
+        sql: day_type
+        type: string

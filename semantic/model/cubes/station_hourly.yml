@@ -1,0 +1,115 @@
+# Station activity per clock hour (marts.fct_station_hourly, kept forever).
+cubes:
+  - name: station_hourly
+    title: Station activity (hourly)
+    sql_table: marts.fct_station_hourly
+    refresh_key:
+      every: 1 hour
+
+    joins:
+      - name: stations
+        relationship: many_to_one
+        sql: "{CUBE}.station_key = {stations}.station_key"
+      - name: weather
+        relationship: many_to_one
+        sql: "{CUBE}.weather_hour = {weather}.weather_hour"
+      - name: dates
+        relationship: many_to_one
+        sql: "{CUBE}.date_key = {dates}.date_key"
+
+    dimensions:
+      - name: row_key
+        sql: "{CUBE}.station_id || '|' || {CUBE}.hour_start::text"
+        type: string
+        primary_key: true
+      - name: station_id
+        sql: station_id
+        type: string
+      - name: hour_start
+        title: Hour
+        sql: hour_start
+        type: time
+      - name: hour_of_day
+        description: Local (New York) hour of day, 0–23.
+        sql: hour_of_day
+        type: number
+      - name: is_peak_period
+        title: Peak period
+        sql: is_peak_period
+        type: boolean
+      - name: imbalance_state_end
+        sql: imbalance_state_end
+        type: string
+
+    measures:
+      - name: in_service_station_minutes
+        sql: in_service_minutes
+        type: sum
+      - name: empty_station_minutes
+        title: Empty station-minutes
+        sql: empty_minutes
+        type: sum
+      - name: full_station_minutes
+        title: Full station-minutes
+        sql: full_minutes
+        type: sum
+      - name: available_station_minutes
+        sql: available_minutes
+        type: sum
+      - name: offline_station_minutes
+        sql: offline_minutes
+        type: sum
+      - name: availability_rate
+        title: Availability rate
+        sql: "{available_station_minutes}::numeric / NULLIF({in_service_station_minutes}, 0)"
+        type: number
+        format: percent
+      - name: empty_share
+        title: Empty share of in-service time
+        sql: "{empty_station_minutes}::numeric / NULLIF({in_service_station_minutes}, 0)"
+        type: number
+        format: percent
+      - name: full_share
+        title: Full share of in-service time
+        sql: "{full_station_minutes}::numeric / NULLIF({in_service_station_minutes}, 0)"
+        type: number
+        format: percent
+      - name: net_flow
+        title: Net flow (bikes)
+        sql: net_flow_bikes
+        type: sum
+      - name: bikes_added
+        sql: bikes_added
+        type: sum
+      - name: bikes_removed
+        sql: bikes_removed
+        type: sum
+      - name: station_hours
+        type: count
+
+    pre_aggregations:
+      - name: by_borough_hour
+        measures:
+          - in_service_station_minutes
+          - empty_station_minutes
+          - full_station_minutes
+          - available_station_minutes
+          - offline_station_minutes
+          - net_flow
+          - bikes_added
+          - bikes_removed
+          - station_hours
+        dimensions:
+          - stations.borough
+          - hour_of_day
+          - is_peak_period
+          - weather.weather_condition
+          - weather.temperature_band
+          - dates.day_type
+        time_dimension: hour_start
+        granularity: hour
+        partition_granularity: month
+        refresh_key:
+          every: 1 hour
+          incremental: true
+          update_window: 1 day

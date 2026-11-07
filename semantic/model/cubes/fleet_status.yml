@@ -1,0 +1,172 @@
+# Live fleet state: one row per current station, computed at query time from the
+# real-time 5-minute aggregate (marts.mart_rebalancing_recommendations is a view).
+# This is the cube behind every "right now" number on Grafana, the API, and the site.
+cubes:
+  - name: fleet_status
+    title: Live fleet status
+    description: Current state of every listed station, updated with each feed poll.
+    sql_table: marts.mart_rebalancing_recommendations
+    # Live data: re-query the warehouse at most every 10 seconds.
+    refresh_key:
+      every: 10 second
+
+    dimensions:
+      - name: station_id
+        sql: station_id
+        type: string
+        primary_key: true
+        public: true
+      - name: station_name
+        sql: station_name
+        type: string
+      - name: borough
+        sql: borough
+        type: string
+      - name: neighborhood
+        sql: neighborhood
+        type: string
+      - name: latitude
+        sql: latitude
+        type: number
+      - name: longitude
+        sql: longitude
+        type: number
+      - name: capacity
+        sql: capacity
+        type: number
+      - name: imbalance_state
+        description: starving, balanced, flooding, or offline (see docs/metrics.md).
+        sql: imbalance_state
+        type: string
+      - name: recommended_action
+        sql: recommended_action
+        type: string
+      - name: priority_rank
+        description: 1 = most urgent rebalancing stop. Null when no action is needed.
+        sql: priority_rank
+        type: number
+      - name: station_fill_ratio
+        sql: fill_ratio
+        type: number
+      - name: station_imbalance_index
+        sql: imbalance_index
+        type: number
+      - name: station_rebalance_need_bikes
+        sql: rebalance_need_bikes
+        type: number
+      - name: station_bikes_available
+        sql: bikes_available
+        type: number
+      - name: station_docks_available
+        sql: docks_available
+        type: number
+      - name: bikes_to_move
+        sql: bikes_to_move
+        type: number
+      - name: priority_score
+        sql: priority_score
+        type: number
+      - name: minutes_since_report
+        sql: minutes_since_report
+        type: number
+      - name: is_in_service
+        sql: is_in_service
+        type: boolean
+      - name: last_reported_at
+        sql: last_reported_at
+        type: time
+      - name: minutes_empty
+        description: Minutes since the station last had a bike (null if it has bikes now).
+        sql: minutes_empty
+        type: number
+      - name: is_high_traffic
+        description: Busiest 10% of stations by typical turnover at this hour of day.
+        sql: is_high_traffic
+        type: boolean
+      - name: typical_hourly_turnover
+        sql: typical_hourly_turnover
+        type: number
+
+    measures:
+      - name: bikes_available
+        title: Bikes available
+        description: Bikes a rider could rent right now (includes e-bikes, excludes disabled).
+        sql: "CASE WHEN {CUBE}.is_in_service THEN {CUBE}.bikes_available END"
+        type: sum
+      - name: ebikes_available
+        title: E-bikes available
+        sql: "CASE WHEN {CUBE}.is_in_service THEN {CUBE}.ebikes_available END"
+        type: sum
+      - name: docks_available
+        title: Docks available
+        description: Empty docks a rider could return to right now.
+        sql: "CASE WHEN {CUBE}.is_in_service THEN {CUBE}.docks_available END"
+        type: sum
+      - name: usable_slots
+        sql: "CASE WHEN {CUBE}.is_in_service THEN {CUBE}.bikes_available + {CUBE}.docks_available END"
+        type: sum
+        public: false
+      - name: fill_ratio
+        title: Fill ratio
+        description: bikes_available / (bikes_available + docks_available) over in-service stations.
+        sql: "{bikes_available}::numeric / NULLIF({usable_slots}, 0)"
+        type: number
+        format: percent
+      - name: imbalance_index
+        title: Imbalance index
+        description: fill_ratio minus the 0.5 target. Negative = starving, positive = flooding.
+        sql: "{fill_ratio} - 0.5"
+        type: number
+      - name: stations
+        title: Stations listed
+        type: count
+      - name: stations_in_service
+        title: Stations in service
+        type: count
+        filters:
+          - sql: "{CUBE}.is_in_service"
+      - name: empty_stations
+        title: Empty stations
+        description: In-service, renting stations with no bike to rent right now.
+        type: count
+        filters:
+          - sql: "{CUBE}.is_in_service AND {CUBE}.bikes_available = 0"
+      - name: full_stations
+        title: Full stations
+        description: In-service, returning stations with no free dock right now.
+        type: count
+        filters:
+          - sql: "{CUBE}.is_in_service AND {CUBE}.docks_available = 0"
+      - name: starving_stations
+        type: count
+        filters:
+          - sql: "{CUBE}.imbalance_state = 'starving'"
+      - name: balanced_stations
+        type: count
+        filters:
+          - sql: "{CUBE}.imbalance_state = 'balanced'"
+      - name: flooding_stations
+        type: count
+        filters:
+          - sql: "{CUBE}.imbalance_state = 'flooding'"
+      - name: offline_stations
+        type: count
+        filters:
+          - sql: "{CUBE}.imbalance_state = 'offline'"
+      - name: rebalance_need_bikes
+        title: Rebalancing need (bikes to move)
+        description: >
+          Bikes to add plus bikes to remove to bring every starving or flooding station
+          to the target fill.
+        sql: bikes_to_move
+        type: sum
+      - name: longest_empty_minutes
+        title: Longest time empty (minutes)
+        description: Longest current empty spell among the stations in the group.
+        sql: minutes_empty
+        type: max
+      - name: data_freshness_seconds
+        title: Data freshness (seconds)
+        description: Seconds since the newest station report (now − latest last_reported).
+        sql: "EXTRACT(EPOCH FROM (now() - MAX({CUBE}.last_reported_at)))"
+        type: number

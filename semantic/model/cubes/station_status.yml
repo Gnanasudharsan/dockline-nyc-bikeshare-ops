@@ -1,0 +1,164 @@
+# Station state every 5 minutes (marts.fct_station_status_5min, kept 35 days).
+# Rewind / time travel and intraday trends. Each row is 5 station-minutes.
+# Point-in-time measures (bikes_available, ...) are totals per 5-minute bucket: group
+# by bucket_start at minute granularity (buckets are 5-minute aligned).
+cubes:
+  - name: station_status
+    title: Station status (5-minute)
+    sql_table: marts.fct_station_status_5min
+    refresh_key:
+      every: 5 minute
+
+    joins:
+      - name: stations
+        relationship: many_to_one
+        sql: "{CUBE}.station_key = {stations}.station_key"
+      - name: weather
+        relationship: many_to_one
+        sql: "{CUBE}.weather_hour = {weather}.weather_hour"
+
+    dimensions:
+      - name: row_key
+        sql: "{CUBE}.station_id || '|' || {CUBE}.bucket_start::text"
+        type: string
+        primary_key: true
+      - name: station_id
+        sql: station_id
+        type: string
+      - name: bucket_start
+        title: Time
+        sql: bucket_start
+        type: time
+      - name: imbalance_state
+        sql: imbalance_state
+        type: string
+      - name: is_peak_period
+        sql: is_peak_period
+        type: boolean
+      - name: is_in_service
+        sql: is_in_service
+        type: boolean
+      - name: station_fill_ratio
+        sql: fill_ratio
+        type: number
+
+    measures:
+      - name: bikes_available
+        title: Bikes available
+        sql: "CASE WHEN {CUBE}.is_in_service THEN {CUBE}.bikes_available END"
+        type: sum
+      - name: ebikes_available
+        title: E-bikes available
+        sql: "CASE WHEN {CUBE}.is_in_service THEN {CUBE}.ebikes_available END"
+        type: sum
+      - name: docks_available
+        title: Docks available
+        sql: "CASE WHEN {CUBE}.is_in_service THEN {CUBE}.docks_available END"
+        type: sum
+      - name: usable_slots
+        sql: "CASE WHEN {CUBE}.is_in_service THEN {CUBE}.bikes_available + {CUBE}.docks_available END"
+        type: sum
+        public: false
+      - name: fill_ratio
+        title: Fill ratio
+        sql: "{bikes_available}::numeric / NULLIF({usable_slots}, 0)"
+        type: number
+        format: percent
+      - name: imbalance_index
+        title: Imbalance index
+        sql: "{fill_ratio} - 0.5"
+        type: number
+      - name: in_service_station_minutes
+        sql: in_service_minutes
+        type: sum
+      - name: empty_station_minutes
+        title: Empty station-minutes
+        description: Minutes stations had no bike to rent while renting.
+        sql: empty_minutes
+        type: sum
+      - name: full_station_minutes
+        title: Full station-minutes
+        description: Minutes stations had no free dock while returning.
+        sql: full_minutes
+        type: sum
+      - name: available_station_minutes
+        sql: available_minutes
+        type: sum
+      - name: offline_station_minutes
+        sql: offline_minutes
+        type: sum
+      - name: availability_rate
+        title: Availability rate
+        description: Share of in-service station-minutes with at least 1 bike and 1 dock.
+        sql: "{available_station_minutes}::numeric / NULLIF({in_service_station_minutes}, 0)"
+        type: number
+        format: percent
+      - name: net_flow
+        title: Net flow (bikes)
+        description: Change in bikes on hand. Includes rebalancing trucks; not trips.
+        sql: net_flow_bikes
+        type: sum
+      - name: rebalance_need_bikes
+        title: Rebalancing need (bikes to move)
+        sql: "CASE WHEN {CUBE}.imbalance_state IN ('starving', 'flooding') THEN ABS({CUBE}.rebalance_need_bikes) END"
+        type: sum
+      - name: empty_stations
+        type: count
+        filters:
+          - sql: "{CUBE}.is_empty"
+      - name: full_stations
+        type: count
+        filters:
+          - sql: "{CUBE}.is_full"
+      - name: starving_stations
+        type: count
+        filters:
+          - sql: "{CUBE}.imbalance_state = 'starving'"
+      - name: balanced_stations
+        type: count
+        filters:
+          - sql: "{CUBE}.imbalance_state = 'balanced'"
+      - name: flooding_stations
+        type: count
+        filters:
+          - sql: "{CUBE}.imbalance_state = 'flooding'"
+      - name: offline_stations
+        type: count
+        filters:
+          - sql: "{CUBE}.imbalance_state = 'offline'"
+
+    pre_aggregations:
+      # Network and borough totals per 5-minute bucket: the Live Overview history and
+      # rewind charts read only this rollup.
+      - name: by_borough_5min
+        measures:
+          - bikes_available
+          - ebikes_available
+          - docks_available
+          - usable_slots
+          - in_service_station_minutes
+          - empty_station_minutes
+          - full_station_minutes
+          - available_station_minutes
+          - offline_station_minutes
+          - net_flow
+          - rebalance_need_bikes
+          - empty_stations
+          - full_stations
+          - starving_stations
+          - balanced_stations
+          - flooding_stations
+          - offline_stations
+        dimensions:
+          - stations.borough
+        time_dimension: bucket_start
+        granularity: minute
+        partition_granularity: day
+        refresh_key:
+          every: 5 minute
+          incremental: true
+          update_window: 6 hour
+        build_range_start:
+          sql: SELECT now() - interval '35 days'
+        build_range_end:
+          sql: SELECT now()

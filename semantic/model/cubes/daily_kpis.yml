@@ -1,0 +1,86 @@
+# Daily KPIs per borough (marts.fct_daily_kpis). Rates are recomputed from additive
+# minutes, never averaged.
+cubes:
+  - name: daily_kpis
+    title: Daily KPIs
+    sql_table: marts.fct_daily_kpis
+    refresh_key:
+      every: 1 hour
+
+    dimensions:
+      - name: kpi_id
+        sql: kpi_id
+        type: string
+        primary_key: true
+      - name: service_date
+        title: Date
+        sql: service_date
+        type: time
+      - name: borough
+        sql: borough
+        type: string
+      - name: is_complete_day
+        sql: is_complete_day
+        type: boolean
+      - name: dominant_weather_condition
+        sql: dominant_weather_condition
+        type: string
+
+    measures:
+      - name: in_service_station_minutes
+        sql: in_service_station_minutes
+        type: sum
+      - name: empty_station_minutes
+        title: Empty station-minutes
+        sql: empty_station_minutes
+        type: sum
+      - name: full_station_minutes
+        title: Full station-minutes
+        sql: full_station_minutes
+        type: sum
+      - name: available_station_minutes
+        sql: available_station_minutes
+        type: sum
+      - name: offline_station_minutes
+        sql: offline_station_minutes
+        type: sum
+      - name: availability_rate
+        title: Availability rate
+        sql: "{available_station_minutes}::numeric / NULLIF({in_service_station_minutes}, 0)"
+        type: number
+        format: percent
+      - name: empty_share
+        sql: "{empty_station_minutes}::numeric / NULLIF({in_service_station_minutes}, 0)"
+        type: number
+        format: percent
+      - name: full_share
+        sql: "{full_station_minutes}::numeric / NULLIF({in_service_station_minutes}, 0)"
+        type: number
+        format: percent
+      - name: peak_empty_station_minutes
+        sql: peak_empty_station_minutes
+        type: sum
+      - name: peak_full_station_minutes
+        sql: peak_full_station_minutes
+        type: sum
+      - name: net_flow
+        title: Net flow (bikes)
+        sql: net_flow_bikes
+        type: sum
+      - name: bikes_added
+        sql: bikes_added
+        type: sum
+      - name: bikes_removed
+        sql: bikes_removed
+        type: sum
+      - name: stations_in_service
+        description: Stations in service at any time that day (summed across boroughs).
+        sql: stations_in_service
+        type: sum
+      - name: avg_temperature_c
+        sql: avg_temperature_c
+        type: avg
+      - name: total_precipitation_mm
+        description: Network-wide daily precipitation (same for every borough row).
+        sql: total_precipitation_mm
+        type: max

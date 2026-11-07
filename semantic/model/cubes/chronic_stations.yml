@@ -1,0 +1,53 @@
+cubes:
+  - name: chronic_stations
+    title: Chronic problem stations
+    description: Trailing 14-day weekday-peak verdict per station (marts.mart_chronic_stations).
+    sql_table: marts.mart_chronic_stations
+    refresh_key:
+      every: 1 hour
+
+    dimensions:
+      - name: station_id
+        sql: station_id
+        type: string
+        primary_key: true
+        public: true
+      - name: station_name
+        sql: station_name
+        type: string
+      - name: borough
+        sql: borough
+        type: string
+      - name: neighborhood
+        sql: neighborhood
+        type: string
+      - name: chronic_status
+        sql: chronic_status
+        type: string
+      - name: chronic_problem_station
+        sql: chronic_problem_station
+        type: boolean
+      - name: peak_empty_share
+        sql: peak_empty_share
+        type: number
+      - name: peak_full_share
+        sql: peak_full_share
+        type: number
+      - name: peak_hours_observed
+        sql: peak_hours_observed
+        type: number
+
+    measures:
+      - name: chronic_problem_stations
+        title: Chronic problem stations
+        description: >
+          Stations empty or full for more than 25% of in-service weekday-peak minutes
+          over the trailing 14 days (needs at least 10 observed peak hours).
+        type: count
+        filters:
+          - sql: "{CUBE}.chronic_problem_station"
+      - name: stations_rated
+        description: Stations with enough peak data for a verdict.
+        type: count
+        filters:
+          - sql: "{CUBE}.chronic_status <> 'insufficient_data'"
