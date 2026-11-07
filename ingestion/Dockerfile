@@ -18,6 +18,7 @@ WORKDIR /app
 
 # Dependencies first, so code changes don't reinstall them.
 COPY pyproject.toml uv.lock ./
+COPY api/pyproject.toml api/pyproject.toml
 COPY ingestion/pyproject.toml ingestion/pyproject.toml
 COPY warehouse/pyproject.toml warehouse/pyproject.toml
 COPY orchestration/pyproject.toml orchestration/pyproject.toml

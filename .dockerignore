@@ -18,3 +18,5 @@ node_modules
 dbt/logs
 orchestration/tests
 orchestration/.dagster_home
+api/tests
+evals

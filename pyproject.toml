@@ -7,6 +7,7 @@ requires-python = ">=3.12,<3.13"
 license = { text = "MIT" }
 authors = [{ name = "Gnanasudharsan Ashokumar" }]
 dependencies = [
+  "dockline-api",
   "dockline-ingestion",
   "dockline-orchestration",
   "dockline-warehouse",
@@ -32,9 +33,10 @@ dev = [
 package = false
 
 [tool.uv.workspace]
-members = ["ingestion", "orchestration", "warehouse"]
+members = ["api", "ingestion", "orchestration", "warehouse"]
 
 [tool.uv.sources]
+dockline-api = { workspace = true }
 dockline-ingestion = { workspace = true }
 dockline-orchestration = { workspace = true }
 dockline-warehouse = { workspace = true }
@@ -61,6 +63,7 @@ ignore = ["D100", "D104", "D203", "D213"]
 
 [tool.ruff.lint.isort]
 known-first-party = [
+  "dockline_api",
   "dockline_ingestion",
   "dockline_orchestration",
   "dockline_warehouse",
@@ -79,6 +82,8 @@ known-first-party = [
 # The Power BI generator holds long DAX/M literals; scripts call fixed git/HTTPS sources.
 "powerbi/build_pbip.py" = ["E501", "D401"]
 "powerbi/scripts/*.py" = ["S310", "S603", "S607", "E501"]
+# The Ask the Data catalog holds one-line metric definitions (user-facing text).
+"api/src/dockline_api/catalog.py" = ["E501"]
 
 [tool.mypy]
 python_version = "3.12"
@@ -97,6 +102,9 @@ files = [
   "grafana",
   "scripts",
   "powerbi",
+  "api/src",
+  "api/tests",
+  "evals",
 ]
 mypy_path = ["ingestion/tests"]
 exclude = ["ingestion/tests/conftest\\.py$"]
@@ -107,7 +115,7 @@ module = ["testcontainers.*", "sqlparse.*", "dbt.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
-testpaths = ["tests", "ingestion/tests", "warehouse/tests", "orchestration/tests"]
+testpaths = ["tests", "ingestion/tests", "warehouse/tests", "orchestration/tests", "api/tests"]
 pythonpath = ["ingestion/tests"]
 addopts = "-ra --strict-markers --import-mode=importlib"
 asyncio_mode = "auto"
