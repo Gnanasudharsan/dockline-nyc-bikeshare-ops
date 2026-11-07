@@ -51,6 +51,17 @@ jobs:
           uv run dbt deps
           uv run dbt parse
 
+      - name: Power BI project (Microsoft JSON schemas, theme schema, field references)
+        run: uv run python powerbi/scripts/validate_pbip.py
+
+      - name: Install .NET 8 (for Microsoft's TMDL parser)
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Power BI semantic model (TMDL parsed by Microsoft's TmdlSerializer)
+        run: dotnet run --project powerbi/tools/tmdl-validator -c Release -- powerbi/Dockline.SemanticModel/definition
+
       - name: Pytest (unit + integration against a TimescaleDB container)
         run: uv run pytest
 
