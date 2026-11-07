@@ -3,8 +3,9 @@ cubes:
   - name: station_hourly
     title: Station activity (hourly)
     sql_table: marts.fct_station_hourly
+    # The hourly fact is rebuilt at :05; checking every 15 minutes keeps the lag short.
     refresh_key:
-      every: 1 hour
+      every: 15 minute
 
     joins:
       - name: stations
@@ -110,6 +111,6 @@ cubes:
         granularity: hour
         partition_granularity: month
         refresh_key:
-          every: 1 hour
+          every: 15 minute
           incremental: true
           update_window: 1 day
