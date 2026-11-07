@@ -70,6 +70,8 @@ services:
       <<: *warehouse-env
       # Also creates Dagster's metadata database next to the warehouse.
       DOCKLINE_EXTRA_DATABASES: ${DAGSTER_POSTGRES_DB:-dagster}
+      # Login password for the read-only serving role (migration 0010).
+      DOCKLINE_READER_PASSWORD: ${DOCKLINE_READER_PASSWORD:?Run make env to generate DOCKLINE_READER_PASSWORD}
     depends_on:
       timescaledb:
         condition: service_healthy
@@ -169,5 +171,121 @@ services:
           memory: 1536m
     logging: *default-logging
 
+  # Cube Store: storage and query engine for Cube pre-aggregations, plus its cache/queue.
+  cubestore:
+    image: cubejs/cubestore:${CUBESTORE_IMAGE_TAG:-v1.8.20-arm64v8}
+    restart: unless-stopped
+    environment:
+      CUBESTORE_REMOTE_DIR: /cube/data
+      CUBESTORE_LOG_LEVEL: warn
+      CUBESTORE_TELEMETRY: "false"
+    volumes:
+      - cubestore-data:/cube/data
+    healthcheck:
+      # The image has no curl/wget; probe the status port with bash's /dev/tcp.
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/3031 && printf 'GET /readyz HTTP/1.0\r\n\r\n' >&3 && grep -q '200' <&3"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1g
+    logging: *default-logging
+
+  # Cube Core: the only place metrics are defined (semantic/model). REST API on 4000,
+  # Postgres-compatible SQL API on 15432 (Grafana's metrics datasource).
+  cube:
+    image: cubejs/cube:v1.8.20
+    restart: unless-stopped
+    environment:
+      CUBEJS_DB_TYPE: postgres
+      CUBEJS_DB_HOST: timescaledb
+      CUBEJS_DB_PORT: "5432"
+      CUBEJS_DB_NAME: ${POSTGRES_DB:-dockline}
+      CUBEJS_DB_USER: dockline_reader
+      CUBEJS_DB_PASS: ${DOCKLINE_READER_PASSWORD:?Run make env to generate DOCKLINE_READER_PASSWORD}
+      CUBEJS_API_SECRET: ${CUBEJS_API_SECRET:?Run make env to generate CUBEJS_API_SECRET}
+      CUBEJS_SQL_USER: ${CUBEJS_SQL_USER:-dockline}
+      CUBEJS_SQL_PASSWORD: ${CUBEJS_SQL_PASSWORD:?Run make env to generate CUBEJS_SQL_PASSWORD}
+      CUBEJS_PG_SQL_PORT: "15432"
+      CUBEJS_CUBESTORE_HOST: cubestore
+      CUBEJS_DEV_MODE: "false"
+      CUBEJS_TELEMETRY: "false"
+      CUBEJS_SCHEDULED_REFRESH_DEFAULT: "true"
+      CUBEJS_PRE_AGGREGATIONS_SCHEMA: dockline_pre_aggregations
+      CUBEJS_LOG_LEVEL: warn
+      TZ: ${TZ:-America/New_York}
+    volumes:
+      - ./semantic:/cube/conf:ro
+    ports:
+      - "${CUBE_BIND_ADDRESS:-127.0.0.1}:${CUBE_PORT:-4000}:4000"
+      - "${CUBE_BIND_ADDRESS:-127.0.0.1}:${CUBE_SQL_PORT:-15432}:15432"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      cubestore:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4000/readyz').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1g
+    logging: *default-logging
+
+  # Grafana OSS, provisioned entirely from grafana/ (datasources, dashboards, alerts).
+  grafana:
+    image: grafana/grafana:13.2.5
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?Run make env to generate GRAFANA_ADMIN_PASSWORD}
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES: "false"
+      GF_NEWS_NEWS_FEED_ENABLED: "false"
+      GF_DASHBOARDS_MIN_REFRESH_INTERVAL: 10s
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/live-network-overview.json
+      GF_DATE_FORMATS_DEFAULT_TIMEZONE: America/New_York
+      GF_USERS_DEFAULT_THEME: system
+      # Read by the provisioning files (datasources use $__env{...}).
+      DOCKLINE_READER_PASSWORD: ${DOCKLINE_READER_PASSWORD:?Run make env to generate DOCKLINE_READER_PASSWORD}
+      CUBEJS_SQL_USER: ${CUBEJS_SQL_USER:-dockline}
+      CUBEJS_SQL_PASSWORD: ${CUBEJS_SQL_PASSWORD:?Run make env to generate CUBEJS_SQL_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-dockline}
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "${GRAFANA_BIND_ADDRESS:-127.0.0.1}:${GRAFANA_PORT:-3060}:3000"
+    depends_on:
+      cube:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512m
+    logging: *default-logging
+
 volumes:
   timescaledb-data:
+  cubestore-data:
+  grafana-data:
