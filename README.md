@@ -21,7 +21,7 @@ with certified metrics, and serves it to four surfaces:
 | Phase | Scope | Status |
 | --- | --- | --- |
 | 0 | Repository and foundation | Done |
-| 1 | Live ingestion and storage | Planned |
+| 1 | Live ingestion and storage | Done |
 | 2 | dbt models and orchestration | Planned |
 | 3 | Semantic layer and live Grafana dashboard | Planned |
 | 4 | Power BI analyst report | Planned |

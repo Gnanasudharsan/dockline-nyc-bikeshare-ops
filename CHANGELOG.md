@@ -6,6 +6,35 @@ phases are tagged `phase-N` until the `v1.0.0` release.
 
 ## [Unreleased]
 
+## [phase-1] — 2026-11-07
+
+### Added
+- Ingestion service (`ingestion/`): async poller for GBFS `station_status` (every feed
+  ttl), `station_information` (hourly) and Open-Meteo hourly weather. GBFS feeds are
+  resolved through auto-discovery, preferring v2.3. Per-record Pydantic v2 validation
+  with counted rejection reasons, idempotent `unnest` batch writes, tenacity retries
+  with jittered backoff, graceful SIGTERM shutdown, heartbeat healthcheck, JSON logs.
+- Warehouse migrations (`warehouse/`): `raw.station_status` hypertable (unique on
+  `station_id, last_reported`, compressed after 7 days, dropped after 30),
+  `raw.station_information`, `raw.weather_hourly`, `ops.ingestion_runs` audit log, and
+  5-minute and hourly continuous aggregates kept forever.
+- In-house migration runner with checksums, advisory locking and no-transaction
+  support, run as the one-shot `migrate` Compose service.
+- Unit tests on recorded feed fixtures and end-to-end integration tests against a
+  throwaway TimescaleDB container (testcontainers).
+- CI: integration tests, plus a live smoke test that builds the stack and checks that
+  real GBFS rows land.
+- `make migrate`, `make psql`, `make test-unit`, `make check-ingestion`.
+- ADR 0006 (raw status storage model) and ADR 0007 (migration runner).
+
+### Fixed
+- station_status polls are scheduled from the feed's `last_updated + ttl` instead of
+  a fixed 60 s timer, which could phase-lock just before each feed refresh and miss
+  a version (found during the acceptance run; ADR 0008).
+- station_status uses ETag conditional requests, so checks for a new version return
+  an empty 304 instead of re-downloading an unchanged payload. Runs record
+  `not_modified` (migration 0008, ADR 0009).
+
 ## [phase-0] — 2026-11-06
 
 ### Added
