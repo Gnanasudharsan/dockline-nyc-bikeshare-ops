@@ -56,3 +56,6 @@ data/
 backups/
 *.log
 *.dump
+
+# Downloaded tool caches (schemas, ...)
+.cache/

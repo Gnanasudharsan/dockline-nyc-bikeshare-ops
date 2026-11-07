@@ -24,6 +24,8 @@ dev = [
   "ruff>=0.8",
   "types-pyyaml>=6.0",
   "sqlfluff>=3.4",
+  "jsonschema>=4.23",
+  "types-jsonschema>=4.26.0.20261006",
 ]
 
 [tool.uv]
@@ -74,6 +76,9 @@ known-first-party = [
 # The dashboard generator holds long SQL/JSON literals and assembles Grafana queries
 # from constants in this file (no user input reaches it).
 "grafana/build_dashboards.py" = ["S310", "D401", "E501", "S608"]
+# The Power BI generator holds long DAX/M literals; scripts call fixed git/HTTPS sources.
+"powerbi/build_pbip.py" = ["E501", "D401"]
+"powerbi/scripts/*.py" = ["S310", "S603", "S607", "E501"]
 
 [tool.mypy]
 python_version = "3.12"
@@ -91,6 +96,7 @@ files = [
   "orchestration/tests",
   "grafana",
   "scripts",
+  "powerbi",
 ]
 mypy_path = ["ingestion/tests"]
 exclude = ["ingestion/tests/conftest\\.py$"]
