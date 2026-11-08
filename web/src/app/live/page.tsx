@@ -12,8 +12,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/live" },
 };
 
-// Snapshot history changes every 10 minutes; re-read it at most every 5.
-export const revalidate = 300;
+// Snapshot history changes every 10 minutes; re-read it at most every 2.
+export const revalidate = 120;
 
 export default async function LivePage() {
   if (IS_SNAPSHOT) {

@@ -24,7 +24,7 @@ default stays `full`). Switching back is an environment change, not a code chang
   rules) to write `latest.json`, `history-24h.json` (10-minute frames) and
   `daily-kpis.json` (30 days). They live on an orphan `data` branch kept at one
   commit that each run replaces by force-push, so `main` stays clean and the
-  repository does not grow. The site reads them through `/api/snapshot/<name>` (5-minute
+  repository does not grow. The site reads them through `/api/snapshot/<name>` (2-minute
   cache). Overlapping runs cancel; failed scheduled runs email the owner.
 - **One definition, two languages:** the full stack defines metrics in dbt and Cube.
   Snapshot mode has no warehouse, so the point-in-time rules exist in Python and

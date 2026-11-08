@@ -20,8 +20,8 @@ export const DEMO_VIDEO_URL = process.env.NEXT_PUBLIC_DEMO_VIDEO_URL ?? "";
 
 /** The snapshot files the site may read, and how long to cache each (seconds). */
 export const SNAPSHOT_FILES = {
-  latest: { file: "latest.json", revalidate: 300 },
-  "history-24h": { file: "history-24h.json", revalidate: 300 },
-  "daily-kpis": { file: "daily-kpis.json", revalidate: 300 },
+  latest: { file: "latest.json", revalidate: 120 },
+  "history-24h": { file: "history-24h.json", revalidate: 120 },
+  "daily-kpis": { file: "daily-kpis.json", revalidate: 120 },
 } as const;
 export type SnapshotFile = keyof typeof SNAPSHOT_FILES;

@@ -2,8 +2,8 @@ import { SNAPSHOT_FILES, type SnapshotFile } from "@/lib/mode";
 import { getSnapshotFile } from "@/lib/snapshot";
 
 // Same-origin access to the snapshot workflow's files (history for the replay and
-// charts), cached for 5 minutes. Only the files in SNAPSHOT_FILES can be read.
-export const revalidate = 300;
+// charts), cached for 2 minutes (GitHub raw adds up to 5). Only the files in SNAPSHOT_FILES can be read.
+export const revalidate = 120;
 
 export function generateStaticParams() {
   return Object.keys(SNAPSHOT_FILES).map((name) => ({ name }));
@@ -24,6 +24,6 @@ export async function GET(_request: Request, context: { params: Promise<{ name: 
     );
   }
   return Response.json(data, {
-    headers: { "Cache-Control": "public, max-age=60, s-maxage=300, stale-while-revalidate=300" },
+    headers: { "Cache-Control": "public, max-age=60, s-maxage=120, stale-while-revalidate=120" },
   });
 }
