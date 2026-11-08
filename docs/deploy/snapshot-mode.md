@@ -78,8 +78,12 @@ disables schedules after 60 days without commits to `main`.
   run from the repository root. `.vercelignore` there uploads only `web/` (never the
   local `.env`). The CLI also appends `.env*` to `.gitignore` when linking; that rule
   would hide `.env.example`, so it was reverted.
-- `vercel git connect` fails until the Vercel GitHub app is installed on the account
-  (vercel.com → Settings → Git, or the project's **Settings → Git → Connect**).
+- `vercel git connect` failed twice with the same generic message. The causes were,
+  in turn: the Vercel GitHub app not installed for this repository, and then an
+  expired GitHub login connection in Vercel (the API reported GitHub's "Bad
+  credentials"). Reconnecting GitHub under Vercel **Account Settings →
+  Authentication** fixed it. `vercel api "/v1/integrations/search-repo?query=<name>"`
+  shows the real error.
 - GitHub's scheduler took more than 20 minutes to start a new `*/10` schedule; manual
   runs (`gh workflow run snapshot.yml`) filled the gap.
 - Production: <https://dockline-nyc.vercel.app> (an extra `*.vercel.app` domain on the
