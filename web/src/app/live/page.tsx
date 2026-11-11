@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { LazyEmbed } from "@/components/LazyEmbed";
 import { ReplayMap } from "@/components/ReplayMap";
-import { TrendPanels } from "@/components/TrendPanels";
+import { LiveTrends } from "@/components/LiveTrends";
 import { GRAFANA_PUBLIC_DASHBOARD, GRAFANA_URL } from "@/lib/api";
 import { IS_SNAPSHOT } from "@/lib/mode";
-import { getDailyKpis, getHistory } from "@/lib/snapshot";
 
 export const metadata: Metadata = {
   title: "Live",
@@ -12,12 +11,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/live" },
 };
 
-// Snapshot history changes every 10 minutes; re-read it at most every 2.
-export const revalidate = 120;
-
-export default async function LivePage() {
+export default function LivePage() {
   if (IS_SNAPSHOT) {
-    const [history, daily] = await Promise.all([getHistory(), getDailyKpis()]);
     return (
       <div className="mx-auto max-w-[1200px] px-4 pt-10">
         <h1 className="headline text-3xl">Live network</h1>
@@ -26,7 +21,7 @@ export default async function LivePage() {
           metrics moved. The history comes from a snapshot of the public feed every 10 minutes.
         </p>
         <ReplayMap />
-        <TrendPanels history={history} daily={daily} />
+        <LiveTrends />
       </div>
     );
   }

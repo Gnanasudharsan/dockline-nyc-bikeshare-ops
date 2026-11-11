@@ -7,7 +7,11 @@ import { formatInt, formatPercent } from "@/lib/format";
 export const revalidate = 10;
 
 export default async function HomePage() {
-  const [kpis, insights] = await Promise.all([getLiveKpis(), getInsights()]);
+  // Snapshot mode renders no server data: the browser reads /api/live (CDN-cached), so
+  // the page itself never holds stale numbers (ADR 0022).
+  const [kpis, insights] = IS_SNAPSHOT
+    ? [null, null]
+    : await Promise.all([getLiveKpis(), getInsights()]);
   const concentration = insights?.findings.find((f) => f.id === "rebalancing-concentration");
 
   const highlights = [

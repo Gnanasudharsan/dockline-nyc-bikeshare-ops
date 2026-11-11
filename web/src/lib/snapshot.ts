@@ -11,17 +11,23 @@ import type { DailyKpis, History24h, LatestSnapshot, LiveResponse } from "./type
 const DISCOVERY_URL = "https://gbfs.citibikenyc.com/gbfs/gbfs.json";
 const PREFERRED_VERSION = "2.3";
 const PREFERRED_LANGUAGE = "en";
-/** Live feed cache: with the route's own 30 s window, numbers are at most ~60 s old. */
-export const LIVE_REVALIDATE_SECONDS = 30;
+/**
+ * How long Vercel's CDN may serve one /api/live response (plus as long again while it
+ * refreshes in the background), so numbers are at most about a minute old.
+ */
+export const LIVE_CDN_SECONDS = 30;
 
 interface Discovery {
   version?: string;
   data: Record<string, { feeds: { name: string; url: string }[] }>;
 }
 
-async function getJson<T>(url: string, revalidate: number): Promise<T> {
+// Upstream reads are never cached by Next itself: the API routes are dynamic and cached
+// on Vercel's CDN instead (ADR 0022). Next's fetch cache stopped refreshing on Vercel
+// and served the build-time feed for days.
+async function getJson<T>(url: string): Promise<T> {
   const response = await fetch(url, {
-    next: { revalidate },
+    cache: "no-store",
     signal: AbortSignal.timeout(10_000),
     headers: {
       "User-Agent": "dockline-web (+https://github.com/Gnanasudharsan/dockline-nyc-bikeshare-ops)",
@@ -38,18 +44,17 @@ function feedsByName(discovery: Discovery): Record<string, string> {
 }
 
 async function resolveFeeds(): Promise<{ status: string; information: string }> {
-  let discovery = await getJson<Discovery>(DISCOVERY_URL, 3600);
+  let discovery = await getJson<Discovery>(DISCOVERY_URL);
   let feeds = feedsByName(discovery);
   if (feeds.gbfs_versions && discovery.version !== PREFERRED_VERSION) {
     const versions = await getJson<{ data: { versions: { version: string; url: string }[] } }>(
       feeds.gbfs_versions,
-      3600,
     );
     const preferred = versions.data.versions.find(
       (candidate) => candidate.version.replace(/^v/, "") === PREFERRED_VERSION,
     );
     if (preferred) {
-      discovery = await getJson<Discovery>(preferred.url, 3600);
+      discovery = await getJson<Discovery>(preferred.url);
       feeds = feedsByName(discovery);
     }
   }
@@ -61,9 +66,9 @@ async function resolveFeeds(): Promise<{ status: string; information: string }> 
 
 /** A snapshot file from the data branch, or null if it cannot be read. */
 export async function getSnapshotFile<T>(name: SnapshotFile): Promise<T | null> {
-  const { file, revalidate } = SNAPSHOT_FILES[name];
+  const { file } = SNAPSHOT_FILES[name];
   try {
-    return await getJson<T>(`${SNAPSHOT_DATA_URL}/${file}`, revalidate);
+    return await getJson<T>(`${SNAPSHOT_DATA_URL}/${file}`);
   } catch {
     return null;
   }
@@ -81,8 +86,8 @@ export async function getLive(): Promise<LiveResponse | null> {
   try {
     const feeds = await resolveFeeds();
     const [status, information] = await Promise.all([
-      getJson<unknown>(feeds.status, LIVE_REVALIDATE_SECONDS),
-      getJson<unknown>(feeds.information, 3600),
+      getJson<unknown>(feeds.status),
+      getJson<unknown>(feeds.information),
     ]);
     const live: LiveSnapshot = computeLive(status, information, Math.floor(Date.now() / 1000));
     return { ...live, source: "feed" };

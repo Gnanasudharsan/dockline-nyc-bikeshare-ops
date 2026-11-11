@@ -1,9 +1,13 @@
-import { getLive, LIVE_REVALIDATE_SECONDS } from "@/lib/snapshot";
+import { getLive, LIVE_CDN_SECONDS } from "@/lib/snapshot";
 
 // Snapshot mode's live endpoint: certified point-in-time KPIs and every station's
-// state, computed from the public GBFS feed (src/lib/metrics.ts). Cached briefly on
-// the CDN so the feed is read at most about twice a minute.
-export const revalidate = 30;
+// state, computed from the public GBFS feed (src/lib/metrics.ts).
+//
+// It runs on every request that reaches it; Vercel's CDN caches each response for
+// LIVE_CDN_SECONDS (plus as long again while it refreshes in the background), so the
+// feed is read about twice a minute however many people visit. Next's own ISR cache is
+// not used: on Vercel it kept serving the build-time copy (ADR 0022).
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   const live = await getLive();
@@ -18,7 +22,8 @@ export async function GET() {
   }
   return Response.json(live, {
     headers: {
-      "Cache-Control": `public, max-age=0, s-maxage=${LIVE_REVALIDATE_SECONDS}, stale-while-revalidate=${LIVE_REVALIDATE_SECONDS}`,
+      "Cache-Control": "public, max-age=0, must-revalidate",
+      "Vercel-CDN-Cache-Control": `max-age=${LIVE_CDN_SECONDS}, stale-while-revalidate=${LIVE_CDN_SECONDS}`,
     },
   });
 }

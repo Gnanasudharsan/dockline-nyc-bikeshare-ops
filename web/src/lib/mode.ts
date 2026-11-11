@@ -18,10 +18,10 @@ export const SNAPSHOT_DATA_URL = (
 /** Optional link to a recorded demo of the full stack (Ask the Data, Grafana). */
 export const DEMO_VIDEO_URL = process.env.NEXT_PUBLIC_DEMO_VIDEO_URL ?? "";
 
-/** The snapshot files the site may read, and how long to cache each (seconds). */
+/** The snapshot files the site may read, and how long the CDN may cache each (seconds). */
 export const SNAPSHOT_FILES = {
-  latest: { file: "latest.json", revalidate: 120 },
-  "history-24h": { file: "history-24h.json", revalidate: 120 },
-  "daily-kpis": { file: "daily-kpis.json", revalidate: 120 },
+  latest: { file: "latest.json", cdnSeconds: 120 },
+  "history-24h": { file: "history-24h.json", cdnSeconds: 120 },
+  "daily-kpis": { file: "daily-kpis.json", cdnSeconds: 120 },
 } as const;
 export type SnapshotFile = keyof typeof SNAPSHOT_FILES;

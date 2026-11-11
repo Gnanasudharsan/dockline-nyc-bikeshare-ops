@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/insights" },
 };
 
+// Snapshot mode reads the feed and history uncached (no-store), so it renders per request.
 export const revalidate = 900;
 
 export default async function InsightsPage() {
