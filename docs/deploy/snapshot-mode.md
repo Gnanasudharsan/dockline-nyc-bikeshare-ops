@@ -7,8 +7,10 @@ leaves out: [ADR 0022](../adr/0022-snapshot-mode.md).
 
 ## 1. Start the history
 
-The **Snapshot** workflow (`.github/workflows/snapshot.yml`) runs every 10 minutes once
-it is on `main`. Run it once by hand so the data branch exists:
+The **Snapshot** workflow (`.github/workflows/snapshot.yml`) takes a snapshot every 10
+minutes. GitHub's own schedule is too irregular for that, so each run loops for about
+5.5 hours and then starts the next one; an hourly schedule restarts the chain if it
+ever stops. Start it once by hand:
 
 ```bash
 gh workflow run snapshot.yml

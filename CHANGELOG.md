@@ -6,6 +6,16 @@ phases are tagged `phase-N` until the `v1.0.0` release.
 
 ## [Unreleased]
 
+### Fixed
+- Snapshot mode showed frozen numbers: on Vercel the ISR routes kept serving the
+  build-time feed for days. `/api/live` and `/api/snapshot/<name>` are now dynamic and
+  cached only on Vercel's CDN (30 s and 120 s), and Home and Live load their data in
+  the browser.
+- The snapshot history fell hours behind because GitHub ran the `*/10` schedule only
+  every 4-8 hours. The Snapshot workflow now loops for about 5.5 hours per run (a
+  snapshot every 10 minutes) and starts its successor; an hourly schedule is the
+  backstop.
+
 ## [v1.1.0] — 2026-11-07
 
 Public deployment in snapshot mode: <https://dockline-nyc.vercel.app>.

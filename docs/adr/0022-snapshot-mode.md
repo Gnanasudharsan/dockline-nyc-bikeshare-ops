@@ -48,3 +48,18 @@ default stays `full`). Switching back is an environment change, not a code chang
 - Vercel ignores the `data` branch (`web/vercel.json`), so snapshots never trigger
   deployments.
 - Cost: $0 (Vercel Hobby, GitHub Actions minutes for a public repository).
+
+## Update (2026-11-11): two fixes after four days in production
+- **Frozen live numbers.** On Vercel, the ISR routes and Next's fetch cache never
+  refreshed: `/api/live` served the copy built at deploy time for three days, while
+  the same build refreshed correctly under `next start`. The API routes are now
+  dynamic (`force-dynamic`, upstream fetches `no-store`) and cached only by Vercel's
+  CDN (`Vercel-CDN-Cache-Control: max-age=30, stale-while-revalidate=30`; 120 s for
+  history). Snapshot-mode pages hold no server data: Home and Live load it in the
+  browser from those routes, and Insights renders per request.
+- **Sparse history.** GitHub ran the `*/10` schedule only every 4-8 hours. The
+  Snapshot workflow now loops inside one run, taking a snapshot at every 10-minute
+  mark for about 5.5 hours, then starts its successor with `workflow_dispatch`. An
+  hourly schedule restarts the chain if it breaks. This keeps one runner busy most of
+  the time, which is free for public repositories; if GitHub objects, the
+  alternative is an external free cron calling `workflow_dispatch` every 10 minutes.
