@@ -5,26 +5,36 @@ name: Snapshot
 # `data` branch: latest.json, history-24h.json, daily-kpis.json. The website reads them
 # from raw.githubusercontent.com.
 #
-# The data branch is an orphan branch kept at a single commit that each run replaces
-# (force-push to `data` only), so the repository does not grow. main is never touched.
-# A failed scheduled run emails the repository owner, like the Uptime workflow.
+# GitHub ran the `*/10` schedule only every 4-8 hours, so one run now loops: a snapshot
+# at each 10-minute mark for about 5.5 hours, then it starts the next run itself
+# (workflow_dispatch). The hourly schedule is only a backstop that restarts the chain
+# if it ever breaks; while a loop is running, those runs wait in the queue and are
+# replaced by the next one.
+#
+# The data branch is an orphan branch kept at a single commit that each snapshot
+# replaces (force-push to `data` only), so the repository does not grow. main is never
+# touched. A failed run emails the repository owner, like the Uptime workflow.
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "17 * * * *"
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: write # push the data branch
+  actions: write # start the next run of this workflow
 
-# Overlapping runs cancel the older one; the newest snapshot wins.
+# One loop at a time; a run that arrives while one is going waits for it.
 concurrency:
   group: snapshot
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   snapshot:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 350
+    env:
+      LOOP_MINUTES: 330
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v7
 
@@ -49,28 +59,28 @@ jobs:
             echo "No data branch yet; starting a new history."
           fi
 
-      - name: Poll the feeds and update the history
-        run: uv run --package dockline-ingestion python -m dockline_ingestion.snapshot --dir snapshot
-
-      - name: Publish to the data branch (one commit, replaced each run)
-        working-directory: snapshot
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Take a snapshot every 10 minutes for about 5.5 hours
         run: |
-          python3 - <<'PY'
-          import json, pathlib
-          for name in ("latest.json", "history-24h.json", "daily-kpis.json"):
-              path = pathlib.Path(name)
-              json.loads(path.read_text())
-              print(f"{name}: {path.stat().st_size / 1024:.0f} KB")
-          PY
-          cp ../infra/snapshot/DATA_BRANCH_README.md README.md
-          # Vercel reads its config from the pushed commit: carry the rule that skips
-          # deployments of this branch.
-          mkdir -p web && cp ../web/vercel.json web/vercel.json
-          git init -q -b data
-          git config user.name "Gnanasudharsan"
-          git config user.email "84964314+Gnanasudharsan@users.noreply.github.com"
-          git add -A
-          git commit -q -m "chore(data): snapshot $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          git push -q --force "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" HEAD:data
+          deadline=$(( $(date +%s) + LOOP_MINUTES * 60 ))
+          failures=0
+          while true; do
+            if uv run --package dockline-ingestion python -m dockline_ingestion.snapshot --dir snapshot \
+              && infra/snapshot/publish.sh snapshot; then
+              failures=0
+            else
+              failures=$((failures + 1))
+              echo "::warning::Snapshot failed ($failures in a row); trying again at the next 10-minute mark."
+              if [ "$failures" -ge 3 ]; then
+                echo "::error::Three snapshots in a row failed."
+                exit 1
+              fi
+            fi
+            now=$(date +%s)
+            next=$(( (now / 600 + 1) * 600 + 15 ))  # 15 s past the next 10-minute mark
+            if [ "$next" -ge "$deadline" ]; then break; fi
+            sleep $(( next - now ))
+          done
+
+      - name: Start the next run
+        if: ${{ !cancelled() }}
+        run: gh workflow run snapshot.yml --ref main --repo "$GITHUB_REPOSITORY"
